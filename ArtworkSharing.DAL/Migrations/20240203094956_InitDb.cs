@@ -142,26 +142,6 @@ namespace ArtworkSharing.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MediaContents",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Capacity = table.Column<float>(type: "real", nullable: false),
-                    Media = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MediaContents", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MediaContents_Artworks_ArtworkId",
-                        column: x => x.ArtworkId,
-                        principalTable: "Artworks",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ArtworkServices",
                 columns: table => new
                 {
@@ -266,6 +246,32 @@ namespace ArtworkSharing.DAL.Migrations
                         column: x => x.LikedUserId,
                         principalTable: "Users",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MediaContents",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Capacity = table.Column<float>(type: "real", nullable: false),
+                    Media = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ArtworkServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MediaContents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MediaContents_ArtworkServices_ArtworkServiceId",
+                        column: x => x.ArtworkServiceId,
+                        principalTable: "ArtworkServices",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MediaContents_Artworks_ArtworkId",
+                        column: x => x.ArtworkId,
+                        principalTable: "Artworks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -449,6 +455,11 @@ namespace ArtworkSharing.DAL.Migrations
                 name: "IX_MediaContents_ArtworkId",
                 table: "MediaContents",
                 column: "ArtworkId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MediaContents_ArtworkServiceId",
+                table: "MediaContents",
+                column: "ArtworkServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_TransactionId",

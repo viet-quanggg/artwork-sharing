@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
-    [Migration("20240203083043_InitDb")]
+    [Migration("20240203094956_InitDb")]
     partial class InitDb
     {
         /// <inheritdoc />
@@ -260,6 +260,9 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<Guid>("ArtworkId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("ArtworkServiceId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<float>("Capacity")
                         .HasColumnType("real");
 
@@ -270,6 +273,8 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArtworkId");
+
+                    b.HasIndex("ArtworkServiceId");
 
                     b.ToTable("MediaContents");
                 });
@@ -585,6 +590,10 @@ namespace ArtworkSharing.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.ArtworkService", null)
+                        .WithMany("ArtworkProduct")
+                        .HasForeignKey("ArtworkServiceId");
+
                     b.Navigation("Artwork");
                 });
 
@@ -672,6 +681,8 @@ namespace ArtworkSharing.DAL.Migrations
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkService", b =>
                 {
+                    b.Navigation("ArtworkProduct");
+
                     b.Navigation("Transactions");
                 });
 

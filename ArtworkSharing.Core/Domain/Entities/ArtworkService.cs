@@ -21,6 +21,7 @@ namespace ArtworkSharing.Core.Domain.Entities
         public ArtworkServiceStatus Status { get; set; }
         public User Audience { get; set; } = null!;
         public Artist Artist { get; set; } = null!;
+        public ICollection<MediaContent>? ArtworkProduct { get; set; }
         public ICollection<Transaction>? Transactions { get; set; }
     }
 }
