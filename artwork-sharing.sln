@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtworkSharing.DAL", "ArtworkSharing.DAL\ArtworkSharing.DAL.csproj", "{C8406DDC-74C0-45EA-9E21-9BBD7E3EA2AF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtworkSharing.Service", "ArtworkSharing.Service\ArtworkSharing.Service.csproj", "{630FB5F4-6F89-4CA8-8D72-E276B02A7DA4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArtworkSharing", "ArtworkSharing\ArtworkSharing.csproj", "{3727D05B-9139-4FE7-9A08-E500BAE38F8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtworkSharing.Core", "ArtworkSharing.Core\ArtworkSharing.Core.csproj", "{F9552394-FA34-4404-BA3E-6BF96C25596E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C8406DDC-74C0-45EA-9E21-9BBD7E3EA2AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8406DDC-74C0-45EA-9E21-9BBD7E3EA2AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8406DDC-74C0-45EA-9E21-9BBD7E3EA2AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8406DDC-74C0-45EA-9E21-9BBD7E3EA2AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{630FB5F4-6F89-4CA8-8D72-E276B02A7DA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{630FB5F4-6F89-4CA8-8D72-E276B02A7DA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{630FB5F4-6F89-4CA8-8D72-E276B02A7DA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{630FB5F4-6F89-4CA8-8D72-E276B02A7DA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3727D05B-9139-4FE7-9A08-E500BAE38F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3727D05B-9139-4FE7-9A08-E500BAE38F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3727D05B-9139-4FE7-9A08-E500BAE38F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3727D05B-9139-4FE7-9A08-E500BAE38F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9552394-FA34-4404-BA3E-6BF96C25596E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9552394-FA34-4404-BA3E-6BF96C25596E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9552394-FA34-4404-BA3E-6BF96C25596E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9552394-FA34-4404-BA3E-6BF96C25596E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {74348A95-E7CF-4B4A-AB49-B34AF48716E2}
+	EndGlobalSection
+EndGlobal
