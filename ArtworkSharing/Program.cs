@@ -1,4 +1,6 @@
+using ArtworkSharing.Core.Models;
 using ArtworkSharing.DAL.Data;
+using ArtworkSharing.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ArtworkSharingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDatabase();
+builder.Services.AddServices();
 
 var app = builder.Build();
 EnsureMigrate(app);
