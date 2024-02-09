@@ -1,5 +1,6 @@
 ﻿using ArtworkSharing.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.DAL
 {
@@ -14,73 +15,59 @@ namespace ArtworkSharing.DAL
             DbContext = dbContext;
         }
 
-        public async Task DeleteAsync(int id, bool saveChanges = true)
-        {
-            var entity = await Entities.FindAsync(id);
-            await DeleteAsync(entity);
+        public void Add(T entity)
+             => DbContext.Add(entity);
 
-            if (saveChanges)
-            {
-                await DbContext.SaveChangesAsync();
-            }
-        }
 
-        public async Task DeleteAsync(T entity, bool saveChanges = true)
-        {
-            Entities.Remove(entity);
-            if (saveChanges)
-            {
-                await DbContext.SaveChangesAsync();
-            }
-        }
+        public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+            => await DbContext.AddAsync(entity, cancellationToken);
 
-        public async Task DeleteRangeAsync(IEnumerable<T> entities, bool saveChanges = true)
-        {
-            var enumerable = entities as T[] ?? entities.ToArray();
-            if (enumerable.Any())
-            {
-                Entities.RemoveRange(enumerable);
-            }
 
-            if (saveChanges)
-            {
-                await DbContext.SaveChangesAsync();
-            }
-        }
+        public void AddRange(IEnumerable<T> entities)
+            => DbContext.AddRange(entities);
 
-        public async Task<IList<T>> GetAllAsync()
-        {
-            return await Entities.ToListAsync();
-        }
 
-        public T Find(params object[] keyValues)
-        {
-            return Entities.Find(keyValues);
-        }
+        public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+            => await DbContext.AddRangeAsync(entities, cancellationToken);
 
-        public virtual async Task<T> FindAsync(params object[] keyValues)
-        {
-            return await Entities.FindAsync(keyValues);
-        }
 
-        public async Task InsertAsync(T entity, bool saveChanges = true)
-        {
-            await Entities.AddAsync(entity);
+        public T Get(Expression<Func<T, bool>> expression)
+            => Entities.FirstOrDefault(expression);
 
-            if (saveChanges)
-            {
-                await DbContext.SaveChangesAsync();
-            }
-        }
 
-        public async Task InsertRangeAsync(IEnumerable<T> entities, bool saveChanges = true)
-        {
-            await DbContext.AddRangeAsync(entities);
+        public IEnumerable<T> GetAll()
+            => Entities.AsEnumerable();
 
-            if (saveChanges)
-            {
-                await DbContext.SaveChangesAsync();
-            }
-        }
+
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>> expression)
+            => Entities.Where(expression).AsEnumerable();
+
+
+        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
+            => await Entities.ToListAsync(cancellationToken);
+
+
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
+            => await Entities.Where(expression).ToListAsync(cancellationToken);
+
+
+        public async Task<T> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
+            => await Entities.FirstOrDefaultAsync(expression, cancellationToken);
+
+
+        public void Remove(T entity)
+            => DbContext.Remove(entity);
+
+
+        public void RemoveRange(IEnumerable<T> entities)
+            => DbContext.RemoveRange(entities);
+
+
+        public void Update(T entity)
+            => DbContext.Update(entity);
+
+
+        public void UpdateRange(IEnumerable<T> entities)
+            => DbContext.UpdateRange(entities);
     }
 }

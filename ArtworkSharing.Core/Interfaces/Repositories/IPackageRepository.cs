@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ArtworkSharing.Core.Interfaces.Repositories
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IPackageRepository : IRepository<Package>
     {
     }
 }

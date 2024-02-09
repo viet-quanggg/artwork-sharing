@@ -1,6 +1,8 @@
 ﻿using ArtworkSharing.Core.Interfaces;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Data;
+using ArtworkSharing.Service.Services;
 
 namespace ArtworkSharing.Extensions
 {
@@ -14,16 +16,6 @@ namespace ArtworkSharing.Extensions
         /// <returns></returns>
         public static IServiceCollection AddDatabase(this IServiceCollection services)
         {
-            // Configure DbContext with Scoped lifetime   
-            //services.AddDbContext<ArtworkSharingContext>(options =>
-            //{
-            //    options.UseSqlServer(AppSettings.ConnectionString,
-            //        sqlOptions => sqlOptions.CommandTimeout(120));
-            //    options.UseLazyLoadingProxies();
-            //}
-            //AddDbContext<ArtworkSharingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            //);
-
             services.AddScoped<Func<ArtworkSharingContext>>((provider) => () => provider.GetService<ArtworkSharingContext>());
             services.AddScoped<DbFactory>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -36,9 +28,10 @@ namespace ArtworkSharing.Extensions
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        //public static IServiceCollection AddServices(this IServiceCollection services)
-        //{
-        //    return services.AddScoped<IWorkService, WorkService>();
-        //}
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<IArtworkService, ArtworkService>();
+            return services;
+        }
     }
 }

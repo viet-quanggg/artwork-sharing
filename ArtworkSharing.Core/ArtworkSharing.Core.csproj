@@ -10,7 +10,6 @@
     <Folder Include="Domain\Dtos\" />
     <Folder Include="Domain\Objects\" />
     <Folder Include="Constants\" />
-    <Folder Include="Interfaces\Services\" />
   </ItemGroup>
 
   <ItemGroup>

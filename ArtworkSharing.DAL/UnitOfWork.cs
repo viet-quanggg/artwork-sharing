@@ -2,26 +2,61 @@
 using ArtworkSharing.Core.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ArtworkSharing.DAL.Repositories;
 
 namespace ArtworkSharing.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public DbContext DbContext { get; private set; }
-        private Dictionary<string, object> Repositories { get; }
+        public DbContext DbContext { get; private set; }       
+
+        public IUserRepository UserRepository { get; private set; }
+
+        public IArtworkRepository ArtworkRepository { get; private set; }
+
+        public IArtistPackageRepository ArtworkPackageRepository { get; private set; }
+
+        public IArtistRepository ArtistRepository { get; private set; }
+
+        public IArtworkServiceRepository ArtworkServiceRepository { get; private set; }
+
+        public ICategoryRepository CategoryRepository { get; private set; }
+        public ICommentRepository CommentRepository { get; private set; }
+        public IFollowRepository FollowRepository { get; private set; }
+
+        public ILikeRepository LikeRepository { get; private set; }
+
+        public IMediaContentRepository MediaContentRepository { get; private set; }
+
+        public IPackageRepository PackageRepository { get; private set; }
+
+        public IRatingRepository RatingRepository { get; private set; }
+
+        public IRefundRequestRepository RefundRequestRepository { get; private set; }
+
+        public ITransactionRepository TransactionRepository { get; private set; }
+
         private IDbContextTransaction _transaction;
         private IsolationLevel? _isolationLevel;
 
         public UnitOfWork(DbFactory dbFactory)
         {
             DbContext = dbFactory.DbContext;
-            Repositories = new Dictionary<string, dynamic>();
+            ArtworkRepository = new ArtworkRepository(DbContext);
+            UserRepository = new UserRepository(DbContext);
+            ArtworkPackageRepository = new ArtistPackageRepository(DbContext);
+            ArtistRepository = new ArtistRepository(DbContext);
+            ArtworkServiceRepository = new ArtworkServiceRepository(DbContext);
+            CategoryRepository = new CategoryRepository(DbContext);
+            CommentRepository = new CommentRepository(DbContext);
+            FollowRepository = new FollowRepository(DbContext);
+            LikeRepository = new LikeRepository(DbContext);
+            MediaContentRepository = new MediaContentRepository(DbContext);
+            PackageRepository = new PackageRepository(DbContext);
+            RatingRepository = new RatingRepository(DbContext);
+            RefundRequestRepository = new RefundRequestRepository(DbContext);
+            TransactionRepository = new TransactionRepository(DbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -86,23 +121,6 @@ namespace ArtworkSharing.DAL
             DbContext = null;
         }
 
-        public IRepository<TEntity> Repository<TEntity>() where TEntity : class
-        {
-            var type = typeof(TEntity);
-            var typeName = type.Name;
-
-            lock (Repositories)
-            {
-                if (Repositories.ContainsKey(typeName))
-                {
-                    return (IRepository<TEntity>)Repositories[typeName];
-                }
-
-                var repository = new Repository<TEntity>(DbContext);
-
-                Repositories.Add(typeName, repository);
-                return repository;
-            }
-        }
+       
     }
 }
