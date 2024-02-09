@@ -1,3 +1,4 @@
+using ArtworkSharing.Core.Models;
 using ArtworkSharing.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 

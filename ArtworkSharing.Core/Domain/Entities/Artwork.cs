@@ -21,6 +21,6 @@ namespace ArtworkSharing.Core.Domain.Entities
         public ICollection<Like>? Likes { get; set; }
         public ICollection<Comment>? Comments { get; set; }
         public ICollection<Transaction>? Transactions { get; set; }
-        public ICollection<ArtworkCategory>? Categories { get; set; }
+        public ICollection<Category>? Categories { get; set; }
     }
 }

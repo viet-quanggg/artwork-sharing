@@ -7,8 +7,7 @@ namespace ArtworkSharing.DAL.Data
     {
         public DbSet<Artwork> Artworks { get; set; }
         public DbSet<ArtistPackage> ArtistPackages { get; set; }
-        public DbSet<Artist> Artists { get; set; }
-        public DbSet<ArtworkCategory> ArtworkCategories { get; set; }
+        public DbSet<Artist> Artists { get; set; }        
         public DbSet<ArtworkService> ArtworkServices { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
