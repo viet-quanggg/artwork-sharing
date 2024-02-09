@@ -1,4 +1,4 @@
-﻿using ArtworkSharing.Core.Interfaces.Repositories;
+﻿using ArtworkSharing.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Storage;

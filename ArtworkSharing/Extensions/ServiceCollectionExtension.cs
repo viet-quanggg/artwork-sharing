@@ -31,6 +31,8 @@ namespace ArtworkSharing.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IArtworkService, ArtworkService>();
+            services.AddScoped<IArtistService, ArtistService>();
+            services.AddScoped<IArtistPackageService, ArtistPackageService>();
             return services;
         }
     }

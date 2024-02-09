@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ArtworkSharing.Core.Domain.Entities;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
-    public class IArtworkService
+    public interface IArtworkService
     {
+        Task<IList<Artwork>> GetAll();
+        Task<Artwork> GetOne(Guid artworkId);
+        Task Update(Artwork artwork);
+        Task Add(Artwork artwork);
+        Task Delete(Guid artworkId);
     }
 }

@@ -1,4 +1,4 @@
-﻿using ArtworkSharing.Core.Interfaces.Repositories;
+﻿using ArtworkSharing.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -43,7 +43,7 @@ namespace ArtworkSharing.DAL
             => Entities.Where(expression).AsEnumerable();
 
 
-        public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<IList<T>> GetAllAsync(CancellationToken cancellationToken = default)
             => await Entities.ToListAsync(cancellationToken);
 
 
@@ -54,20 +54,47 @@ namespace ArtworkSharing.DAL
         public async Task<T> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
             => await Entities.FirstOrDefaultAsync(expression, cancellationToken);
 
+        public async Task DeleteAsync(int id, bool saveChanges = true)
+        {
+            var entity = await Entities.FindAsync(id);
+            await DeleteAsync(entity);
 
-        public void Remove(T entity)
-            => DbContext.Remove(entity);
+            if (saveChanges)
+            {
+                await DbContext.SaveChangesAsync();
+            }
+        }
 
+        public async Task DeleteAsync(T entity, bool saveChanges = true)
+        {
+            Entities.Remove(entity);
+            if (saveChanges)
+            {
+                await DbContext.SaveChangesAsync();
+            }
+        }
 
-        public void RemoveRange(IEnumerable<T> entities)
-            => DbContext.RemoveRange(entities);
+        public async Task DeleteRangeAsync(IEnumerable<T> entities, bool saveChanges = true)
+        {
+            var enumerable = entities as T[] ?? entities.ToArray();
+            if (enumerable.Any())
+            {
+                Entities.RemoveRange(enumerable);
+            }
 
+            if (saveChanges)
+            {
+                await DbContext.SaveChangesAsync();
+            }
+        }
+        public T Find(params object[] keyValues)
+        {
+            return Entities.Find(keyValues);
+        }
 
-        public void Update(T entity)
-            => DbContext.Update(entity);
-
-
-        public void UpdateRange(IEnumerable<T> entities)
-            => DbContext.UpdateRange(entities);
+        public virtual async Task<T> FindAsync(params object[] keyValues)
+        {
+            return await Entities.FindAsync(keyValues);
+        }
     }
 }
