@@ -4,5 +4,6 @@ namespace ArtworkSharing.Core.Interfaces.Repositories
 {
     public interface IMediaContentRepository : IRepository<MediaContent>
     {
+
     }
 }
