@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
-    [Migration("20240203094956_InitDb")]
+    [Migration("20240209134539_InitDb")]
     partial class InitDb
     {
         /// <inheritdoc />
@@ -20,10 +20,25 @@ namespace ArtworkSharing.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.15")
+                .HasAnnotation("ProductVersion", "7.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ArtworkCategory", b =>
+                {
+                    b.Property<Guid>("ArtworksId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoriesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ArtworksId", "CategoriesId");
+
+                    b.HasIndex("CategoriesId");
+
+                    b.ToTable("ArtworkCategory");
+                });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Artist", b =>
                 {
@@ -31,7 +46,12 @@ namespace ArtworkSharing.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Artists");
                 });
@@ -95,27 +115,6 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasIndex("ArtistId");
 
                     b.ToTable("Artworks");
-                });
-
-            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkCategory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ArtworkId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArtworkId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("ArtworkCategories");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkService", b =>
@@ -385,6 +384,9 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -402,6 +404,8 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.HasIndex("AudienceId");
 
+                    b.HasIndex("PackageId");
+
                     b.ToTable("Transactions");
                 });
 
@@ -414,9 +418,6 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("IsArtistId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -442,11 +443,35 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsArtistId");
-
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ArtworkCategory", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", null)
+                        .WithMany()
+                        .HasForeignKey("ArtworksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Artist", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtistPackage", b =>
@@ -485,25 +510,6 @@ namespace ArtworkSharing.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Artist");
-                });
-
-            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkCategory", b =>
-                {
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", "Artwork")
-                        .WithMany("Categories")
-                        .HasForeignKey("ArtworkId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Artwork");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkService", b =>
@@ -621,11 +627,11 @@ namespace ArtworkSharing.DAL.Migrations
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Transaction", b =>
                 {
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", null)
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", "Artwork")
                         .WithMany("Transactions")
                         .HasForeignKey("ArtworkId");
 
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.ArtworkService", null)
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.ArtworkService", "ArtworkService")
                         .WithMany("Transactions")
                         .HasForeignKey("ArtworkServiceId");
 
@@ -635,24 +641,26 @@ namespace ArtworkSharing.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Package", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId");
+
+                    b.Navigation("Artwork");
+
+                    b.Navigation("ArtworkService");
+
                     b.Navigation("Audience");
+
+                    b.Navigation("Package");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.User", b =>
                 {
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artist", "IsArtist")
-                        .WithMany()
-                        .HasForeignKey("IsArtistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ArtworkSharing.Core.Domain.Entities.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("IsArtist");
 
                     b.Navigation("Role");
                 });
@@ -668,8 +676,6 @@ namespace ArtworkSharing.DAL.Migrations
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Artwork", b =>
                 {
-                    b.Navigation("Categories");
-
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");

@@ -1,4 +1,5 @@
-﻿using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Exceptions;
+using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Data;
@@ -31,7 +32,24 @@ namespace ArtworkSharing.Extensions
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IArtworkService, ArtworkService>();
+            services.AddScoped<IArtistService, ArtistService>();
+            services.AddScoped<IArtistPackageService, ArtistPackageService>();
             return services;
+        }
+
+
+        public static void AddConfigException(this IServiceCollection services)
+        {
+            services.AddControllers(_ =>
+            {
+                _.Filters.Add(new BusinessException());
+            });
+        }
+
+        public static void UseException(this IApplicationBuilder app)
+        {
+            app.UseRouting();
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }
