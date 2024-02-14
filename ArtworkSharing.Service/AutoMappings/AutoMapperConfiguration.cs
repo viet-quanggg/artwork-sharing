@@ -25,7 +25,7 @@ namespace ArtworkSharing.Service.AutoMappings
         public MapperHandler()
         {
             CreateMap<Transaction, TransactionViewModel>().ReverseMap();
-            CreateMap<Transaction, TransactionViewModel>().ReverseMap();
+            CreateMap<Transaction, UpdateTransactionModel>().ReverseMap();
             CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
             CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
         }
