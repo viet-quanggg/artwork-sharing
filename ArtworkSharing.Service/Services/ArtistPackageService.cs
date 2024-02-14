@@ -4,21 +4,21 @@ using ArtworkSharing.Core.Interfaces.Services;
 
 namespace ArtworkSharing.Service.Services
 {
-    public class ArtworkService : IArtworkService
+    public class ArtistPackageService : IArtistPackageService
     {
         private readonly IUnitOfWork _unitOfWork;
-        public ArtworkService(IUnitOfWork unitOfWork)
+        public ArtistPackageService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task Add(Artwork artwork)
+        public async Task Add(ArtistPackage artistPackage)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
 
-                var repos = _unitOfWork.ArtworkRepository;
-                await repos.AddAsync(artwork);
+                var repos = _unitOfWork.ArtworkPackageRepository;
+                await repos.AddAsync(artistPackage);
 
                 await _unitOfWork.CommitTransaction();
             }
@@ -29,18 +29,18 @@ namespace ArtworkSharing.Service.Services
             }
         }
 
-        public async Task Delete(Guid artworkId)
+        public async Task Delete(Guid artistPackageId)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
 
-                var repos = _unitOfWork.ArtworkRepository;
-                var artwork = await repos.GetAsync(a => a.Id == artworkId);
-                if (artwork == null)
+                var repos = _unitOfWork.ArtworkPackageRepository;
+                var ap = await repos.FindAsync(artistPackageId);
+                if (ap == null)
                     throw new KeyNotFoundException();
 
-                await repos.DeleteAsync(artwork);
+                await repos.DeleteAsync(ap);
 
                 await _unitOfWork.CommitTransaction();
             }
@@ -51,25 +51,25 @@ namespace ArtworkSharing.Service.Services
             }
         }
 
-        public async Task<IList<Artwork>> GetAll()
+        public async Task<IList<ArtistPackage>> GetAll()
         {
-            return await _unitOfWork.ArtworkRepository.GetAllAsync();
+            return await _unitOfWork.ArtworkPackageRepository.GetAllAsync();
         }
 
-        public async Task<Artwork> GetOne(Guid artworkId)
+        public async Task<ArtistPackage> GetOne(Guid artistPackageId)
         {
-            return await _unitOfWork.ArtworkRepository.FindAsync(artworkId);
+            return await _unitOfWork.ArtworkPackageRepository.FindAsync(artistPackageId);
         }
 
-        public async Task Update(Artwork artwork)
+        public async Task Update(ArtistPackage artistPackage)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
 
-                var repos = _unitOfWork.ArtistRepository;
-                var a = await repos.FindAsync(artwork.Id);
-                if (a == null)
+                var repos = _unitOfWork.ArtworkPackageRepository;
+                var ap = await repos.FindAsync(artistPackage.Id);
+                if (ap == null)
                     throw new KeyNotFoundException();
 
                 //a.Name = a.Name;

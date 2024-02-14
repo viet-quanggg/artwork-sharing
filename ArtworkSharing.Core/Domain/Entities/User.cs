@@ -19,9 +19,7 @@ namespace ArtworkSharing.Core.Domain.Entities
 
         public Guid RoleId { get; set; }
 
-        public Guid IsArtistId { get; set; }
-
-        public Artist? IsArtist { get; set; }
+       
         public Role Role { get; set; } = null!;
         public ICollection<Follow>? Followers { get; set; }
         public ICollection<Follow>? Followings { get; set; }
