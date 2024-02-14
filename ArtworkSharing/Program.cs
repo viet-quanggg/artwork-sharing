@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ArtworkSharingContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddDatabase();
 builder.Services.AddServices();
-
+builder.Services.AddConfigException();
 var app = builder.Build();
 EnsureMigrate(app);
 // Configure the HTTP request pipeline.
@@ -23,7 +23,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseException();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
