@@ -81,7 +81,7 @@ namespace ArtworkSharing.Service.Services
                 if (Rating == null)
                     throw new KeyNotFoundException();
 
-                RatingRepository.Remove(Rating);
+                RatingRepository.DeleteAsync(Rating);
 
                 await _unitOfWork.CommitTransaction();
             }

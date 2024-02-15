@@ -83,7 +83,7 @@ namespace ArtworkSharing.Service.Services
                 if (Package == null)
                     throw new KeyNotFoundException();
 
-                PackageRepository.Remove(Package);
+                PackageRepository.DeleteAsync(Package);
 
                 await _unitOfWork.CommitTransaction();
             }

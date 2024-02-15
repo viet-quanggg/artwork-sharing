@@ -82,7 +82,7 @@ namespace ArtworkSharing.Service.Services
                 if (mediaContent == null)
                     throw new KeyNotFoundException();
 
-                mediaContentRepository.Remove(mediaContent);
+                mediaContentRepository.DeleteAsync(mediaContent);
 
                 await _unitOfWork.CommitTransaction();
             }
