@@ -12,14 +12,18 @@ namespace ArtworkSharing.Controllers
     {
         private readonly IArtistService _ArtistService;
         private readonly IArtworkService _ArtworkService;
-        private readonly ILikeService _LikeService;
-        private readonly IRatingService _RatingService;
-        private readonly ICommentService _CommentService;
+
+        private readonly ITransactionService _TransactionService;
+
+        /* private readonly ILikeService _LikeService;
+         private readonly IRatingService _RatingService;
+         private readonly ICommentService _CommentService;*/
 
         private readonly ILogger<TController> _logger;
-        public TController(IArtistService artistService, IArtworkService artworkService,ILikeService likeService,IRatingService ratingService,ICommentService commentService, ILogger<TController> logger)
+        public TController(IArtistService artistService, IArtworkService artworkService,ITransactionService transactionService, ILogger<TController> logger)
         {
             _ArtistService = artistService;
+            _TransactionService = transactionService;
             _ArtworkService = artworkService;
             _logger = logger;
         }
@@ -43,7 +47,7 @@ namespace ArtworkSharing.Controllers
             }
         }
         [HttpPost("{artistId}", Name = "AddArtwork")]
-        public async Task<ActionResult> Add(Guid artistId, [FromBody] Artwork artwork)
+        public async Task<IActionResult> Add(Guid artistId, [FromBody] Artwork artwork)
         {
             try
             {
@@ -63,7 +67,7 @@ namespace ArtworkSharing.Controllers
             }
         }
         [HttpPut(Name = "EditArtwork")]
-        public async Task<ActionResult> Update([FromBody] Artwork artworkInput)
+        public async Task<IActionResult> Update([FromBody] Artwork artworkInput)
         {
             try
             {
@@ -86,7 +90,7 @@ namespace ArtworkSharing.Controllers
         }
 
         [HttpDelete("{artworkId}", Name = "DeleteArtwork")]
-        public async Task<ActionResult> Delete(Guid artworkId)
+        public async Task<IActionResult> Delete(Guid artworkId)
         {
             try
             {
@@ -107,7 +111,7 @@ namespace ArtworkSharing.Controllers
             }
         }
         [HttpPost("{artistId}", Name = "AddlistArtworks")]
-        public async Task<ActionResult> AddArtworks(Guid artistId, [FromBody] List<Artwork> artworks)
+        public async Task<IActionResult> AddArtworks(Guid artistId, [FromBody] List<Artwork> artworks)
         {
             try
             {
@@ -132,5 +136,65 @@ namespace ArtworkSharing.Controllers
             }
         }
 
+        [HttpGet( Name = "Getalltransactionfordashboard")]
+        public async Task<ActionResult<TController>> GetTransactionsByTimeRange(string timeRange)
+        {
+            try
+            {
+                DateTime startDate;
+
+                switch (timeRange.ToLower())
+                {
+                    case "day":
+                        startDate = DateTime.Now.AddDays(-1);
+                        break;
+                    case "month":
+                        startDate = DateTime.Now.AddMonths(-1);
+                        break;
+                    case "year":
+                        startDate = DateTime.Now.AddYears(-1);
+                        break;
+                    default:
+                        return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
+                }
+
+                var transactions = await _TransactionService.GetAll();
+                var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
+                return Ok(filteredTransactions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting transactions: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpGet(Name = "GetallArtworkforDashboard")]
+        public async Task<ActionResult<TController>> GetArtWork()
+        {
+            try
+            {
+                var transactions = await _ArtworkService.GetAll();
+                return Ok(transactions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting transactions: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpGet("{entityId}", Name = "GetWorkerforDashboard")]
+        public async Task<ActionResult<TController>> GetWorker(Guid entityId)
+        {
+            try
+            {
+                var worker = await _ArtworkService.GetOne(entityId);
+                return Ok(worker);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting transactions: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

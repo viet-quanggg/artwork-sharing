@@ -34,6 +34,7 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<IArtworkService, ArtworkService>();
             services.AddScoped<IArtistService, ArtistService>();
             services.AddScoped<IArtistPackageService, ArtistPackageService>();
+            services.AddScoped<ITransactionService, TransactionService>();
             return services;
         }
 
