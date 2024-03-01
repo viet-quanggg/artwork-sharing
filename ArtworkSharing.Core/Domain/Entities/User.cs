@@ -1,26 +1,19 @@
 ﻿using ArtworkSharing.Core.Domain.Base;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Core.Domain.Entities
 {
     public class User : EntityBase<Guid>
     {
-        public string Name { get; set; } = null!;
-        public string Username { get; set; } = null!;
+        public string Name { get; set; } = null!;       
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Phone { get; set; } = null!;
-        public bool Status { get; set; } 
+        public bool Status { get; set; }
 
-        public Guid RoleId { get; set; }
+        public int RoleId { get; set; } = 3;
 
-       
-        public Role Role { get; set; } = null!;
+
+        public Role Role { get; set; } = new Role { Name = "User" };
         public ICollection<Follow>? Followers { get; set; }
         public ICollection<Follow>? Followings { get; set; }
         public ICollection<Like>? Likes { get; set; }

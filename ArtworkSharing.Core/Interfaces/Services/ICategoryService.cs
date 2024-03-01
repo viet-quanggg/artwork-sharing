@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 using ArtworkSharing.Core.Domain.Entities;
 
 namespace ArtworkSharing.Core.Interfaces.Services

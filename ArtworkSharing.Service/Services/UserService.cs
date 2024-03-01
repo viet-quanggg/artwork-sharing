@@ -1,8 +1,9 @@
-﻿using System;
+﻿using ArtworkSharing.Core.Domain.Dtos.UserDtos;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -64,6 +65,8 @@ namespace ArtworkSharing.Service.Services
         {
             return _unitOfWork.UserRepository.GetAllAsync();
         }
+
+    
 
         public async Task UpdateUser(User user)
         {

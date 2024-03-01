@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\Dtos\" />
     <Folder Include="Domain\Objects\" />
     <Folder Include="Constants\" />
   </ItemGroup>

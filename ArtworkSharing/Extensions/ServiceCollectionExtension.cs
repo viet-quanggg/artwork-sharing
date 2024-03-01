@@ -4,7 +4,10 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Service.Services;
-
+using ArtworkSharing.Service.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+ 
 namespace ArtworkSharing.Extensions
 {
     public static class ServiceCollectionExtension
@@ -34,6 +37,12 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<IArtworkService, ArtworkService>();
             services.AddScoped<IArtistService, ArtistService>();
             services.AddScoped<IArtistPackageService, ArtistPackageService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthService, AuthService>();
+
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
+            services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
             return services;
         }
 

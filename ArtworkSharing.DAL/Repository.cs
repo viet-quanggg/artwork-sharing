@@ -1,4 +1,5 @@
-﻿using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -92,9 +93,11 @@ namespace ArtworkSharing.DAL
             return Entities.Find(keyValues);
         }
 
-        public virtual async Task<T> FindAsync(params object[] keyValues)
+        public virtual async Task<T?> FindAsync(params object[] keyValues)
         {
             return await Entities.FindAsync(keyValues);
         }
+
+       
     }
 }

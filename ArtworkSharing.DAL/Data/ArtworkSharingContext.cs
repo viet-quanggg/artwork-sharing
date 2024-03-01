@@ -25,7 +25,7 @@ namespace ArtworkSharing.DAL.Data
         {
             
         }
-        public ArtworkSharingContext(DbContextOptions options) : base(options)
+        public ArtworkSharingContext(DbContextOptions<ArtworkSharingContext> options) : base(options)
         {
             
         }
@@ -68,6 +68,9 @@ namespace ArtworkSharing.DAL.Data
               .HasForeignKey(a => a.ArtistId)
               .OnDelete(DeleteBehavior.NoAction);
 
+            modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
         }
     }
 }
