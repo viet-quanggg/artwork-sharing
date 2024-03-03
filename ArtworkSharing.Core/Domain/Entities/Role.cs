@@ -1,10 +1,9 @@
-﻿using ArtworkSharing.Core.Domain.Base;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace ArtworkSharing.Core.Domain.Entities
 {
-    public class Role : EntityBase<int>
+    public class Role : IdentityRole<Guid>
     {
-        public string Name { get; set; } = null!;
-       
+        public ICollection<UserRole> UserRoles { get; set; }
     }
 }

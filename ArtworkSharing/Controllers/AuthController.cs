@@ -8,13 +8,11 @@ namespace ArtworkSharing.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
-        private readonly ITokenService _tokenService;
+        private readonly IAuthService _authService;       
 
-        public AuthController(IAuthService authService, ITokenService tokenService)
+        public AuthController(IAuthService authService)
         {
-            _authService = authService;
-            _tokenService = tokenService;
+            _authService = authService;          
         }
 
           
@@ -24,7 +22,10 @@ namespace ArtworkSharing.Controllers
             try
             {
                 var user = await _authService.LoginAsync(userToLoginDTO);
-             
+                if(user == null)
+                {
+                    return Unauthorized();
+                }
                 return Ok(user);
             }          
             catch (Exception ex)
@@ -40,14 +41,12 @@ namespace ArtworkSharing.Controllers
             {
                 var user = await _authService.RegisterAsync(userToRegisterDTO);
 
-
-                return Ok();
+                return Ok(user);
             }
             catch(Exception ex)
             {
                 return BadRequest(ex.InnerException?.Message);
-            }
-               
+            }             
                 
           
         }

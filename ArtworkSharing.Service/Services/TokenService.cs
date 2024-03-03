@@ -1,10 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace ArtworkSharing.Service.Services
@@ -12,24 +12,26 @@ namespace ArtworkSharing.Service.Services
     public class TokenService : ITokenService
     {
         private readonly SymmetricSecurityKey _key;
+        private readonly UserManager<User> _userManager;
+
         //private readonly UserManager<User> _userManager;
-        public TokenService(IConfiguration config)
+        public TokenService(IConfiguration config, UserManager<User> userManager)
         {
           
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("AppSettings:Token").Value));
-
+            _userManager = userManager;
         }
         public async Task<string> CreateToken(User user)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email.ToString())
-              
+                new Claim(JwtRegisteredClaimNames.Email, user.Email.ToString()),
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString())
             };
 
-            //var roles = await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            //claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
   
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
