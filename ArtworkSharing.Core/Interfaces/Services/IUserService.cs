@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ArtworkSharing.Core.Domain.Dtos.UserDtos;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.User;
 
@@ -11,6 +11,7 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task CreateNewUser(User user);
         Task UpdateUser(User user);
         Task DeleteUser(Guid userId);
+       
     }
 }
 

@@ -1,13 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Service.Services
 {
-	public class CommentService : ICommentService
+    public class CommentService : ICommentService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 
