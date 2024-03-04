@@ -12,5 +12,8 @@ namespace ArtworkSharing.Core.Interfaces.Repositories
 		Task Update(Follow follow);
 		Task Add(Follow follow);
 		Task Delete(Guid followId);
-	}
+		Task<bool> IsFollowing(Guid currentUserId, Guid followUserId);
+		Task FollowUser(Guid currentUserId, Guid followUserId);
+        Task UnFollowUser(Guid currentUserId, Guid followUserId);
+    }
 }

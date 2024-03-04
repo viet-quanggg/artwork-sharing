@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Exceptions;
 using ArtworkSharing.Core.Interfaces;
+using ArtworkSharing.Core.Interfaces.Repositories;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Data;
@@ -42,9 +43,10 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<IArtworkService, ArtworkSharing.Service.Services.ArtworkService>();
             services.AddScoped<IArtistService, ArtistService>();
             services.AddScoped<IArtistPackageService, ArtistPackageService>();
+            services.AddScoped<IFollowService, FollowService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
-
+            services.AddTransient<IEmailSender, EmailSender>();
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
             services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
@@ -68,17 +70,24 @@ namespace ArtworkSharing.Extensions
 
         public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddIdentityCore<User>(opt =>
+            services.AddIdentity<User, Role>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.User.RequireUniqueEmail = true;
+                opt.SignIn.RequireConfirmedEmail = true;
             })
-                .AddRoles<Role>()
                 .AddRoleManager<RoleManager<Role>>()
-                .AddEntityFrameworkStores<ArtworkSharingContext>();
+                .AddEntityFrameworkStores<ArtworkSharingContext>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(24); // Token expires after 24 hours
+            });    
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options => {
+                    .AddJwtBearer(options =>
+                    {
                         options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                         {
                             ValidateIssuerSigningKey = true,
@@ -86,6 +95,14 @@ namespace ArtworkSharing.Extensions
                             ValidateIssuer = false,
                             ValidateAudience = false
                         };
+                    });
+
+            services.AddAuthentication()
+                    .AddGoogle(options =>
+                    {
+                        options.ClientId = "[Your Google Client ID]";
+                        options.ClientSecret = "[Your Google Client Secret]";
+                        // You can set other options as needed.
                     });
             //services.AddAuthorization(opt =>
             //{

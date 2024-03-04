@@ -1,8 +1,15 @@
-﻿namespace ArtworkSharing.Core.Domain.Dtos.UserDtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ArtworkSharing.Core.Domain.Dtos.UserDtos
 {
     public class UserToLoginDto
     {
-        public string Email { get; set; }    
-        public string Password { get; set; } = null!;
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
     }
 }

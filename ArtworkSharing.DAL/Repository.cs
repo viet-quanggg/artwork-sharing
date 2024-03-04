@@ -55,7 +55,7 @@ namespace ArtworkSharing.DAL
         public async Task<T> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
             => await Entities.FirstOrDefaultAsync(expression, cancellationToken);
 
-        public async Task DeleteAsync(int id, bool saveChanges = true)
+        public async Task DeleteAsync(Guid id, bool saveChanges = true)
         {
             var entity = await Entities.FindAsync(id);
             await DeleteAsync(entity);

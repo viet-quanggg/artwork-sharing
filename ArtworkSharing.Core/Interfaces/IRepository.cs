@@ -39,7 +39,7 @@ namespace ArtworkSharing.Core.Interfaces
         /// <param name="id"></param>
         /// <param name="saveChanges"></param>
         /// <returns></returns>
-        Task DeleteAsync(int id, bool saveChanges = true);
+        Task DeleteAsync(Guid id, bool saveChanges = true);
         /// <summary>
         /// Remove one item from an entity by asynchronous method
         /// 
