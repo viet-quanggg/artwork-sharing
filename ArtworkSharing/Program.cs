@@ -1,4 +1,3 @@
-using ArtworkSharing.Core.Models;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddIdentityServices(builder.Configuration);
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,14 +26,16 @@ builder.Services.AddConfigException();
 var app = builder.Build();
 EnsureMigrate(app);
 // Configure the HTTP request pipeline.
+//app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseException();
-app.UseHttpsRedirection();
-
+//app.UseException();
+//app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

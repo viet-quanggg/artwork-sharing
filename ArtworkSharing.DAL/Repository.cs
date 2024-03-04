@@ -1,4 +1,5 @@
-﻿using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -54,7 +55,7 @@ namespace ArtworkSharing.DAL
         public async Task<T> GetAsync(Expression<Func<T, bool>> expression, CancellationToken cancellationToken = default)
             => await Entities.FirstOrDefaultAsync(expression, cancellationToken);
 
-        public async Task DeleteAsync(int id, bool saveChanges = true)
+        public async Task DeleteAsync(Guid id, bool saveChanges = true)
         {
             var entity = await Entities.FindAsync(id);
             await DeleteAsync(entity);
@@ -92,9 +93,11 @@ namespace ArtworkSharing.DAL
             return Entities.Find(keyValues);
         }
 
-        public virtual async Task<T> FindAsync(params object[] keyValues)
+        public virtual async Task<T?> FindAsync(params object[] keyValues)
         {
             return await Entities.FindAsync(keyValues);
         }
+
+       
     }
 }
