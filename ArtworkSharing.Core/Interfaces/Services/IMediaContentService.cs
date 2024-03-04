@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.MediaContent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace ArtworkSharing.Core.Interfaces.Services
 {
     public interface IMediaContentService
     {
-        Task<IList<MediaContent>> GetAll();
-        Task<MediaContent> GetOne(Guid mediaContentId);
+        Task<IList<MediaContentViewModel>> GetAll();
+        Task<MediaContentViewModel> GetOne(Guid mediaContentId);
         Task Update(MediaContent mediaContent);
         Task Add(MediaContent mediaContent);
         Task Delete(Guid mediaContentId);

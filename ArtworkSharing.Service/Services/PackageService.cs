@@ -6,6 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ArtworkSharing.Core.ViewModels.MediaContent;
+using ArtworkSharing.Service.AutoMappings;
+using ArtworkSharing.Core.ViewModels.Package;
+using ArtworkSharing.DAL.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -17,15 +22,17 @@ namespace ArtworkSharing.Service.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IList<Package>> GetAll()
+        public async Task<IList<PackageViewModel>> GetAll()
         {
-            return _unitOfWork.PackageRepository.GetAll().ToList();
+            var queryableData = _unitOfWork.PackageRepository.GetAll().AsQueryable();
+
+            return AutoMapperConfiguration.Mapper.Map<IList<PackageViewModel>>(await queryableData.ToListAsync(CancellationToken.None));
         }
 
-        public async Task<Package> GetOne(Guid PackageId)
+        public async Task<PackageViewModel> GetOne(Guid PackageId)
         {
-            return await _unitOfWork.PackageRepository
-                   .GetAsync(mc => mc.Id == PackageId);
+            return AutoMapperConfiguration.Mapper.Map<PackageViewModel>(await (_unitOfWork.PackageRepository.FirstOrDefaultAsync(x => x.Id == PackageId)));
+
         }
 
         public async Task Update(Package PackageInput)
