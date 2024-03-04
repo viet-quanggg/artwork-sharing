@@ -2,7 +2,12 @@
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Net.Http;
+using System.Xml;
 
 namespace ArtworkSharing.Controllers
 {
@@ -194,6 +199,36 @@ namespace ArtworkSharing.Controllers
             {
                 _logger.LogError($"Error getting transactions: {ex.Message}");
                 return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpPost( Name = "Save Page")]
+        public async Task<IActionResult> SaveApiResponseToJsonFile([FromForm] int Page)
+        {
+
+            try
+            {
+
+                IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("Page.json", true, true)
+                .Build();
+                var num = configuration.GetSection("Page").Value;
+                IConfigurationRoot _configuration = (IConfigurationRoot)configuration;
+                if (num.IsNullOrEmpty())
+                {
+                     _configuration.GetSection("Page").Value = Page.ToString();
+                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
+                     System.IO.File.WriteAllText(filePath , JsonConvert.SerializeObject(_configuration.AsEnumerable(), Newtonsoft.Json.Formatting.Indented));
+
+                }
+
+
+
+                return Ok("API response saved to JSON file.");
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu có
+                return BadRequest($"Error: {ex.Message}");
             }
         }
     }
