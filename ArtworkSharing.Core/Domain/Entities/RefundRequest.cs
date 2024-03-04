@@ -13,6 +13,6 @@ namespace ArtworkSharing.Core.Domain.Entities
         public DateTime RefundRequestDate { get; set; }
         public string Description { get; set; } = null!;
         public string Reason { get; set; } = null!;
-        public Transaction Transaction { get; set; } = null!;
+        public Transaction? Transaction { get; set; } = null;
     }
 }

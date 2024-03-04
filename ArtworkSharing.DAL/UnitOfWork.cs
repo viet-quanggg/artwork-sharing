@@ -57,6 +57,7 @@ namespace ArtworkSharing.DAL
             RatingRepository = new RatingRepository(DbContext);
             RefundRequestRepository = new RefundRequestRepository(DbContext);
             TransactionRepository = new TransactionRepository(DbContext);
+            
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

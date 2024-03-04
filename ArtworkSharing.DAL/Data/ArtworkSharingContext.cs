@@ -30,6 +30,14 @@ namespace ArtworkSharing.DAL.Data
             
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            if (!options.IsConfigured)
+            {
+                options.UseSqlServer("server =(local); database = ArtworkSharing;uid=sa;pwd=123456@Aa; TrustServerCertificate=True");
+            }
+        }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Follow>()

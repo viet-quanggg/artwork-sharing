@@ -4,6 +4,7 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Service.Services;
+using Microsoft.Identity.Client;
 
 namespace ArtworkSharing.Extensions
 {
@@ -34,6 +35,10 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<IArtworkService, ArtworkService>();
             services.AddScoped<IArtistService, ArtistService>();
             services.AddScoped<IArtistPackageService, ArtistPackageService>();
+            services.AddScoped<IRefundRequestService, RefundRequestService>();
+            services.AddScoped<IArtworkRequestService, ArtworkRequestService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<UnitOfWork>();
             return services;
         }
 

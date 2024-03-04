@@ -1,4 +1,5 @@
-﻿using ArtworkSharing.Core.ViewModels.RefundRequests;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.RefundRequests;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
@@ -11,5 +12,7 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task<RefundRequestViewModel> UpdateRefundRequest(Guid id, UpdateRefundRequestModel urm);
 
         Task<bool> DeleteRefundRequest(Guid id);
+
+        Task CreateRefundRequest(RefundRequest refund);
     }
 }
