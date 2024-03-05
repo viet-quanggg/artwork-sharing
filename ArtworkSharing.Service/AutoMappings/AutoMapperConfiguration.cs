@@ -34,20 +34,28 @@ namespace ArtworkSharing.Service.AutoMappings
         {
             CreateMap<Transaction, TransactionViewModel>().ReverseMap();
             CreateMap<Transaction, UpdateTransactionModel>().ReverseMap();
+
             CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
             CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
-            CreateMap<User, UserToLoginDto>().ReverseMap();
-            CreateMap<User, UserToRegisterDto>().ReverseMap();
-            CreateMap<User, UserDto>().ReverseMap();
+
             CreateMap<Artwork, ArtworkViewModel>().ReverseMap();
             CreateMap<Category, CategoryViewModel>().ReverseMap();
-            CreateMap<Comment, CommentViewModel>();
-            CreateMap<Like, LikeViewModel>().ReverseMap();
             CreateMap<Artist, ArtistViewModel>().ReverseMap();
             CreateMap<MediaContent, MediaContentViewModel>().ReverseMap();
+
             CreateMap<User, UserViewModel>().ReverseMap();
             CreateMap<User, UpdateUserModel>().ReverseMap();
             CreateMap<User, CreateUserModel>().ReverseMap();
+            CreateMap<User, UserToLoginDto>().ReverseMap();
+            CreateMap<User, UserToRegisterDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
+
+            CreateMap<Like, LikeModel>().ReverseMap();
+            CreateMap<Like, LikeViewModel>().ReverseMap();
+
+            CreateMap<Comment, CommentViewModel>().ReverseMap();
+            CreateMap<Comment, CreateCommentModel>().ReverseMap();
+            CreateMap<Comment, UpdateCommentModel>().ReverseMap();
         }
     }
 }

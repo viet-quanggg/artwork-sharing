@@ -1,12 +1,9 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.Comments;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
-	public interface ICommentService
+    public interface ICommentService
 	{
 		Task<List<CommentViewModel>> GetAll();
 		Task<Comment> GetOne(Guid commentId);

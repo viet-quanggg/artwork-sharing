@@ -79,9 +79,6 @@ namespace ArtworkSharing.Service.Services
         {
             return _unitOfWork.UserRepository.GetAllAsync();
         }
-
-     
-
         public async Task UpdateUser(User user)
         {
             try

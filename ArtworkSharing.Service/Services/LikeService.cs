@@ -5,9 +5,6 @@ using ArtworkSharing.Core.ViewModels.Likes;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -20,7 +17,7 @@ namespace ArtworkSharing.Service.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<LikeViewModel>> Add(CreateLikeModel like)
+        public async Task<List<LikeViewModel>> Add(LikeModel like)
         {
             try
             {
@@ -35,7 +32,7 @@ namespace ArtworkSharing.Service.Services
 
                 await _unitOfWork.CommitTransaction();
 
-                return await GetLikeByArtworkId(like.ArtworkId);
+                return await GetLikeByArtworkId(li.ArtworkId);
             }
             catch (Exception e)
             {
@@ -77,35 +74,29 @@ namespace ArtworkSharing.Service.Services
         public async Task<List<LikeViewModel>> GetLikeByArtworkId(Guid id)
             => AutoMapperConfiguration.Mapper.Map<List<LikeViewModel>>(await _unitOfWork.LikeRepository.Where(x => x.ArtworkId == id).ToListAsync());
 
-        public async Task<bool> UnLike(Guid id)
+        public async Task<List<LikeViewModel>> UnLike(Guid id)
         {
             var like = await _unitOfWork.LikeRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (like == null) return false;
+            if (like == null) return null!;
+
+            Guid artworkId = like.ArtworkId;
 
             await _unitOfWork.LikeRepository.DeleteAsync(like);
 
-            return (await _unitOfWork.SaveChangesAsync()) > 0;
+            return (await _unitOfWork.SaveChangesAsync() > 0) ? await GetLikeByArtworkId(artworkId) : null!;
         }
 
-        public async Task Update(Like like)
+        public async Task<List<LikeViewModel>> Update(LikeModel lm)
         {
-            try
+            var like = await _unitOfWork.LikeRepository.FirstOrDefaultAsync(x => x.UserId == lm.UserId && x.ArtworkId == lm.ArtworkId);
+
+            if (like == null)
             {
-                await _unitOfWork.BeginTransaction();
-
-                var likeRepository = _unitOfWork.LikeRepository;
-                var existingLike = await likeRepository.FindAsync(like.Id);
-                if (existingLike == null)
-                    throw new KeyNotFoundException();
-
-                // Update like properties here if needed
-
-                await _unitOfWork.CommitTransaction();
+                return await Add(lm);
             }
-            catch (Exception e)
+            else
             {
-                await _unitOfWork.RollbackTransaction();
-                throw;
+                return await UnLike(like.Id);
             }
         }
     }

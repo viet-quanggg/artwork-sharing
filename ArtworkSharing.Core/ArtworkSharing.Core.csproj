@@ -8,12 +8,11 @@
 
 	<ItemGroup>
 	  <Compile Remove="Constants\**" />
+	  <Compile Remove="Domain\Objects\**" />
 	  <EmbeddedResource Remove="Constants\**" />
+	  <EmbeddedResource Remove="Domain\Objects\**" />
 	  <None Remove="Constants\**" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Domain\Objects\" />
+	  <None Remove="Domain\Objects\**" />
 	</ItemGroup>
 
 	<ItemGroup>
