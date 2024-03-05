@@ -1,16 +1,28 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using ArtworkSharing.Core.ViewModels.Likes;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
-	public interface ILikeService
-	{
-		Task<IList<Like>> GetAll();
-		Task<Like> GetOne(Guid likeId);
-		Task Update(Like like);
-		Task Add(Like like);
-		Task Delete(Guid likeId);
-	}
+    public interface ILikeService
+    {
+        Task<List<LikeViewModel>> Add(CreateLikeModel like);
+
+
+        Task Delete(Guid likeId);
+
+
+        Task<List<LikeViewModel>> GetAll();
+
+
+        Task<Like> GetOne(Guid likeId);
+
+
+        Task<List<LikeViewModel>> GetLikeByArtworkId(Guid id);
+
+
+        Task<bool> UnLike(Guid id);
+
+
+        Task Update(Like like);
+    }
 }

@@ -63,7 +63,7 @@ namespace ArtworkSharing.Service.Services
 
             existingComment.Content = comment.Content;
 
-            return (await _unitOfWork.SaveChangesAsync()) > 0 ? await GetComment(comment.Id);
+            return (await _unitOfWork.SaveChangesAsync()) > 0 ? await GetComment(comment.Id):null!;
         }
 
    
