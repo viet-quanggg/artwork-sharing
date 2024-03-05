@@ -19,6 +19,11 @@ namespace ArtworkSharing.Controllers
             _artworkService = artworkService;
         }
 
+        /// <summary>
+        /// Get artwork with filter model
+        /// </summary>
+        /// <param name="browseArtwork"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetArtworks(BrowseArtworkModel browseArtwork)
         {
