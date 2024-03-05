@@ -1,5 +1,5 @@
-﻿using ArtworkSharing.Core.Domain.Dtos.UserDtos;
-using ArtworkSharing.Core.Domain.Entities;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.Users;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
@@ -9,8 +9,11 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task<User> GetUser(Guid userId);
         Task CreateNewUser(User user);
         Task UpdateUser(User user);
-        Task DeleteUser(Guid userId);
-       
+
+        Task<bool> DeleteUser(Guid userId);
+        Task<UserViewModel> UpdateUser(UpdateUserModel userModel);
+        Task<UserViewModel> CreateUser(CreateUserModel createUser);
+        Task<UserViewModel> GetOne(Guid id);
     }
 }
 
