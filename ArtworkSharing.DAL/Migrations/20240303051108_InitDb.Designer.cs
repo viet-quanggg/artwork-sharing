@@ -12,11 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
+<<<<<<< HEAD
 <<<<<<<< HEAD:ArtworkSharing.DAL/Migrations/20240216103435_InitDb.Designer.cs
     [Migration("20240216103435_InitDb")]
 ========
     [Migration("20240303051108_InitDb")]
 >>>>>>>> main:ArtworkSharing.DAL/Migrations/20240303051108_InitDb.Designer.cs
+=======
+    [Migration("20240303051108_InitDb")]
+>>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
     partial class InitDb
     {
         /// <inheritdoc />
