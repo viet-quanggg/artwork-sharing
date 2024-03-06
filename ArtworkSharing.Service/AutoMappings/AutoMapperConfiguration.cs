@@ -1,13 +1,10 @@
-<<<<<<< HEAD
 using ArtworkSharing.Core.Domain.Dtos.UserDtos;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
-=======
-﻿using ArtworkSharing.Core.Domain.Entities;
-using ArtworkSharing.Core.ViewModels.ArtworkRequest;
-﻿using ArtworkSharing.Core.Domain.Dtos.UserDtos;
 using ArtworkSharing.Core.Domain.Entities;
->>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
+using ArtworkSharing.Core.ViewModels.ArtworkRequest;
+using ArtworkSharing.Core.Domain.Dtos.UserDtos;
+using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Core.ViewModels.User;
@@ -47,10 +44,6 @@ namespace ArtworkSharing.Service.AutoMappings
             CreateMap<User, UserToLoginDto>().ReverseMap();
             CreateMap<User, UserToRegisterDto>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
-<<<<<<< HEAD
-=======
-
->>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
         }
     }
 }

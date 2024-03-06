@@ -5,13 +5,9 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.User;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
-<<<<<<< HEAD
-using Microsoft.EntityFrameworkCore;
-=======
 
 using Microsoft.EntityFrameworkCore;
-
->>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services
 {

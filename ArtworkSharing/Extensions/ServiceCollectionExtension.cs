@@ -7,10 +7,6 @@ using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Service.Services;
 using Microsoft.Identity.Client;
-<<<<<<< HEAD
-
-=======
->>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
 using ArtworkSharing.Service.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -48,18 +44,10 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<IArtworkService, ArtworkSharing.Service.Services.ArtworkService>();
             services.AddScoped<IArtistService, ArtistService>();
             services.AddScoped<IArtistPackageService, ArtistPackageService>();
-<<<<<<< HEAD
-=======
-
->>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
             services.AddScoped<IRefundRequestService, RefundRequestService>();
             services.AddScoped<IArtworkRequestService, ArtworkRequestService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<UnitOfWork>();
-<<<<<<< HEAD
-=======
-
->>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
             services.AddScoped<IFollowService, FollowService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
@@ -67,10 +55,6 @@ namespace ArtworkSharing.Extensions
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
             services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
-<<<<<<< HEAD
-=======
-
->>>>>>> e96e5d1b9473cabe06937e930fddc7626b9f099f
             return services;
         }
 
