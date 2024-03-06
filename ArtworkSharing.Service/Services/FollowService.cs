@@ -1,14 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Repositories;
-using ArtworkSharing.Core.Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Service.Services
 {
-	public class FollowService : IFollowService
+    public class FollowService : IFollowService
 	{
 		private readonly IUnitOfWork _unitOfWork;
 
@@ -57,7 +53,16 @@ namespace ArtworkSharing.Service.Services
 			}
 		}
 
-		public async Task<IList<Follow>> GetAll()
+        public async Task FollowUser(Guid currentUserId, Guid followUserId)
+        {
+            await _unitOfWork.FollowRepository.AddAsync(new Follow
+			{
+                FollowerId = currentUserId,
+                FollowedId = followUserId
+            });
+        }
+
+        public async Task<IList<Follow>> GetAll()
 		{
 			return await _unitOfWork.FollowRepository.GetAllAsync();
 		}
@@ -67,7 +72,21 @@ namespace ArtworkSharing.Service.Services
 			return await _unitOfWork.FollowRepository.FindAsync(followId);
 		}
 
-		public async Task Update(Follow follow)
+        public async Task<bool> IsFollowing(Guid currentUserId, Guid followUserId)
+        {
+            var follow = await _unitOfWork.FollowRepository.GetAsync(f => f.FollowerId == currentUserId && f.FollowedId == followUserId);
+			if (follow == null)
+				return false;
+			return true;
+        }
+
+        public async Task UnFollowUser(Guid currentUserId, Guid followUserId)
+        {
+			var follow = await _unitOfWork.FollowRepository.GetAsync(f => f.FollowerId == currentUserId && f.FollowedId == followUserId);
+            await _unitOfWork.FollowRepository.DeleteAsync(follow);
+        }
+
+        public async Task Update(Follow follow)
 		{
 			try
 			{

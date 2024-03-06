@@ -1,4 +1,4 @@
-﻿using System;
+﻿using ArtworkSharing.Core.Domain.Dtos.UserDtos;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
@@ -64,6 +64,8 @@ namespace ArtworkSharing.Service.Services
 
         public async Task<IList<UserViewModel>> GetUsers()
             => AutoMapperConfiguration.Mapper.Map<IList<UserViewModel>>(await (_unitOfWork.UserRepository.GetAll().AsQueryable()).ToListAsync());
+
+
 
         public async Task UpdateUser(User user)
         {

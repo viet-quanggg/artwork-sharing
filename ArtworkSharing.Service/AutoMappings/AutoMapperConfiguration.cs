@@ -1,4 +1,5 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Dtos.UserDtos;
+using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using ArtworkSharing.Core.ViewModels.Transactions;
@@ -36,6 +37,9 @@ namespace ArtworkSharing.Service.AutoMappings
             CreateMap<ArtworkService, ArtworkRequestViewModel>().ReverseMap();
             CreateMap<User, UserViewModel>().ReverseMap();
             CreateMap<User, CreateUserViewModel>().ReverseMap();
+            CreateMap<User, UserToLoginDto>().ReverseMap();
+            CreateMap<User, UserToRegisterDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
         }
     }
 }

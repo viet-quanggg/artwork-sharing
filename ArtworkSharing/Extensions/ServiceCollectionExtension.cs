@@ -1,10 +1,20 @@
-﻿using ArtworkSharing.Core.Exceptions;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Exceptions;
 using ArtworkSharing.Core.Interfaces;
+using ArtworkSharing.Core.Interfaces.Repositories;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Service.Services;
 using Microsoft.Identity.Client;
+
+using ArtworkSharing.Service.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ArtworkSharing.Extensions
 {
@@ -32,13 +42,20 @@ namespace ArtworkSharing.Extensions
         /// <returns></returns>
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddScoped<IArtworkService, ArtworkService>();
+            services.AddScoped<IArtworkService, ArtworkSharing.Service.Services.ArtworkService>();
             services.AddScoped<IArtistService, ArtistService>();
             services.AddScoped<IArtistPackageService, ArtistPackageService>();
             services.AddScoped<IRefundRequestService, RefundRequestService>();
             services.AddScoped<IArtworkRequestService, ArtworkRequestService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<UnitOfWork>();
+            services.AddScoped<IFollowService, FollowService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
+            services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
             return services;
         }
 
@@ -56,5 +73,50 @@ namespace ArtworkSharing.Extensions
             app.UseRouting();
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
+
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddIdentity<User, Role>(opt =>
+            {
+                opt.Password.RequireNonAlphanumeric = false;
+                opt.User.RequireUniqueEmail = true;
+                opt.SignIn.RequireConfirmedEmail = true;
+            })
+                .AddRoleManager<RoleManager<Role>>()
+                .AddEntityFrameworkStores<ArtworkSharingContext>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<DataProtectionTokenProviderOptions>(options =>
+            {
+                options.TokenLifespan = TimeSpan.FromHours(24); // Token expires after 24 hours
+            });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(config.GetSection("AppSettings:Token").Value)),
+                            ValidateIssuer = false,
+                            ValidateAudience = false
+                        };
+                    });
+
+            services.AddAuthentication()
+                    .AddGoogle(options =>
+                    {
+                        options.ClientId = "[Your Google Client ID]";
+                        options.ClientSecret = "[Your Google Client Secret]";
+                        // You can set other options as needed.
+                    });
+            //services.AddAuthorization(opt =>
+            //{
+            //    opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+            //    opt.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+            //});
+            return services;
+        }
+
     }
 }
