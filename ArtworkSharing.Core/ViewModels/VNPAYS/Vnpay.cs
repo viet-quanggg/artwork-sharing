@@ -6,6 +6,5 @@
         public string TmnCode { get; set; }
         public string HashSetcret { get; set; }
         public string ReturnUrl { get; set; }
-        public string Command { get; set; }
     }
 }

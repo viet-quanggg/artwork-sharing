@@ -116,6 +116,8 @@ namespace ArtworkSharing.Core.Helpers.VNPAYS
 
     public class Utils
     {
+
+
         public static String HmacSHA512(string key, String inputData)
         {
             var hash = new StringBuilder();
@@ -132,6 +134,21 @@ namespace ArtworkSharing.Core.Helpers.VNPAYS
 
             return hash.ToString();
         }
+        public static string GetIpAddress(HttpContext httpContext)
+        {
+            string ipAddress;
+            try
+            {
+                ipAddress = httpContext.Connection.RemoteIpAddress + "";
+            }
+            catch (Exception ex)
+            {
+                ipAddress = "Invalid IP:" + ex.Message;
+            }
+
+            return ipAddress;
+        }
+    }
 
     public class VnPayCompare : IComparer<string>
     {
