@@ -72,8 +72,6 @@ namespace ArtworkSharing.Core.Helpers.VNPAYS
             return baseUrl;
         }
 
-
-
         #endregion
 
         #region Response process
@@ -116,8 +114,6 @@ namespace ArtworkSharing.Core.Helpers.VNPAYS
 
     public class Utils
     {
-
-
         public static String HmacSHA512(string key, String inputData)
         {
             var hash = new StringBuilder();
@@ -161,5 +157,4 @@ namespace ArtworkSharing.Core.Helpers.VNPAYS
             return vnpCompare.Compare(x, y, CompareOptions.Ordinal);
         }
     }
-}
 }

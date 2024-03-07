@@ -20,7 +20,7 @@ namespace ArtworkSharing.Core.ViewModels.VNPAYS
         public const string NumberProductFile = "Please choose 4 files.";
         public const string ErrorAddImage = "can't upload more upto only four image.";
 
-        public const string OrderNotFound = "Order is not found";
+        public const string TransactionNotFound = "Transaction is not found";
 
         //======================= 
         public const string ProductNotFound = "Not found this product.";
@@ -34,7 +34,6 @@ namespace ArtworkSharing.Core.ViewModels.VNPAYS
         public const string AmountNotValid = "Invalid amount";
 
         public const string PaymentSuccess = "Payment successfully";
-
 
         //=======================
     }
