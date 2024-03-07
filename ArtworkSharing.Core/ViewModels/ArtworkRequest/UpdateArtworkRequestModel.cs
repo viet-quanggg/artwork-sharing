@@ -1,5 +1,5 @@
-using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Domain.Enums;
+using ArtworkSharing.Core.ViewModels.MediaContent;
 
 namespace ArtworkSharing.Core.ViewModels.ArtworkRequest;
 
@@ -15,6 +15,6 @@ public class UpdateArtworkRequestModel
     public DateTime RequestedDeadlineDate { get; set; }
     public ArtworkServiceStatus Status { get; set; }
     
-    public ICollection<MediaContent>? ArtworkProduct { get; set; }
+    public ICollection<MediaContentViewModel>? ArtworkProduct { get; set; }
 
 }
