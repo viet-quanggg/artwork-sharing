@@ -14,5 +14,7 @@ namespace ArtworkSharing.DAL.Repositories
         public ArtworkRepository(DbContext dbContext) : base(dbContext)
         {
         }
+
+      
     }
 }
