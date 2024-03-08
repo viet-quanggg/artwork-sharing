@@ -1,3 +1,4 @@
+using ArtworkSharing.Controllers;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,10 @@ builder.Services.AddDbContext<ArtworkSharingContext>(options => options.UseSqlSe
 builder.Services.AddDatabase();
 builder.Services.AddServices();
 builder.Services.AddConfigException();
+builder.Services.AddHttpClient();
+
+// Đăng ký WatermarkController
+builder.Services.AddTransient<WatermarkController>();
 var app = builder.Build();
 EnsureMigrate(app);
 // Configure the HTTP request pipeline.
