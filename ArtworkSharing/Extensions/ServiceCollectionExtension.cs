@@ -47,9 +47,9 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<IFollowService, FollowService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<ILikeService, LikeService>();
             services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddFluentValidationAutoValidation();

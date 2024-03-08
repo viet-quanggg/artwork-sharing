@@ -1,10 +1,13 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
-using ArtworkSharing.Core.ViewModels.Transactions;
+using ArtworkSharing.Core.ViewModels.VNPAYS;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
     public interface IVNPayTransactionService
     {
-       // Task<TransactionViewModel> CreateVNPayTransaction(VNPayTransaction vNPayTransaction);
+        string GetUrlFromTransaction(Transaction trans);
+        Task<VNPayResponseModel> HandleQuery(string query);
+        Task<List<VNPayTransactionViewModel>> GetVNPayTransactions(VNPayFilter vNPayFilter);
+        Task<VNPayTransactionViewModel> GetVNPayTransactionByTransactionId(Guid id);
     }
 }

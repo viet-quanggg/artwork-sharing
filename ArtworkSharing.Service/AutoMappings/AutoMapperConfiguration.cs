@@ -9,6 +9,7 @@ using ArtworkSharing.Core.ViewModels.MediaContents;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Core.ViewModels.Users;
+using ArtworkSharing.Core.ViewModels.VNPAYS;
 using AutoMapper;
 
 namespace ArtworkSharing.Service.AutoMappings
@@ -56,6 +57,8 @@ namespace ArtworkSharing.Service.AutoMappings
             CreateMap<Comment, CommentViewModel>().ReverseMap();
             CreateMap<Comment, CreateCommentModel>().ReverseMap();
             CreateMap<Comment, UpdateCommentModel>().ReverseMap();
+
+            CreateMap<VNPayTransaction, VNPayTransactionViewModel>().ReverseMap();
         }
     }
 }

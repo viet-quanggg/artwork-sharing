@@ -1,6 +1,6 @@
 ﻿namespace ArtworkSharing.Core.ViewModels.VNPAYS
 {
-    public class Vnpay
+    public class VNPay
     {
         public string Url { get; set; }
         public string TmnCode { get; set; }

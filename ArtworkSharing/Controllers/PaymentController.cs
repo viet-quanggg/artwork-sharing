@@ -1,6 +1,5 @@
 ﻿using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.VNPAYS;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers
@@ -10,21 +9,21 @@ namespace ArtworkSharing.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
-        private readonly IPaymentService _paymentService;
+        private readonly IVNPayTransactionService _VNPayTransactionService;
 
-        public PaymentController(IPaymentService paymentService, ITransactionService transactionService)
+        public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService)
         {
             _transactionService = transactionService;
-            _paymentService = paymentService;
+            _VNPayTransactionService = vNPayTransactionService;
         }
 
         /// <summary>
-        /// Get url redirect by transactionId
+        /// Get url VNPAY redirect by transactionId
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUrlRedirect(Guid id)
+        public async Task<IActionResult> GetUrlRedirectVNPAY(Guid id)
         {
             if (id == Guid.Empty) return BadRequest();
 
@@ -32,18 +31,17 @@ namespace ArtworkSharing.Controllers
 
             if (tran == null!) return BadRequest();
 
-            return Ok(_paymentService.GetUrlFromTransaction(tran));
+            return Ok(_VNPayTransactionService.GetUrlFromTransaction(tran));
         }
 
-
         /// <summary>
-        /// Return url and process ipn
+        /// Return url and process ipnVNPAY
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> ProcessIpn()
+        public async Task<IActionResult> ProcessIpnVNPAY()
         {
-            VNPayViewModel rs = await _paymentService.HandleQuery(Request.QueryString + "");
+            VNPayResponseModel rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
 
             if (rs.TransactionViewModel == null)
             {
@@ -51,5 +49,27 @@ namespace ArtworkSharing.Controllers
             }
             return Ok(rs);
         }
+
+        /// <summary>
+        /// Get VNPay transaction by transactionId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("VNPAYTransaction/{id}")]
+        public async Task<IActionResult> GetVNPAYTransaction(Guid id)
+        {
+            if (id == Guid.Empty) return BadRequest();
+
+            return Ok(await _VNPayTransactionService.GetVNPayTransactionByTransactionId(id));
+        }
+
+        /// <summary>
+        /// Get VNPAY Transactions
+        /// </summary>
+        /// <param name="vNPayFilter"></param>
+        /// <returns></returns>
+        [HttpGet("VNPAYTransactions")]
+        public async Task<IActionResult> GetVNPAYTransactions([FromBody] VNPayFilter vNPayFilter)
+         => Ok(await _VNPayTransactionService.GetVNPayTransactions(vNPayFilter));
     }
 }

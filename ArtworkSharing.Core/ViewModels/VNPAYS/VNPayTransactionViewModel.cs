@@ -1,8 +1,8 @@
-﻿using ArtworkSharing.Core.Domain.Base;
+﻿using ArtworkSharing.Core.ViewModels.Transactions;
 
-namespace ArtworkSharing.Core.Domain.Entities
+namespace ArtworkSharing.Core.ViewModels.VNPAYS
 {
-    public class VNPayTransaction : EntityBase<Guid>
+    public class VNPayTransactionViewModel
     {
         public double Amount { get; set; }
         public string BankCode { get; set; }
@@ -12,6 +12,6 @@ namespace ArtworkSharing.Core.Domain.Entities
         public string TmnCode { get; set; }
         public string TransactionNo { get; set; }
         public Guid TransactionId { get; set; }
-        public Transaction Transaction { get; set; }
+        public TransactionViewModel Transaction { get; set; }
     }
 }
