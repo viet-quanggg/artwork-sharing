@@ -1,6 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Artworks;
+using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -36,7 +40,7 @@ namespace ArtworkSharing.Service.Services
                 await _unitOfWork.BeginTransaction();
 
                 var repos = _unitOfWork.ArtistRepository;
-                var artist = await repos.GetAsync(a=>a.Id==artistId);
+                var artist = await repos.GetAsync(a => a.Id == artistId);
                 if (artist == null)
                     throw new KeyNotFoundException();
 
@@ -60,6 +64,8 @@ namespace ArtworkSharing.Service.Services
         {
             return await _unitOfWork.ArtistRepository.FindAsync(artistId);
         }
+
+       
 
         public async Task Update(Artist artist)
         {

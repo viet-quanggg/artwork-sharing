@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.Artworks;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
@@ -9,5 +10,7 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task Update(Artwork artwork);
         Task Add(Artwork artwork);
         Task Delete(Guid artworkId);
+        Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!);
+
     }
 }

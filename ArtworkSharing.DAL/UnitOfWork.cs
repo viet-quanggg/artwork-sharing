@@ -9,7 +9,7 @@ namespace ArtworkSharing.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public DbContext DbContext { get; private set; }       
+        public DbContext DbContext { get; private set; }
 
         public IUserRepository UserRepository { get; private set; }
 
@@ -37,6 +37,8 @@ namespace ArtworkSharing.DAL
 
         public ITransactionRepository TransactionRepository { get; private set; }
 
+        public IVNPayTransactionRepository VNPayTransactionRepository { get; private set; }
+
         private IDbContextTransaction _transaction;
         private IsolationLevel? _isolationLevel;
 
@@ -57,6 +59,7 @@ namespace ArtworkSharing.DAL
             RatingRepository = new RatingRepository(DbContext);
             RefundRequestRepository = new RefundRequestRepository(DbContext);
             TransactionRepository = new TransactionRepository(DbContext);
+            VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -121,6 +124,6 @@ namespace ArtworkSharing.DAL
             DbContext = null;
         }
 
-       
+
     }
 }

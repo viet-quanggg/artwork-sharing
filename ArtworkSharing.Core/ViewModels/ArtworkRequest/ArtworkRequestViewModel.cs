@@ -15,7 +15,6 @@ public class ArtworkRequestViewModel
     public float RequestedDeposit { get; set; }
     public DateTime RequestedDeadlineDate { get; set; }
     public ArtworkServiceStatus Status { get; set; }
-    
     public ICollection<MediaContentViewModel>? ArtworkProduct { get; set; }
 
 }
