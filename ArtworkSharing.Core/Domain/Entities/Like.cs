@@ -9,7 +9,7 @@ namespace ArtworkSharing.Core.Domain.Entities
 {
     public class Like : EntityBase<Guid>
     {
-        public Guid LikedUserId { get; set; }
+        public Guid UserId { get; set; }
         public Guid ArtworkId { get; set; }
         public DateTime LikedDate { get; set; }
         public User? LikedUser { get; set; }

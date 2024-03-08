@@ -1,6 +1,7 @@
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
     options.ResolveConflictingActions(apiDescriptions => apiDescriptions.OrderBy(action => action.RelativePath).First());
 });
 

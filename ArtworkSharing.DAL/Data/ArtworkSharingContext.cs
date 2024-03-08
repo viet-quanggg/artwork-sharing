@@ -69,7 +69,7 @@ namespace ArtworkSharing.DAL.Data
             modelBuilder.Entity<Like>()
                .HasOne(l => l.LikedUser)
                .WithMany(a => a.Likes)
-               .HasForeignKey(l => l.LikedUserId)
+               .HasForeignKey(l => l.UserId)
                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Comment>()
