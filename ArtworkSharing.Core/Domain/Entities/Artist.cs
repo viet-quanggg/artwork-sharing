@@ -10,6 +10,7 @@ namespace ArtworkSharing.Core.Domain.Entities
     public class Artist : EntityBase<Guid>
     {
         public Guid UserId { get; set; }
+        public string BankAccount { get; set; }
         public ICollection<ArtworkService>? ArtworkServices { get; set; }
         public ICollection<Artwork>? Artworks { get; set; }
         public ICollection<ArtistPackage>? ArtistPackages { get; set; }
