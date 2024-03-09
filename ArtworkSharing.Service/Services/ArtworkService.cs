@@ -1,12 +1,20 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
+﻿using System.Collections;
+using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.ArtworkRequest;
+using ArtworkSharing.Core.ViewModels.Artworks;
+using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services
 {
     public class ArtworkService : IArtworkService
     {
         private readonly IUnitOfWork _unitOfWork;
+        
         public ArtworkService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -81,6 +89,112 @@ namespace ArtworkSharing.Service.Services
                 await _unitOfWork.RollbackTransaction();
                 throw;
             }
+        }
+        
+        
+        //Admin Functions
+        public async Task<IList<ArtworkViewModelAdmin>> GetArtworksAdmin(int pageNumber, int pageSize)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+
+                var repos = _unitOfWork.ArtworkRepository;
+
+                // Calculate the number of items to skip based on the page number and page size
+                int itemsToSkip = (pageNumber - 1) * pageSize;
+
+                // Query the database with pagination
+                var list = await repos
+                    .Include(a => a.Transactions)
+                    .Include(a => a.Artist)
+                    .Include(a => a.Categories)
+                    .Include(a => a.MediaContents)
+                    .Skip(itemsToSkip)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                // Map the result to the desired ViewModel
+                return AutoMapperConfiguration.Mapper.Map<IList<ArtworkViewModelAdmin>>(list);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+
+        public async Task<ArtworkViewModelAdmin> GetArtworkAdmin(Guid artworkId)
+            => AutoMapperConfiguration.Mapper.Map<ArtworkViewModelAdmin>(
+                await (_unitOfWork.ArtworkRepository.FirstOrDefaultAsync(a => a.Id == artworkId)));
+
+        public async Task<ArtworkViewModelAdmin> CreateArtworkAdmin(Guid artistId, ArtworkCreateModelAdmin acmd)
+        {
+            await _unitOfWork.BeginTransaction();
+            
+            var artworkProduct = AutoMapperConfiguration.Mapper.Map<Artwork>(acmd);
+            artworkProduct.ArtistId = artistId;
+            artworkProduct.CreatedDate = DateTime.Now;;
+            artworkProduct.Status = true;
+            await _unitOfWork.ArtworkRepository.AddAsync(artworkProduct);
+            
+            await _unitOfWork.CommitTransaction();
+            
+            return await GetArtworkAdmin(artworkProduct.Id);
+        }
+
+        public async Task<bool> ChangeArtworkStatus_DisableAsync(Guid artworkId)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransaction();
+                var repos = _unitOfWork.ArtworkRepository;
+                var updateArtwork = await repos.FirstOrDefaultAsync(ua => ua.Id == artworkId);
+                if (updateArtwork == null)
+                {
+                    throw new KeyNotFoundException();
+                }
+                else
+                {
+                    updateArtwork.Status = false;
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitTransaction();
+                    return true;
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<ArtworkViewModelAdmin> UpdateAdmin(Guid artworkId, ArtworkUpdateModelAdmin artwork)
+        {
+            var updateArtwork = await _unitOfWork.ArtworkRepository.FirstOrDefaultAsync(a => a.Id == artworkId);
+            if (updateArtwork == null) throw new ArgumentException(nameof(updateArtwork));
+
+            updateArtwork.Status = artwork.Status;
+            updateArtwork.Categories = artwork.Categories;
+            updateArtwork.MediaContents = artwork.MediaContents;
+            updateArtwork.Description = artwork.Description;
+            updateArtwork.Price = artwork.Price;
+            updateArtwork.Name = artwork.Name;
+            
+            _unitOfWork.ArtworkRepository.UpdateArtwork(updateArtwork);
+            await _unitOfWork.SaveChangesAsync();
+            return await GetArtworkAdmin(artworkId);
+        }
+
+        public async Task<bool> DeleteArtworkAdmin(Guid artworkId)
+        {
+            var deleteArtwork = await _unitOfWork.ArtworkRepository.FirstOrDefaultAsync(a => a.Id == artworkId);
+            if (deleteArtwork == null) throw new ArgumentException(nameof(deleteArtwork));
+
+            _unitOfWork.ArtworkRepository.DeleteAsync(deleteArtwork.Id);
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
     }
 }

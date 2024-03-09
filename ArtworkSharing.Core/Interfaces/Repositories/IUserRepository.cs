@@ -9,5 +9,6 @@ namespace ArtworkSharing.Core.Interfaces.Repositories
 {
     public interface IUserRepository : IRepository<User>
     {
+        void UpdateUser(User user);
     }
 }

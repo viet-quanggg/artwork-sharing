@@ -32,12 +32,11 @@ namespace ArtworkSharing.Service.Services
 
         public async Task CreateRefundRequest(RefundRequest refund)
         {
-            var refundRequest = await _uow.RefundRequestRepository.FirstOrDefaultAsync(_ => _.TransactionId == refund.TransactionId);
-            if (refundRequest == null) throw new ArgumentException(nameof(refundRequest));
-            refundRequest = refund;
-            // refundRequest = AutoMapperConfiguration.Mapper.Map<RefundRequest>(refund);
-            await _uow.RefundRequestRepository.AddAsync(refundRequest);
-            await _uow.SaveChangesAsync();
+            await _uow.BeginTransaction();
+            
+            await _uow.RefundRequestRepository.AddAsync(refund);
+            
+            await _uow.CommitTransaction();
         }
 
         public async Task<List<RefundRequestViewModel>> GetAll()

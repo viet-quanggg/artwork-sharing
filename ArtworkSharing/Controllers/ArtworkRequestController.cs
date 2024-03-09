@@ -18,11 +18,11 @@ public class ArtworkRequestController : Controller
         _requestService = artworkRequestService;
     }
     [HttpGet]
-    public async Task<ActionResult> GetAllArtworkRequests()
+    public async Task<IActionResult> GetAllArtworkRequests(int pageNumber, int pageSize)
     {
         try
         {
-            var requestList = await _requestService.GetArtworkServices();
+            var requestList = await _requestService.GetArtworkServices(pageNumber, pageSize);
             return Ok(requestList);
         }
         catch (Exception ex)
@@ -31,12 +31,12 @@ public class ArtworkRequestController : Controller
         }
     }
     
-    [HttpGet("{artworkRequestId}")]
-    public async Task<ActionResult> GetArtworkRequest()
+    [HttpGet("getartworkRequest")]
+    public async Task<IActionResult> GetArtworkRequest(Guid artworkRequestId)
     {
         try
         {
-            var artworkRequest = await _requestService.GetArtworkServices();
+            var artworkRequest = await _requestService.GetArtworkService(artworkRequestId);
             return Ok(artworkRequest);
         }
         catch (Exception ex)
@@ -46,7 +46,7 @@ public class ArtworkRequestController : Controller
     }
 
     [HttpPost("createartworkrequest")]
-    public async Task<ActionResult> CreateArtworkRequest([FromBody] CreateArtworkRequestModel cam)
+    public async Task<IActionResult> CreateArtworkRequest([FromBody] CreateArtworkRequestModel cam)
     {
         try
         {

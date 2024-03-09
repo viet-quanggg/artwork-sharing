@@ -44,7 +44,7 @@ public class RefundRequestController : Controller
     }
 
     [HttpPost("createRefund")]
-    public async Task<ActionResult> CreateRefund(CreateRefundRequestModel crm)
+    public async Task<ActionResult> CreateRefund([FromBody] CreateRefundRequestModel crm)
     {
         try
         {

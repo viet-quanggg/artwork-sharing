@@ -6,10 +6,10 @@ namespace ArtworkSharing.Core.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<IList<UserViewModel>> GetUsers();
+        Task<IList<UserViewModel>> GetUsers(int pageNumber, int pageSize);
         Task<UserViewModel> GetUser(Guid userId);
         Task CreateNewUser(User user);
-        Task UpdateUser(User user);
+        Task<UserViewModel> UpdateUser(Guid userId, UpdateUserModelAdmin user);
         Task DeleteUser(Guid userId);
        
     }

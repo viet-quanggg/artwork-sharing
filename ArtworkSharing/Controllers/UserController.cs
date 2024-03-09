@@ -17,11 +17,11 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetAllUsers()
+    public async Task<ActionResult> GetAllUsers(int pageNumber, int pageSize)
     {
         try
         {
-            var userList = await _userService.GetUsers();
+            var userList = await _userService.GetUsers(pageNumber, pageSize);
             return Ok(userList);
         }
         catch (Exception ex)
@@ -79,6 +79,13 @@ public class UserController : Controller
         {
             throw new Exception(ex.Message);
         }
+    }
+
+    [HttpPut("{userId}")]
+    public async Task<ActionResult> UpdateUser([FromRoute] Guid userId, UpdateUserModelAdmin uuma)
+    {
+        if (userId == Guid.Empty || uuma == null) return BadRequest(new { Message = "User not found!" });
+        return Ok(await _userService.UpdateUser(userId, uuma));
     }
     
     

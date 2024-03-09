@@ -64,27 +64,53 @@ namespace ArtworkSharing.Service.Services
             => AutoMapperConfiguration.Mapper.Map<UserViewModel>(
                 await _unitOfWork.UserRepository.FirstOrDefaultAsync(u => u.Id == userId));
 
-        public async Task<IList<UserViewModel>> GetUsers()
-            => AutoMapperConfiguration.Mapper.Map<IList<UserViewModel>>(await (_unitOfWork.UserRepository.GetAll().AsQueryable()).ToListAsync());
+        public async Task<IList<UserViewModel>> GetUsers(int pageNumber, int pageSize)
+        {
+            try
+            {
+                int itemsToSkip = (pageNumber - 1) * pageSize;
+
+                var list = await _unitOfWork.UserRepository
+                    .Include(u => u.Transactions)
+                    .Include(u => u.UserRoles)
+                    .Include(u => u.ArtworkServices)
+                    .Skip(itemsToSkip)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+                return AutoMapperConfiguration.Mapper.Map<IList<UserViewModel>>(list);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
 
 
-        public async Task UpdateUser(User user)
+        public async Task<UserViewModel> UpdateUser(Guid userId ,UpdateUserModelAdmin user)
         {
             try
             {
                 await _unitOfWork.BeginTransaction();
                 var repo = _unitOfWork.UserRepository;
-                var Uuser = await repo.FirstOrDefaultAsync(u => u.Id == user.Id);
+                var Uuser = await repo.FirstOrDefaultAsync(u => u.Id == userId);
                 if (Uuser == null)
                 {
                     throw new KeyNotFoundException();
                 }
                 else
                 {
-                    Uuser = user;
+                    
+                    Uuser.Name = user.Name;
+                    Uuser.Gender = user.Gender;
+                    Uuser.Status = user.Status;
+                    Uuser.PhotoUrl = user.PhotoUrl;
+                    repo.UpdateUser(Uuser);
 
-
+                   await _unitOfWork.CommitTransaction();
+                   await _unitOfWork.SaveChangesAsync();
+                   return await GetUser(userId);
                 }
 
             }

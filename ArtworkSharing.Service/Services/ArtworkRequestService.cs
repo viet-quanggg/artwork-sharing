@@ -16,14 +16,32 @@ public class ArtworkRequestService : IArtworkRequestService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IList<ArtworkRequestViewModel>> GetArtworkServices() =>
-        AutoMapperConfiguration.Mapper.Map<List<ArtworkRequestViewModel>>(await _unitOfWork.ArtworkServiceRepository.GetAll().AsQueryable().ToListAsync()
-            );
+    public async Task<IList<ArtworkRequestViewModel>> GetArtworkServices(int pageNumber, int pageSize)
+    {
+        try
+        {
+            int itemsToSkip = (pageNumber - 1) * pageSize;
+
+            var list = await _unitOfWork.ArtworkServiceRepository
+                .Include(a => a.Transactions)
+                .Include(a => a.ArtworkProduct)
+                .Skip(itemsToSkip)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return AutoMapperConfiguration.Mapper.Map<IList<ArtworkRequestViewModel>>(list);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
 
 
     public async Task<ArtworkRequestViewModel> GetArtworkService(Guid guid) =>
         AutoMapperConfiguration.Mapper.Map<ArtworkRequestViewModel>(
-            await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.TransactionId == guid));
+            await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.Id == guid));
 
     public async Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam)
     {
@@ -48,13 +66,11 @@ public class ArtworkRequestService : IArtworkRequestService
 
     public async Task CreateArtworkRequest(Core.Domain.Entities.ArtworkService artworkService)
     {
-        var service = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(_ =>
-                _.TransactionId == artworkService.TransactionId);
-        if (service == null) throw new ArgumentException(nameof(service));
-        service = artworkService;
-        // refundRequest = AutoMapperConfiguration.Mapper.Map<RefundRequest>(refund);
-        await _unitOfWork.ArtworkServiceRepository.AddAsync(service);
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.BeginTransaction();
+        
+        await _unitOfWork.ArtworkServiceRepository.AddAsync(artworkService);
+        
+        await _unitOfWork.CommitTransaction();
     }
     
     
