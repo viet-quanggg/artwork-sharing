@@ -11,10 +11,17 @@ namespace ArtworkSharing.DAL.Repositories
 {
     public class ArtworkRepository : Repository<Artwork>, IArtworkRepository
     {
+        
+        private readonly DbContext _dbContext;
         public ArtworkRepository(DbContext dbContext) : base(dbContext)
         {
+            _dbContext = dbContext;
         }
 
-      
+
+        public void UpdateArtwork(Artwork artwork)
+        {
+            _dbContext.Update<Artwork>(artwork);
+        }
     }
 }

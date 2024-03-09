@@ -6,8 +6,16 @@ namespace ArtworkSharing.DAL.Repositories
 {
     public class UserRepository : Repository<User>, IUserRepository
     {
+        private readonly DbContext _dbContext;
+
         public UserRepository(DbContext dbContext) : base(dbContext)
         {
+            _dbContext = dbContext;
+        }
+
+        public void UpdateUser(User user)
+        {
+            _dbContext.Update<User>(user);
         }
     }
 }
