@@ -76,7 +76,7 @@ namespace ArtworkSharing.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpPost("{id}")]
-        public async Task<IActionResult> RefundTraction([FromRoute] Guid id, Guid userId)
+        public async Task<IActionResult> RefundTraction([FromRoute] Guid id)
         {
             string uId = HttpContext.Items["UserId"] + "";
             if (string.IsNullOrEmpty(uId))
