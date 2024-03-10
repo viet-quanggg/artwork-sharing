@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
-
 namespace ArtworkSharing.Service.Services
 {
     public class PaymentService : IPaymentService
@@ -20,7 +19,7 @@ namespace ArtworkSharing.Service.Services
         private readonly HttpContext _httpContext;
         private readonly IConfiguration _configuration;
         private SortedList<string, string> pParams = new SortedList<string, string>();
-        private Vnpay Vnpay { get; set; } = new Vnpay();
+        private VNPay Vnpay { get; set; } = new VNPay();
 
         public PaymentService(IConfiguration configuration, IHttpContextAccessor httpContext, IUnitOfWork unitOfWork)
         {
