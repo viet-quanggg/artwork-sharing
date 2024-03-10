@@ -88,7 +88,7 @@ namespace ArtworkSharing.Service.Services
 
 
 
-        public async Task<UserViewModel> UpdateUser(Guid userId ,UpdateUserModelAdmin user)
+        public async Task<UserViewModel> UpdateUser(Guid userId, UpdateUserModelAdmin user)
         {
             try
             {
@@ -101,16 +101,16 @@ namespace ArtworkSharing.Service.Services
                 }
                 else
                 {
-                    
+
                     Uuser.Name = user.Name;
                     Uuser.Gender = user.Gender;
                     Uuser.Status = user.Status;
                     Uuser.PhotoUrl = user.PhotoUrl;
                     repo.UpdateUser(Uuser);
 
-                   await _unitOfWork.CommitTransaction();
-                   await _unitOfWork.SaveChangesAsync();
-                   return await GetUser(userId);
+                    await _unitOfWork.CommitTransaction();
+                    await _unitOfWork.SaveChangesAsync();
+                    return await GetUser(userId);
                 }
 
             }

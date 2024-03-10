@@ -30,12 +30,14 @@ namespace ArtworkSharing.Service.Services
             return rs > 0;
         }
 
-        public async Task CreateRefundRequest(RefundRequest refund)
+        public async Task CreateRefundRequest(CreateRefundRequestModel crrm)
         {
             await _uow.BeginTransaction();
-            
-            await _uow.RefundRequestRepository.AddAsync(refund);
-            
+            var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
+            refund.RefundRequestDate = DateTime.Now;
+            var repo = _uow.RefundRequestRepository;
+            await repo.AddAsync(refund);
+
             await _uow.CommitTransaction();
         }
 
@@ -61,7 +63,7 @@ namespace ArtworkSharing.Service.Services
             await _uow.SaveChangesAsync();
             return await GetRefundRequest(id);
         }
-        
-        
+
+
     }
 }

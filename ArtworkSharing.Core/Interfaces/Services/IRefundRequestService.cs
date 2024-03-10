@@ -13,6 +13,6 @@ namespace ArtworkSharing.Core.Interfaces.Services
 
         Task<bool> DeleteRefundRequest(Guid id);
 
-        Task CreateRefundRequest(RefundRequest refund);
+        Task CreateRefundRequest(CreateRefundRequestModel crrm);
     }
 }

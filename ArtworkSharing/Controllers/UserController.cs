@@ -28,7 +28,7 @@ public class UserController : Controller
         {
             throw new Exception(ex.Message);
         }
-        
+
     }
 
     [HttpGet("getuser")]
@@ -51,7 +51,7 @@ public class UserController : Controller
         try
         {
             var user = AutoMapperConfiguration.Mapper.Map<User>(cum);
-             _userService.CreateNewUser(user);
+            _userService.CreateNewUser(user);
             return Ok(user);
         }
         catch (Exception ex)
@@ -65,7 +65,7 @@ public class UserController : Controller
     {
         try
         {
-            var user = _userService.GetUser(userId);
+            var user = await _userService.GetUser(userId);
             if (user == null)
                 return NotFound("User not found");
             else
@@ -87,7 +87,7 @@ public class UserController : Controller
         if (userId == Guid.Empty || uuma == null) return BadRequest(new { Message = "User not found!" });
         return Ok(await _userService.UpdateUser(userId, uuma));
     }
-    
-    
+
+
 
 }

@@ -44,20 +44,20 @@ public class RefundRequestController : Controller
     }
 
     [HttpPost("createRefund")]
-    public async Task<ActionResult> CreateRefund([FromBody] CreateRefundRequestModel crm)
+    public async Task<ActionResult> CreateRefund([FromBody] CreateRefundRequestModel crrm)
     {
         try
         {
-            var createRefund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crm);
-             _requestService.CreateRefundRequest(createRefund);
-            return Ok(createRefund);
+            //var createRefund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
+            await _requestService.CreateRefundRequest(crrm);
+            return Ok(crrm);
         }
         catch (Exception e)
         {
             throw new Exception(e.Message);
         }
     }
-    
-    
-    
+
+
+
 }
