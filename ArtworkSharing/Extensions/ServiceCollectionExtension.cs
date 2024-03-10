@@ -50,6 +50,7 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<ILikeService, LikeService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
+            services.AddScoped<ITransactionService, TransactionService>();
 
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddFluentValidationAutoValidation();
@@ -88,7 +89,7 @@ namespace ArtworkSharing.Extensions
             services.Configure<DataProtectionTokenProviderOptions>(options =>
             {
                 options.TokenLifespan = TimeSpan.FromHours(24); // Token expires after 24 hours
-            });    
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
