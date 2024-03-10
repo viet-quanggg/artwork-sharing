@@ -1,6 +1,6 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
-using ArtworkSharing.Core.ViewModels.Packages;
+using ArtworkSharing.Core.ViewModels.Package;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
