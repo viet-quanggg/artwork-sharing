@@ -26,9 +26,7 @@ namespace ArtworkSharing.Controllers
         public async Task<IActionResult> GetUrlRedirectVNPAY(Guid id)
         {
             if (id == Guid.Empty) return BadRequest();
-
             var tran = await _transactionService.GetOne(id);
-
             if (tran == null!) return BadRequest();
 
             return Ok(_VNPayTransactionService.GetUrlFromTransaction(tran));
@@ -42,12 +40,12 @@ namespace ArtworkSharing.Controllers
         public async Task<IActionResult> ProcessIpnVNPAY()
         {
             VNPayResponseModel rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
-
             if (rs.TransactionViewModel == null)
             {
                 return BadRequest(new { Message = rs.IpnResponseViewModel.Message });
             }
-            return Ok(rs);
+
+            return Ok(rs.TransactionViewModel);
         }
 
         /// <summary>
@@ -71,5 +69,26 @@ namespace ArtworkSharing.Controllers
         [HttpGet("VNPAYTransactions")]
         public async Task<IActionResult> GetVNPAYTransactions([FromBody] VNPayFilter vNPayFilter)
          => Ok(await _VNPayTransactionService.GetVNPayTransactions(vNPayFilter));
+
+        /// <summary>
+        /// Refund transaction by transaction id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost("{id}")]
+        public async Task<IActionResult> RefundTraction([FromRoute] Guid id, Guid userId)
+        {
+            string uId = HttpContext.Items["UserId"] + "";
+            if (string.IsNullOrEmpty(uId))
+            {
+                return Unauthorized();
+            }
+            var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse(uId));
+            if (rs.TransactionViewModel == null)
+            {
+                return BadRequest(new { Message = rs.IpnResponseViewModel.Message });
+            }
+            return Ok(rs.TransactionViewModel);
+        }
     }
 }

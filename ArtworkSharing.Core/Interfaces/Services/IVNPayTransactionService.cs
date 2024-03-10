@@ -9,5 +9,6 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task<VNPayResponseModel> HandleQuery(string query);
         Task<List<VNPayTransactionViewModel>> GetVNPayTransactions(VNPayFilter vNPayFilter);
         Task<VNPayTransactionViewModel> GetVNPayTransactionByTransactionId(Guid id);
+        Task<VNPayResponseModel> RefundVNPay(Guid id, Guid userId);
     }
 }

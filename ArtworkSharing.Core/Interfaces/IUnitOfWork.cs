@@ -27,6 +27,7 @@ namespace ArtworkSharing.Core.Interfaces
         ITransactionRepository TransactionRepository { get; }
         IVNPayTransactionRepository VNPayTransactionRepository { get; }
 
+        IVNPayTransactionRefundRepository VNPayTransactionRefundRepository { get; }
 
         /// <summary>
         /// Saves changes to database, previously opening a transaction
