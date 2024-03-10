@@ -1,4 +1,5 @@
-﻿using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
@@ -30,6 +31,8 @@ namespace ArtworkSharing.Service.Services
 
         public async Task<List<TransactionViewModel>> GetAll()
             => AutoMapperConfiguration.Mapper.Map<List<TransactionViewModel>>(await (_uow.TransactionRepository.GetAll().AsQueryable()).ToListAsync());
+
+        public async Task<Transaction> GetOne(Guid id) => await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);
 
         public async Task<TransactionViewModel> GetTransaction(Guid id)
             => AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id));

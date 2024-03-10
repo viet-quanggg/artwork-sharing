@@ -1,6 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Artworks;
+using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -81,6 +85,35 @@ namespace ArtworkSharing.Service.Services
                 await _unitOfWork.RollbackTransaction();
                 throw;
             }
+        }
+        public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!)
+        {
+            IQueryable<Artwork> artworks = _unitOfWork.ArtworkRepository.GetAll().OrderByDescending(x => x.CreatedDate).AsQueryable();
+
+            if (bam != null)
+            {
+                if (bam.Name + "" != "")
+                {
+                    artworks = artworks.Where(x => x.Name.ToLower().Contains(bam.Name!.ToLower()));
+                }
+                if (bam.Description + "" != "")
+                {
+                    artworks = artworks.Where(x => x.Description!.ToLower().Contains(bam.Description!.ToLower()));
+                }
+                if (bam.IsPopular)
+                {
+                    artworks = artworks.OrderByDescending(x => x.Likes!.Count);
+                }
+                if (bam.IsAscRecent)
+                {
+                    artworks = artworks.OrderBy(x => x.CreatedDate);
+                }
+                if (bam.ArtistId != Guid.Empty)
+                {
+                    artworks = artworks.Where(x => x.ArtistId == bam.ArtistId);
+                }
+            }
+            return await artworks.ToListAsync();
         }
     }
 }

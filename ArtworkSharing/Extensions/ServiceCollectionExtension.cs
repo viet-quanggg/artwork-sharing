@@ -40,6 +40,7 @@ namespace ArtworkSharing.Extensions
         /// <returns></returns>
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddScoped<IArtworkService, ArtworkSharing.Service.Services.ArtworkService>();
             services.AddScoped<IArtistService, ArtistService>();
             services.AddScoped<IArtistPackageService, ArtistPackageService>();
@@ -50,6 +51,11 @@ namespace ArtworkSharing.Extensions
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IFireBaseService, FireBaseService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<ILikeService, LikeService>();
+            services.AddScoped<ICommentService, CommentService>();
+            services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
+            services.AddScoped<ITransactionService, TransactionService>();
+
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
@@ -88,7 +94,7 @@ namespace ArtworkSharing.Extensions
             services.Configure<DataProtectionTokenProviderOptions>(options =>
             {
                 options.TokenLifespan = TimeSpan.FromHours(24); // Token expires after 24 hours
-            });    
+            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>

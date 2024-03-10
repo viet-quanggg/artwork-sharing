@@ -1,10 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Base;
 using ArtworkSharing.Core.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Core.Domain.Entities
 {
@@ -21,7 +16,7 @@ namespace ArtworkSharing.Core.Domain.Entities
         public ArtworkServiceStatus Status { get; set; }
         public User Audience { get; set; } = null!;
         public Artist Artist { get; set; } = null!;
-        public ICollection<MediaContent>? ArtworkProduct { get; set; }
+        public string? ArtworkProduct { get; set; }
         public ICollection<Transaction>? Transactions { get; set; }
     }
 }
