@@ -42,7 +42,7 @@ namespace ArtworkSharing.Controllers
                     IConfiguration configuration = new ConfigurationBuilder()
                     .AddJsonFile("Page.json", true, true)
                     .Build();
-                    var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                    var pageSize = int.Parse(configuration.GetSection("Page")["Value"]);
                     var transofArtwork = trans.Where(t => t.ArtworkId == ArtistId)
                         .Skip((page - 1) * pageSize)
                         .Take(pageSize)

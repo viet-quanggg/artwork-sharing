@@ -34,7 +34,7 @@ namespace ArtworkSharing.Controllers
                 IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile("Page.json", true, true)
                 .Build();
-                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var pageSize = int.Parse(configuration.GetSection("Page")["Value"]);
                 var artworks = artists.Artworks
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -117,7 +117,7 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-       /* [HttpPost("{artistId}", Name = "AddArtwork")]
+        [HttpPost("{artistId}", Name = "AddArtwork")]
         public async Task<IActionResult> Add(Guid artistId, [FromBody] Artwork artwork)
         {
             try
@@ -136,7 +136,7 @@ namespace ArtworkSharing.Controllers
                 _logger.LogError($"Error adding Artwork: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
-        }*/
+        }
 
     }
 }
