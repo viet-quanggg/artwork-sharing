@@ -66,7 +66,7 @@ namespace ArtworkSharing.Controllers
                 IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile("Page.json", true, true)
                 .Build();
-                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var pageSize = int.Parse(configuration.GetSection("Page")["Value"]);
                 var transactions = await _ArtworkService.GetAll();
                 var Pagefortransaction = transactions
                     .Skip((page - 1) * pageSize)
