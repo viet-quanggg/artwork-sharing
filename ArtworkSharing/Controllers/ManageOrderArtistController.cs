@@ -29,7 +29,7 @@ namespace ArtworkSharing.Controllers
        
         
         [HttpGet("ArtistId",Name ="GetCompleteTransaction")]
-        public async Task<IActionResult> GetTransactionofArtist(Guid ArtistId)
+        public async Task<IActionResult> GetTransactionofArtist(Guid ArtistId,int page)
         {
             try
             {
@@ -39,7 +39,14 @@ namespace ArtworkSharing.Controllers
                   var Artworks = await _ArtworkService.GetAll();
                     var getArtwork = Artworks.Where(r => r.ArtistId == ArtistId).ToList();
                     var trans = await _TransactionService.GetAll();
-                    var transofArtwork = trans.Where(t => t.ArtworkId == ArtistId).ToList();
+                    IConfiguration configuration = new ConfigurationBuilder()
+                    .AddJsonFile("Page.json", true, true)
+                    .Build();
+                    var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                    var transofArtwork = trans.Where(t => t.ArtworkId == ArtistId)
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToList(); 
                     return Ok(trans);
                 }
                 return NotFound("Artist not found");

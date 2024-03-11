@@ -9,8 +9,13 @@ namespace ArtworkSharing.Core.Exceptions
         {
             switch (context.Exception)
             {
-                case Exception ex: context.Result= new BadRequestObjectResult(ex.Message); break;
-                    // Add whatever you need
+                case Exception ex: context.Result = new BadRequestObjectResult(ex.Message); break;
+
+                // Add whatever you need
+
+                default:
+                    context.Result = new StatusCodeResult(500); // Internal Server Error
+                    break;
             }
         }
     }

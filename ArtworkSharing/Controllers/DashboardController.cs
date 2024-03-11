@@ -10,16 +10,18 @@ namespace ArtworkSharing.Controllers
         private readonly ITransactionService _TransactionService;
         private readonly ILogger<ManageOrderArtistController> _logger;
         private readonly IArtworkService _ArtworkService;
+        private readonly IArtistService _ArtistService;
 
-        public DashboardController(ITransactionService transactionService, ILogger<ManageOrderArtistController> logger, IArtworkService artworkService)
+        public DashboardController(ITransactionService transactionService, ILogger<ManageOrderArtistController> logger, IArtworkService artworkService,IArtistService artistService)
         {
             _TransactionService = transactionService;
             _logger = logger;
             _ArtworkService = artworkService;
+            _ArtistService = artistService;
         }
 
         [HttpGet(Name = "Getalltransactionfordashboard")]
-        public async Task<ActionResult<ManageOrderArtistController>> GetTransactionsByTimeRange(string timeRange)
+        public async Task<ActionResult<ManageOrderArtistController>> GetTransactionsByTimeRange(string timeRange,int page)
         {
             try
             {
@@ -39,9 +41,15 @@ namespace ArtworkSharing.Controllers
                     default:
                         return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
                 }
-
+                IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("Page.json", true, true)
+                .Build();
+                var pageSize = int.Parse(configuration.GetSection("Value").Value);
                 var transactions = await _TransactionService.GetAll();
-                var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
+                var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate)
+                                            .Skip((page - 1) * pageSize)
+                                            .Take(pageSize)
+                                            .ToList();
                 return Ok(filteredTransactions);
             }
             catch (Exception ex)
@@ -51,12 +59,20 @@ namespace ArtworkSharing.Controllers
             }
         }
         [HttpGet(Name = "GetallArtworkforDashboard")]
-        public async Task<ActionResult<ManageOrderArtistController>> GetArtWork()
+        public async Task<ActionResult<ManageOrderArtistController>> GetArtWork(int page)
         {
             try
             {
+                IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("Page.json", true, true)
+                .Build();
+                var pageSize = int.Parse(configuration.GetSection("Value").Value);
                 var transactions = await _ArtworkService.GetAll();
-                return Ok(transactions);
+                var Pagefortransaction = transactions
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList(); 
+                return Ok(Pagefortransaction);
             }
             catch (Exception ex)
             {
@@ -64,13 +80,42 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [HttpGet("{entityId}", Name = "GetWorkerforDashboard")]
-        public async Task<ActionResult<ManageOrderArtistController>> GetWorker(Guid entityId)
+        [HttpGet(Name = "GetArtistforDashboard")]
+        public async Task<ActionResult<ManageOrderArtistController>> GetArtist(int page)
         {
             try
             {
-                var worker = await _ArtworkService.GetOne(entityId);
-                return Ok(worker);
+                IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("Page.json", true, true)
+                .Build();
+                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var worker = await _ArtistService.GetAll();
+                var Pageforworker = worker.Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToList(); ;
+                return Ok(Pageforworker);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting transactions: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        [HttpGet(Name = "GetArtistforDashboard")]
+        public async Task<ActionResult<ManageOrderArtistController>> GetSearchArtist(String name, int page)
+        {
+            try
+            {
+                IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("Page.json", true, true)
+                .Build();
+                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var worker = await _ArtistService.GetAll();
+                var Pageforworker = worker.Where(w => w.User.Name.Contains(name))
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToList(); ;
+                return Ok(Pageforworker);
             }
             catch (Exception ex)
             {
