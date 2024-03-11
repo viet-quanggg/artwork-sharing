@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ArtworkSharing.Controllers
 {
@@ -11,25 +12,59 @@ namespace ArtworkSharing.Controllers
         public PageController() { 
             
         }
-       
+
         [HttpPost(Name = "Save Page")]
         public async Task<IActionResult> SaveApiResponseToJsonFile([FromForm] int Page)
         {
-
             try
             {
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
 
-                IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("Page.json", true, true)
-                .Build();
-                var num = configuration.GetSection("Page").Value;
-                IConfigurationRoot _configuration = (IConfigurationRoot)configuration;
-                if (num.IsNullOrEmpty())
+                if (!filePath.IsNullOrEmpty())
                 {
-                    _configuration.GetSection("Page").Value = Page.ToString();
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
-                    System.IO.File.WriteAllText(filePath, JsonConvert.SerializeObject(_configuration.AsEnumerable(), Newtonsoft.Json.Formatting.Indented));
+                    var jsonString = System.IO.File.ReadAllText(filePath);
 
+                    JObject jsonObject;
+                    if (jsonString.StartsWith("["))
+                    {
+                        // JSON file contains an array
+                        jsonObject = JObject.Parse(jsonString);
+                        JArray jsonArray = jsonObject["PageArray"] as JArray;
+
+                        foreach (JObject obj in jsonArray)
+                        {
+                            if (obj["Key"].ToString() == "Page")
+                            {
+                                obj["Value"] = Page.ToString();
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // JSON file contains an object
+                        jsonObject = JObject.Parse(jsonString);
+
+                        if (jsonObject.ContainsKey("Page"))
+                        {
+                            jsonObject["Page"]["Value"] = Page.ToString();
+                        }
+                        else
+                        {
+                            jsonObject.Add(new JProperty("Page", new JObject(new JProperty("Key", "Page"), new JProperty("Value", Page.ToString()))));
+                        }
+                    }
+
+                    System.IO.File.WriteAllText(filePath, jsonObject.ToString());
+                }
+                else
+                {
+                    JObject jsonObject = new JObject
+            {
+                { "PageArray", new JArray(new JObject(new JProperty("Key", "Page"), new JProperty("Value", Page.ToString())))}
+            };
+
+                    System.IO.File.WriteAllText(filePath, jsonObject.ToString());
                 }
 
                 return Ok("API response saved to JSON file.");
