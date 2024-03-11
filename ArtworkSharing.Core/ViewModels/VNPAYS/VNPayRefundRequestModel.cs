@@ -13,8 +13,8 @@ namespace ArtworkSharing.Core.ViewModels.VNPAYS
         public string vnp_Command { get; set; }
         public string vnp_TmnCode { get; set; }
         public string vnp_TransactionType { get; set; }
-        public long vnp_TxnRef { get; set; }
-        public string vnp_Amount { get; set; }
+        public string vnp_TxnRef { get; set; }
+        public long vnp_Amount { get; set; }
         public string vnp_TransactionNo { get; set; }
         public string vnp_TransactionDate { get; set; }
         public string vnp_CreateBy { get; set; }
