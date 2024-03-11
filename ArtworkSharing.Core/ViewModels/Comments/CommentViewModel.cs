@@ -1,4 +1,4 @@
-﻿using ArtworkSharing.Core.ViewModels.Users;
+using ArtworkSharing.Core.ViewModels.Users;
 
 namespace ArtworkSharing.Core.ViewModels.Comments
 {

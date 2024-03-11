@@ -1,4 +1,4 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 using ArtworkSharing.Core.ViewModels.Categories;
 using ArtworkSharing.Core.ViewModels.Comments;
 using ArtworkSharing.Core.ViewModels.Likes;
-using ArtworkSharing.Core.ViewModels.MediaContents;
+using ArtworkSharing.Core.ViewModels.MediaContent;
+
 using ArtworkSharing.Core.ViewModels.Users;
 
 namespace ArtworkSharing.Core.ViewModels.Artworks
