@@ -9,7 +9,7 @@ namespace ArtworkSharing.Controllers
     [Route("[controller]")]
     public class ManageArtWorkController : ControllerBase
     {
-
+        
         private readonly IArtistService _ArtistService;
         private readonly IArtworkService _ArtworkService;
         private readonly ILogger<ManageOrderArtistController> _logger;
@@ -34,7 +34,7 @@ namespace ArtworkSharing.Controllers
                 IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile("Page.json", true, true)
                 .Build();
-                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var pageSize = int.Parse(configuration.GetSection("Page")["Value"]);
                 var artworks = artists.Artworks
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -47,11 +47,10 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpPut(Name = "EditArtwork")]
         public async Task<IActionResult> Update([FromBody] Artwork artworkInput)
         {
-
+            
             try
             {
                 var existArtwork = await _ArtworkService.GetOne(artworkInput.Id);
@@ -71,6 +70,7 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpDelete("{artworkId}", Name = "DeleteArtwork")]
         public async Task<IActionResult> Delete(Guid artworkId)
         {
@@ -92,7 +92,6 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpPost("{artistId}", Name = "AddlistArtworks")]
         public async Task<IActionResult> AddArtworks(Guid artistId, [FromBody] List<Artwork> artworks)
         {
@@ -118,7 +117,6 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpPost("{artistId}", Name = "AddArtwork")]
         public async Task<IActionResult> Add(Guid artistId, [FromBody] Artwork artwork)
         {

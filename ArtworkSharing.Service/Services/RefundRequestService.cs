@@ -1,4 +1,5 @@
-﻿using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using ArtworkSharing.DAL.Extensions;
@@ -29,6 +30,17 @@ namespace ArtworkSharing.Service.Services
             return rs > 0;
         }
 
+        public async Task CreateRefundRequest(CreateRefundRequestModel crrm)
+        {
+            await _uow.BeginTransaction();
+            var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
+            refund.RefundRequestDate = DateTime.Now;
+            var repo = _uow.RefundRequestRepository;
+            await repo.AddAsync(refund);
+
+            await _uow.CommitTransaction();
+        }
+
         public async Task<List<RefundRequestViewModel>> GetAll()
             => AutoMapperConfiguration.Mapper.Map<List<RefundRequestViewModel>>(await (_uow.RefundRequestRepository.GetAll().AsQueryable()).ToListAsync());
 
@@ -51,5 +63,7 @@ namespace ArtworkSharing.Service.Services
             await _uow.SaveChangesAsync();
             return await GetRefundRequest(id);
         }
+
+
     }
 }

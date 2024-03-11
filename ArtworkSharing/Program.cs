@@ -26,6 +26,10 @@ builder.Services.AddDbContext<ArtworkSharingContext>(options => options.UseSqlSe
 builder.Services.AddDatabase();
 builder.Services.AddServices();
 builder.Services.AddConfigException();
+builder.Services.AddMvc(options =>
+{
+    options.SuppressAsyncSuffixInActionNames = false;
+});
 builder.Services.AddHttpClient();
 
 // Đăng ký WatermarkController

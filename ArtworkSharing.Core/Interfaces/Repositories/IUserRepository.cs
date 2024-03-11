@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace ArtworkSharing.Core.Interfaces.Repositories
 {
     public interface IUserRepository : IRepository<User>
-    {
+    { 
         void UpdateUser(User u);
+        
     }
 }

@@ -6,6 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ArtworkSharing.Core.ViewModels.MediaContent;
+using ArtworkSharing.Service.AutoMappings;
+using ArtworkSharing.Core.ViewModels.Rating;
+using ArtworkSharing.Core.ViewModels.Package;
+using ArtworkSharing.DAL.Extensions;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -17,15 +23,17 @@ namespace ArtworkSharing.Service.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IList<Rating>> GetAll()
+        public async Task<IList<RatingViewModel>> GetAll()
         {
-            return _unitOfWork.RatingRepository.GetAll().ToList();
+            var queryableData = _unitOfWork.RatingRepository.GetAll().AsQueryable();
+
+            return AutoMapperConfiguration.Mapper.Map<IList<RatingViewModel>>(await queryableData.ToListAsync(CancellationToken.None));
         }
 
-        public async Task<Rating> GetOne(Guid RatingId)
+        public async Task<RatingViewModel> GetOne(Guid RatingId)
         {
-            return await _unitOfWork.RatingRepository
-                   .GetAsync(mc => mc.Id == RatingId);
+            return AutoMapperConfiguration.Mapper.Map<RatingViewModel>(await (_unitOfWork.PackageRepository.FirstOrDefaultAsync(x => x.Id == RatingId)));
+
         }
 
         public async Task Update(Rating RatingInput)

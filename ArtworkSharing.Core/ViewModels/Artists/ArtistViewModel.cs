@@ -1,4 +1,4 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Entities;
 
 namespace ArtworkSharing.Core.ViewModels.Artists
 {

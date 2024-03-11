@@ -2,6 +2,7 @@
 {
     public class BrowseArtworkModel
     {
+
         public Guid? ArtistId { get; set; } = Guid.Empty;
         public string? Name { get; set; }
         public string? Description { get; set; }
