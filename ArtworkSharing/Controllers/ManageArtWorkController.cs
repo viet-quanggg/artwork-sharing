@@ -22,7 +22,7 @@ namespace ArtworkSharing.Controllers
         }
 
         [HttpGet("{entityId}", Name = "GetArtworkofArtist")]
-        public async Task<ActionResult<ManageOrderArtistController>> GetCombinedEntityById(Guid entityId)
+        public async Task<ActionResult<ManageOrderArtistController>> GetCombinedEntityById(Guid entityId, int page)
         {
             try
             {
@@ -31,7 +31,14 @@ namespace ArtworkSharing.Controllers
                 {
                     return NotFound("Artist not found");
                 }
-                var artworks = artists.Artworks;
+                IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("Page.json", true, true)
+                .Build();
+                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var artworks = artists.Artworks
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList(); ;
                 return Ok(artworks);
             }
             catch (Exception ex)
