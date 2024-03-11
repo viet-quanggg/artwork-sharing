@@ -10,5 +10,6 @@ public class UserViewModel
     public string Phone { get; set; } = null!;
     public bool Status { get; set; }
 
+
     public Guid RoleId { get; set; }
 }

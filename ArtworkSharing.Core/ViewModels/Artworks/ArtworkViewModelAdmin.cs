@@ -14,6 +14,6 @@ public class ArtworkViewModelAdmin
     public Artist Artist { get; set; } = null!;
     public ICollection<Transaction>? Transactions { get; set; }
     public ICollection<Category>? Categories { get; set; }
-    public ICollection<MediaContent> MediaContents { get; set; } = null!;
+    public ICollection<Domain.Entities.MediaContent> MediaContents { get; set; } = null!;
 
 }

@@ -12,7 +12,7 @@ public class ArtworkUpdateModelAdmin
     public bool Status { get; set; }
 
     [JsonIgnore]
-    public ICollection<MediaContent>? MediaContents { get; set; } = null!;
+    public ICollection<Domain.Entities.MediaContent>? MediaContents { get; set; } = null!;
     [JsonIgnore]
     public ICollection<Category>? Categories { get; set; }
 
