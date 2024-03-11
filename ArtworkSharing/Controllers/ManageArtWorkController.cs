@@ -7,7 +7,7 @@ namespace ArtworkSharing.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ManageArtWorkController : Microsoft.AspNetCore.Mvc.Controller
+    public class ManageArtWorkController : ControllerBase
     {
         
         private readonly IArtistService _ArtistService;
@@ -110,7 +110,7 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [HttpPost("{artistId}", Name = "AddArtwork")]
+       /* [HttpPost("{artistId}", Name = "AddArtwork")]
         public async Task<IActionResult> Add(Guid artistId, [FromBody] Artwork artwork)
         {
             try
@@ -129,7 +129,7 @@ namespace ArtworkSharing.Controllers
                 _logger.LogError($"Error adding Artwork: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
-        }
+        }*/
 
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ArtworkSharing.Core.ViewModels.Categories;
 using ArtworkSharing.Core.ViewModels.Comments;
 using ArtworkSharing.Core.ViewModels.Likes;
-using ArtworkSharing.Core.ViewModels.MediaContents;
+using ArtworkSharing.Core.ViewModels.MediaContent;
 
 namespace ArtworkSharing.Core.ViewModels.Artworks
 {

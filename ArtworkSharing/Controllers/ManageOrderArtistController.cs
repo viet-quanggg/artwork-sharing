@@ -7,7 +7,7 @@ namespace ArtworkSharing.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ManageOrderArtistController : Controller
+    public class ManageOrderArtistController : ControllerBase
     {
         private readonly IArtistPackageService _ArtistService;
         private readonly IArtworkService _ArtworkService;

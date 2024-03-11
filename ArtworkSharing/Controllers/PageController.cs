@@ -6,15 +6,12 @@ namespace ArtworkSharing.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PageController : Microsoft.AspNetCore.Mvc.Controller
+    public class PageController : ControllerBase
     {
         public PageController() { 
             
         }
-        public IActionResult Index()
-        {
-            return View();
-        }
+       
         [HttpPost(Name = "Save Page")]
         public async Task<IActionResult> SaveApiResponseToJsonFile([FromForm] int Page)
         {
@@ -34,8 +31,6 @@ namespace ArtworkSharing.Controllers
                     System.IO.File.WriteAllText(filePath, JsonConvert.SerializeObject(_configuration.AsEnumerable(), Newtonsoft.Json.Formatting.Indented));
 
                 }
-
-
 
                 return Ok("API response saved to JSON file.");
             }

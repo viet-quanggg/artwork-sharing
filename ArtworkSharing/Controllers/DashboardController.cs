@@ -5,7 +5,7 @@ namespace ArtworkSharing.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DashboardController : Microsoft.AspNetCore.Mvc.Controller
+    public class DashboardController : ControllerBase
     {
         private readonly ITransactionService _TransactionService;
         private readonly ILogger<ManageOrderArtistController> _logger;
