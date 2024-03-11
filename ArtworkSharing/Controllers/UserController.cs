@@ -36,7 +36,7 @@ public class UserController : Controller
     {
         try
         {
-            var user = await _userService.GetUser(userId);
+            var user = await _userService.GetUserAdmin(userId);
             return Ok(user);
         }
         catch (Exception ex)
@@ -65,7 +65,7 @@ public class UserController : Controller
     {
         try
         {
-            var user = await _userService.GetUser(userId);
+            var user = await _userService.GetUserAdmin(userId);
             if (user == null)
                 return NotFound("User not found");
             else

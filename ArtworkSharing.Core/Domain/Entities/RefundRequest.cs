@@ -1,9 +1,4 @@
 ﻿using ArtworkSharing.Core.Domain.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Core.Domain.Entities
 {
@@ -14,5 +9,6 @@ namespace ArtworkSharing.Core.Domain.Entities
         public string Description { get; set; } = null!;
         public string Reason { get; set; } = null!;
         public Transaction? Transaction { get; set; }
+        public string Status { get; set; } = null!;
     }
 }

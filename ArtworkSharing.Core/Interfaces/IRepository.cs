@@ -19,7 +19,13 @@ namespace ArtworkSharing.Core.Interfaces
         Task AddAsync(T entity, CancellationToken cancellationToken = default);
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
 
-        
+        IEnumerable<T> Get(
+           Expression<Func<T, bool>> filter = null,
+           Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+           string includeProperties = "",
+           int? pageIndex = null,
+           int? pageSize = null
+       );
         /// <summary>
         /// Fin one item of an entity synchronous method
         /// </summary>

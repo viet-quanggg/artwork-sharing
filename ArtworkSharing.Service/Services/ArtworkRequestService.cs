@@ -24,7 +24,6 @@ public class ArtworkRequestService : IArtworkRequestService
 
             var list = await _unitOfWork.ArtworkServiceRepository
                 .Include(a => a.Transactions)
-                .Include(a => a.ArtworkProduct)
                 .Skip(itemsToSkip)
                 .Take(pageSize)
                 .ToListAsync();
@@ -67,11 +66,11 @@ public class ArtworkRequestService : IArtworkRequestService
     public async Task CreateArtworkRequest(Core.Domain.Entities.ArtworkService artworkService)
     {
         await _unitOfWork.BeginTransaction();
-        
+
         await _unitOfWork.ArtworkServiceRepository.AddAsync(artworkService);
-        
+
         await _unitOfWork.CommitTransaction();
     }
-    
-    
+
+
 }

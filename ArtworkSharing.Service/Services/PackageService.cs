@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -91,6 +92,23 @@ namespace ArtworkSharing.Service.Services
             {
                 await _unitOfWork.RollbackTransaction();
                 throw;
+            }
+        }
+
+        public IEnumerable<Package> Get(Expression<Func<Package, bool>> filter = null, Func<IQueryable<Package>, IOrderedQueryable<Package>> orderBy = null, string includeProperties = "", int? pageIndex = null, int? pageSize = null)
+        {
+            try
+            {
+               
+
+                var PackageRepository = _unitOfWork.PackageRepository.Get(filter,orderBy,includeProperties,pageIndex,pageSize   );
+
+                return PackageRepository;
+            }
+            catch (Exception e)
+            {
+
+                return null;
             }
         }
     }

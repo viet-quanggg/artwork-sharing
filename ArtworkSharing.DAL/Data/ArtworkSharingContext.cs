@@ -22,6 +22,9 @@ namespace ArtworkSharing.DAL.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<RefundRequest> RefundRequests { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<VNPayTransaction> VNPayTransactions { get; set; }
+        public DbSet<VNPayTransactionRefund> VNPayTransactionRefunds { get; set; }
+
 
         public ArtworkSharingContext()
         {
@@ -77,7 +80,7 @@ namespace ArtworkSharing.DAL.Data
             modelBuilder.Entity<Like>()
                .HasOne(l => l.LikedUser)
                .WithMany(a => a.Likes)
-               .HasForeignKey(l => l.LikedUserId)
+               .HasForeignKey(l => l.UserId)
                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Comment>()

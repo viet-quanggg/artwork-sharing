@@ -9,7 +9,7 @@ namespace ArtworkSharing.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public DbContext DbContext { get; private set; }       
+        public DbContext DbContext { get; private set; }
 
         public IUserRepository UserRepository { get; private set; }
 
@@ -37,6 +37,10 @@ namespace ArtworkSharing.DAL
 
         public ITransactionRepository TransactionRepository { get; private set; }
 
+        public IVNPayTransactionRepository VNPayTransactionRepository { get; private set; }
+
+        public IVNPayTransactionRefundRepository VNPayTransactionRefundRepository { get; private set; }
+
         private IDbContextTransaction _transaction;
         private IsolationLevel? _isolationLevel;
 
@@ -58,6 +62,8 @@ namespace ArtworkSharing.DAL
             RefundRequestRepository = new RefundRequestRepository(DbContext);
             TransactionRepository = new TransactionRepository(DbContext);
             
+            VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
+            VNPayTransactionRefundRepository = new VNPayTransactionRefundRepository(DbContext);
         }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -109,19 +115,19 @@ namespace ArtworkSharing.DAL
 
         public void Dispose()
         {
-            if (DbContext == null)
-                return;
-            //
-            // Close connection
-            if (DbContext.Database.GetDbConnection().State == ConnectionState.Open)
-            {
-                DbContext.Database.GetDbConnection().Close();
-            }
-            DbContext.Dispose();
+            //if (DbContext == null)
+            //    return;
+            ////
+            //// Close connection
+            //if (DbContext.Database.GetDbConnection().State == ConnectionState.Open)
+            //{
+            //    DbContext.Database.GetDbConnection().Close();
+            //}
+            //DbContext.Dispose();
 
-            DbContext = null;
+            //DbContext = null;
         }
 
-       
+
     }
 }

@@ -2,6 +2,7 @@
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using Microsoft.AspNetCore.Mvc;
+using ArtworkSharing.Core.ViewModels.Artworks;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
@@ -20,5 +21,7 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task<bool> ChangeArtworkStatus_DisableAsync(Guid guid);
         Task<ArtworkViewModelAdmin> UpdateAdmin(Guid artworkId, ArtworkUpdateModelAdmin artwork);
         Task<bool> DeleteArtworkAdmin(Guid artworkId);
+        Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!);
+
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
-    [Migration("20240309073247_InitDb")]
+    [Migration("20240311162412_InitDb")]
     partial class InitDb
     {
         /// <inheritdoc />
@@ -45,6 +45,10 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BankAccount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -125,6 +129,9 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.Property<Guid>("ArtistId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ArtworkProduct")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("AudienceId")
                         .HasColumnType("uniqueidentifier");
@@ -238,14 +245,14 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<DateTime>("LikedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("LikedUserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ArtworkId");
 
-                    b.HasIndex("LikedUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Likes");
                 });
@@ -259,9 +266,6 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<Guid>("ArtworkId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ArtworkServiceId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<float>("Capacity")
                         .HasColumnType("real");
 
@@ -272,8 +276,6 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArtworkId");
-
-                    b.HasIndex("ArtworkServiceId");
 
                     b.ToTable("MediaContents");
                 });
@@ -340,6 +342,10 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.Property<DateTime>("RefundRequestDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("TransactionId")
                         .HasColumnType("uniqueidentifier");
@@ -517,6 +523,88 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BankCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankTranNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PayDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TmnCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TransactionNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("VNPayTransactions");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransactionRefund", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BankCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PayDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResponseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TmnCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TransactionNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TxnRef")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VNPayTransactionRefunds");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -738,7 +826,7 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.HasOne("ArtworkSharing.Core.Domain.Entities.User", "LikedUser")
                         .WithMany("Likes")
-                        .HasForeignKey("LikedUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -754,10 +842,6 @@ namespace ArtworkSharing.DAL.Migrations
                         .HasForeignKey("ArtworkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.ArtworkService", null)
-                        .WithMany("ArtworkProduct")
-                        .HasForeignKey("ArtworkServiceId");
 
                     b.Navigation("Artwork");
                 });
@@ -832,6 +916,17 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransaction", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("ArtworkSharing.Core.Domain.Entities.Role", null)
@@ -890,8 +985,6 @@ namespace ArtworkSharing.DAL.Migrations
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkService", b =>
                 {
-                    b.Navigation("ArtworkProduct");
-
                     b.Navigation("Transactions");
                 });
 
