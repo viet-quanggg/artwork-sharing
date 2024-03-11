@@ -24,6 +24,9 @@ namespace ArtworkSharing.DAL.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<RefundRequest> RefundRequests { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<VNPayTransaction> VNPayTransactions { get; set; }
+        public DbSet<VNPayTransactionRefund> VNPayTransactionRefunds { get; set; }
+
 
         public ArtworkSharingContext()
         {
