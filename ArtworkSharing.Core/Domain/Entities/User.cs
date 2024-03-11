@@ -3,12 +3,13 @@
 namespace ArtworkSharing.Core.Domain.Entities
 {
     public class User : IdentityUser<Guid>
-    {       
-        public string Name { get; set; } = null!;      
-        public string? PhotoUrl { get; set; }        
+    {
+        public string Name { get; set; } = null!;
+        public string? BankAccount { get; set; }
+        public string? PhotoUrl { get; set; }
         public string? Gender { get; set; }
         public bool Status { get; set; }
-             
+
         public ICollection<Follow>? Followers { get; set; }
         public ICollection<Follow>? Followings { get; set; }
         public ICollection<Like>? Likes { get; set; }

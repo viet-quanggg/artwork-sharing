@@ -71,7 +71,6 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpDelete("{artworkId}", Name = "DeleteArtwork")]
         public async Task<IActionResult> Delete(Guid artworkId)
         {

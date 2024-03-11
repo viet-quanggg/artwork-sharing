@@ -7,13 +7,13 @@ using Microsoft.Extensions.Options;
 
 namespace ArtworkSharing.DAL.Data
 {
-    public class ArtworkSharingContext : IdentityDbContext<User, Role, 
+    public class ArtworkSharingContext : IdentityDbContext<User, Role,
         Guid, IdentityUserClaim<Guid>, UserRole, IdentityUserLogin<Guid>,
         IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
     {
         public DbSet<Artwork> Artworks { get; set; }
         public DbSet<ArtistPackage> ArtistPackages { get; set; }
-        public DbSet<Artist> Artists { get; set; }        
+        public DbSet<Artist> Artists { get; set; }
         public DbSet<ArtworkService> ArtworkServices { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -35,22 +35,17 @@ namespace ArtworkSharing.DAL.Data
         public ArtworkSharingContext(DbContextOptions options) : base(options)
 
         {
-        
+
         }
 
-
-       /* private string GetConnectionString()
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true, true)
-                .Build();
-            var stringConnection = configuration.GetConnectionString("DefaultConnection");
-            return stringConnection ?? "";
-        }*/
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-       => optionsBuilder.UseSqlServer("Server=(local);Uid=sa;pwd=12345;Database=ArtworkSharing;Trusted_Connection=True;TrustServerCertificate=True;");
+            if (!options.IsConfigured)
+            {
+                options.UseSqlServer("server =(local); database = ArtworkSharing;uid=sa;pwd=123456@Aa; TrustServerCertificate=True");
+            }
+        }
 
-       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -103,6 +98,6 @@ namespace ArtworkSharing.DAL.Data
               .WithMany(a => a.ArtistPackages)
               .HasForeignKey(a => a.ArtistId)
               .OnDelete(DeleteBehavior.NoAction);
-        } 
+        }
     }
 }
