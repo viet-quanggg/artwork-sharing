@@ -78,12 +78,11 @@ namespace ArtworkSharing.Controllers
         [HttpPost("{id}")]
         public async Task<IActionResult> RefundTraction([FromRoute] Guid id)
         {
-            //string uId = HttpContext.Items["UserId"] + "";
-            //if (string.IsNullOrEmpty(uId))
-            //{
-            //    return Unauthorized();
-            //}
-            string uId = "5612D75E-658E-47CE-C1C8-08DC40C3EE9A";
+            string uId = HttpContext.Items["UserId"] + "";
+            if (string.IsNullOrEmpty(uId))
+            {
+                return Unauthorized();
+            }
             var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse(uId));
             if (rs.TransactionViewModel == null)
             {
