@@ -192,20 +192,20 @@ namespace ArtworkSharing.Service.Services
                 vnp_Command = "refund",
                 vnp_TmnCode = Vnpay.TmnCode,
                 vnp_TransactionType = "02",
-                vnp_TxnRef = Convert.ToInt64(transVNPay.Transaction.TotalBill) * 100,
-                vnp_Amount = transVNPay.Id + "",
+                vnp_TxnRef = transVNPay.Id+"",
+                vnp_Amount = Convert.ToInt64(transVNPay.Transaction.TotalBill) * 100,
                 vnp_TransactionNo = transVNPay.TransactionNo,
                 vnp_TransactionDate = transVNPay.PayDate.ToString("yyyyMMddHHmmss"),
                 vnp_CreateBy = userId + "",
                 vnp_CreateDate = DateTime.Now.ToString("yyyyMMddHHmmss"),
-                vnp_IpAddr = GetIPAddress() ,
+                vnp_IpAddr = GetIPAddress(),
                 vnp_OrderInfo = "Refund transaction with id: " + id,
                 vnp_SecureHash = ""
             };
 
             var data = vNPayRefund.vnp_RequestId + "|" + vNPayRefund.vnp_Version + "|" + vNPayRefund.vnp_Command + "|" + Vnpay.TmnCode + "|" + vNPayRefund.vnp_TransactionType + "|" + vNPayRefund.vnp_TxnRef + "|" + vNPayRefund.vnp_Amount + "|" + vNPayRefund.vnp_TransactionNo + "|" + vNPayRefund.vnp_TransactionDate + "|" + vNPayRefund.vnp_CreateBy + "|" + vNPayRefund.vnp_CreateDate + "|" + vNPayRefund.vnp_IpAddr + "|" + vNPayRefund.vnp_OrderInfo;
 
-            vNPayRefund.vnp_SecureHash= Utils.HmacSHA512(Vnpay.HashSetcret, data);
+            vNPayRefund.vnp_SecureHash = Utils.HmacSHA512(Vnpay.HashSetcret, data);
 
             var jsonData = JsonConvert.SerializeObject(vNPayRefund);
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(Vnpay.RfApi)!;
