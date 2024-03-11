@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace ArtworkSharing.DAL.Data
 {
@@ -28,12 +30,27 @@ namespace ArtworkSharing.DAL.Data
 
         public ArtworkSharingContext()
         {
-            
         }
-        public ArtworkSharingContext(DbContextOptions<ArtworkSharingContext> options) : base(options)
+
+        public ArtworkSharingContext(DbContextOptions options) : base(options)
+
         {
-            
+        
         }
+
+
+       /* private string GetConnectionString()
+        {
+            IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", true, true)
+                .Build();
+            var stringConnection = configuration.GetConnectionString("DefaultConnection");
+            return stringConnection ?? "";
+        }*/
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+       => optionsBuilder.UseSqlServer("Server=(local);Uid=sa;pwd=12345;Database=ArtworkSharing;Trusted_Connection=True;TrustServerCertificate=True;");
+
+       
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

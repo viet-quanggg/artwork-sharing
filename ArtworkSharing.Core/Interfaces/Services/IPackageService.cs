@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.Package;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,8 +11,8 @@ namespace ArtworkSharing.Core.Interfaces.Services
 {
     public interface IPackageService
     {
-        Task<IList<Package>> GetAll();
-        Task<Package> GetOne(Guid packageId);
+        Task<IList<PackageViewModel>> GetAll();
+        Task<PackageViewModel> GetOne(Guid packageId);
         Task Update(Package package);
         Task Add(Package package);
         Task Delete(Guid packageId);

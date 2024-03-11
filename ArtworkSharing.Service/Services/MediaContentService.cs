@@ -1,7 +1,11 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.MediaContent;
+using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +22,16 @@ namespace ArtworkSharing.Service.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IList<MediaContent>> GetAll()
+        public async Task<IList<MediaContentViewModel>> GetAll()
         {
-            return _unitOfWork.MediaContentRepository.GetAll().ToList();
+            var queryableData = _unitOfWork.MediaContentRepository.GetAll().AsQueryable();
+
+            return AutoMapperConfiguration.Mapper.Map<IList<MediaContentViewModel>>(await queryableData.ToListAsync(CancellationToken.None));
         }
 
-        public async Task<MediaContent> GetOne(Guid MediaContentId)
+        public async Task<MediaContentViewModel> GetOne(Guid MediaContentId)
         {
-            return await _unitOfWork.MediaContentRepository
-                   .FirstOrDefaultAsync(mc => mc.Id == MediaContentId);
+            return AutoMapperConfiguration.Mapper.Map<MediaContentViewModel>(await (_unitOfWork.MediaContentRepository.FirstOrDefaultAsync(x => x.Id == MediaContentId))); 
         }
 
         public async Task Update(MediaContent MediaContentInput)

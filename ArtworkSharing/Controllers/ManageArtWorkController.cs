@@ -1,30 +1,28 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
-using ArtworkSharing.Service.Services;
+using ArtworkSharing.Core.ViewModels.Artworks;
 using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace ArtworkSharing.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TController : Controller
+    public class ManageArtWorkController : ControllerBase
     {
+        
         private readonly IArtistService _ArtistService;
         private readonly IArtworkService _ArtworkService;
-        private readonly ILikeService _LikeService;
-        private readonly IRatingService _RatingService;
-        private readonly ICommentService _CommentService;
+        private readonly ILogger<ManageOrderArtistController> _logger;
 
-        private readonly ILogger<TController> _logger;
-        public TController(IArtistService artistService, IArtworkService artworkService,ILikeService likeService,IRatingService ratingService,ICommentService commentService, ILogger<TController> logger)
+        public ManageArtWorkController(IArtistService artistService, IArtworkService artworkService, ILogger<ManageOrderArtistController> logger)
         {
             _ArtistService = artistService;
             _ArtworkService = artworkService;
             _logger = logger;
         }
+
         [HttpGet("{entityId}", Name = "GetArtworkofArtist")]
-        public async Task<ActionResult<TController>> GetCombinedEntityById(Guid entityId)
+        public async Task<ActionResult<ManageOrderArtistController>> GetCombinedEntityById(Guid entityId, int page)
         {
             try
             {
@@ -33,7 +31,14 @@ namespace ArtworkSharing.Controllers
                 {
                     return NotFound("Artist not found");
                 }
-                var artworks = artists.Artworks;
+                IConfiguration configuration = new ConfigurationBuilder()
+                .AddJsonFile("Page.json", true, true)
+                .Build();
+                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var artworks = artists.Artworks
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList(); ;
                 return Ok(artworks);
             }
             catch (Exception ex)
@@ -42,29 +47,10 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        [HttpPost("{artistId}", Name = "AddArtwork")]
-        public async Task<ActionResult> Add(Guid artistId, [FromBody] Artwork artwork)
-        {
-            try
-            {
-                var artist = await _ArtistService.GetOne(artistId);
-                if (artist == null)
-                {
-                    return NotFound("Artist not found");
-                }
-                artwork.Artist = artist;
-                await _ArtworkService.Add(artwork);
-                return CreatedAtRoute("GetArtworkById", new { artworkId = artwork.Id }, artwork);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error adding Artwork: {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
-        }
         [HttpPut(Name = "EditArtwork")]
-        public async Task<ActionResult> Update([FromBody] Artwork artworkInput)
+        public async Task<IActionResult> Update([FromBody] Artwork artworkInput)
         {
+            
             try
             {
                 var existArtwork = await _ArtworkService.GetOne(artworkInput.Id);
@@ -86,7 +72,7 @@ namespace ArtworkSharing.Controllers
         }
 
         [HttpDelete("{artworkId}", Name = "DeleteArtwork")]
-        public async Task<ActionResult> Delete(Guid artworkId)
+        public async Task<IActionResult> Delete(Guid artworkId)
         {
             try
             {
@@ -107,7 +93,7 @@ namespace ArtworkSharing.Controllers
             }
         }
         [HttpPost("{artistId}", Name = "AddlistArtworks")]
-        public async Task<ActionResult> AddArtworks(Guid artistId, [FromBody] List<Artwork> artworks)
+        public async Task<IActionResult> AddArtworks(Guid artistId, [FromBody] List<Artwork> artworks)
         {
             try
             {
@@ -131,6 +117,26 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+       /* [HttpPost("{artistId}", Name = "AddArtwork")]
+        public async Task<IActionResult> Add(Guid artistId, [FromBody] Artwork artwork)
+        {
+            try
+            {
+                var artist = await _ArtistService.GetOne(artistId);
+                if (artist == null)
+                {
+                    return NotFound("Artist not found");
+                }
+                artwork.Artist = artist;
+                await _ArtworkService.Add(artwork);
+                return CreatedAtRoute("GetArtworkById", new { artworkId = artwork.ArtistId }, artwork);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error adding Artwork: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }*/
 
     }
 }
