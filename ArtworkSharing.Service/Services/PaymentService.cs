@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text;
-
 namespace ArtworkSharing.Service.Services
 {
     public class PaymentService : IPaymentService

@@ -7,9 +7,9 @@ namespace ArtworkSharing.Core.Interfaces.Services
     {
         Task<List<TransactionViewModel>> GetAll();
         Task<TransactionViewModel> GetTransaction(Guid id);
-
         Task<Transaction> GetOne(Guid id);
         Task<TransactionViewModel> UpdateTransaction(Guid transactionId, UpdateTransactionModel utm);
         Task<bool> DeleteTransaction(Guid id);
+        Task<List<TransactionViewModel>> GetTransactions(TransactionFilterModel transactionFilter);
     }
 }

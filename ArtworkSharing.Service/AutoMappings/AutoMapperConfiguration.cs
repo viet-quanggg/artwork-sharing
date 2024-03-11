@@ -3,6 +3,7 @@ using ArtworkSharing.Core.ViewModels.MediaContent;
 using ArtworkSharing.Core.ViewModels.Package;
 using ArtworkSharing.Core.ViewModels.Rating;
 using ArtworkSharing.Core.Domain.Dtos.UserDtos;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Artists;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Core.ViewModels.Categories;
@@ -12,6 +13,7 @@ using ArtworkSharing.Core.ViewModels.RefundRequests;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Core.ViewModels.Users;
 using ArtworkSharing.Core.ViewModels.VNPAYS;
+using ArtworkSharing.Service.Services;
 using AutoMapper;
 
 namespace ArtworkSharing.Service.AutoMappings
@@ -64,6 +66,7 @@ namespace ArtworkSharing.Service.AutoMappings
             CreateMap<Comment, UpdateCommentModel>().ReverseMap();
 
             CreateMap<VNPayTransaction, VNPayTransactionViewModel>().ReverseMap();
+            CreateMap<ITransactionService, TransactionService>().ReverseMap();
         }
     }
 }

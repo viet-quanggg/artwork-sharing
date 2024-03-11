@@ -127,9 +127,9 @@ namespace ArtworkSharing.Core.Helpers.VNPAYS
                     hash.Append(theByte.ToString("x2"));
                 }
             }
-
             return hash.ToString();
         }
+
         public static string GetIpAddress(HttpContext httpContext)
         {
             string ipAddress;
