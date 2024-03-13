@@ -1,6 +1,5 @@
-﻿namespace ArtworkSharing.Core.ViewModels.Categories
+﻿namespace ArtworkSharing.Core.ViewModels.Categories;
+
+public class CategoryViewModel
 {
-    public class CategoryViewModel
-    {
-    }
 }

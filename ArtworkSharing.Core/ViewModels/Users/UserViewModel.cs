@@ -1,13 +1,10 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
+﻿namespace ArtworkSharing.Core.ViewModels.Users;
 
-namespace ArtworkSharing.Core.ViewModels.Users
+public class UserViewModel
 {
-    public class UserViewModel
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public string Username { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string Phone { get; set; } = null!;
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string Phone { get; set; } = null!;
 }

@@ -1,13 +1,12 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 
-namespace ArtworkSharing.Core.Interfaces.Services
+namespace ArtworkSharing.Core.Interfaces.Services;
+
+public interface IArtistService
 {
-    public interface IArtistService
-    {
-        Task<IList<Artist>> GetAll();
-        Task<Artist> GetOne(Guid artistId);
-        Task Update(Artist artist);
-        Task Add(Artist artist);
-        Task Delete(Guid artist);
-    }
+    Task<IList<Artist>> GetAll();
+    Task<Artist> GetOne(Guid artistId);
+    Task Update(Artist artist);
+    Task Add(Artist artist);
+    Task Delete(Guid artist);
 }

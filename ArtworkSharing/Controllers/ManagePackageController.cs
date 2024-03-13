@@ -1,106 +1,99 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
+﻿using System.Linq.Expressions;
+using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Package;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace ArtworkSharing.Controllers
+namespace ArtworkSharing.Controllers;
+
+[Route("[controller]")]
+[ApiController]
+public class ManagePackageController : Controller
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class ManagePackageController : Controller
+    private readonly IPackageService _packageService;
+
+
+    public ManagePackageController(IPackageService packageService)
     {
-        private readonly IPackageService _packageService;
+        _packageService = packageService;
+    }
 
-       
-        public ManagePackageController(IPackageService packageService)
+    //[HttpGet]
+    //public async Task<ActionResult<List<PackageViewModel>>> GetAllPackages()
+    //{
+    //    var packages = await _packageService.GetAll();
+    //    return Ok(packages);
+    //}
+
+    [HttpGet(Name = "GetPackageWithPaging")]
+    public async Task<ActionResult<List<PackageViewModel>>> GetPackageWithPaging(
+        [FromQuery] int? pageIndex = null,
+        [FromQuery] int? pageSize = null)
+    {
+        try
         {
-            _packageService = packageService;
+            Expression<Func<Package, bool>> filter = null;
+            Func<IQueryable<Package>, IOrderedQueryable<Package>> orderBy = null;
+            var includeProperties = "";
+
+            var packages = _packageService.Get(filter, orderBy, includeProperties, pageIndex, pageSize);
+            // Convert to view model if needed
+            // var packageViewModels = packages.Select(p => new PackageViewModel { ... }).ToList();
+            return Ok(packages);
         }
-
-        //[HttpGet]
-        //public async Task<ActionResult<List<PackageViewModel>>> GetAllPackages()
-        //{
-        //    var packages = await _packageService.GetAll();
-        //    return Ok(packages);
-        //}
-
-        [HttpGet(Name = "GetPackageWithPaging")]
-        public async Task<ActionResult<List<PackageViewModel>>> GetPackageWithPaging(
-         [FromQuery] int? pageIndex = null,
-         [FromQuery] int? pageSize = null)
+        catch (Exception)
         {
-            try
-            {
-                Expression<Func<Package, bool>> filter = null;
-                Func<IQueryable<Package>, IOrderedQueryable<Package>> orderBy = null;
-                string includeProperties = "";
-
-                var packages = _packageService.Get(filter, orderBy, includeProperties, pageIndex, pageSize);
-                // Convert to view model if needed
-                // var packageViewModels = packages.Select(p => new PackageViewModel { ... }).ToList();
-                return Ok(packages);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500); // Internal Server Error
-            }
+            return StatusCode(500); // Internal Server Error
         }
+    }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<PackageViewModel>> GetPackage(Guid id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<PackageViewModel>> GetPackage(Guid id)
+    {
+        var package = await _packageService.GetOne(id);
+        if (package == null) return NotFound();
+        return Ok(package);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdatePackage(Guid id, Package packageInput)
+    {
+        try
         {
-            var package = await _packageService.GetOne(id);
-            if (package == null)
-            {
-                return NotFound();
-            }
-            return Ok(package);
+            await _packageService.Update(packageInput);
+            return Ok(packageInput);
         }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePackage(Guid id, Package packageInput)
+        catch (KeyNotFoundException)
         {
-            try
-            {
-                await _packageService.Update(packageInput);
-                return Ok(packageInput);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            return NotFound();
         }
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> CreatePackage(Package packageInput)
+    [HttpPost]
+    public async Task<IActionResult> CreatePackage(Package packageInput)
+    {
+        try
         {
-            try
-            {
-                await _packageService.Add(packageInput);
-                return CreatedAtAction(nameof(GetPackage), new { id = packageInput.Id }, packageInput);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500); // Internal Server Error
-            }
+            await _packageService.Add(packageInput);
+            return CreatedAtAction(nameof(GetPackage), new { id = packageInput.Id }, packageInput);
         }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePackage(Guid id)
+        catch (Exception)
         {
-            try
-            {
-                await _packageService.Delete(id);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            return StatusCode(500); // Internal Server Error
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePackage(Guid id)
+    {
+        try
+        {
+            await _packageService.Delete(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
         }
     }
 }

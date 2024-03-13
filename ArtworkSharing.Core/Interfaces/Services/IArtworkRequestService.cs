@@ -1,6 +1,5 @@
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
-using ArtworkSharing.Core.ViewModels.RefundRequests;
 
 namespace ArtworkSharing.Core.Interfaces.Services;
 
