@@ -1,8 +1,7 @@
-﻿namespace ArtworkSharing.Core.ViewModels.Comments
+﻿namespace ArtworkSharing.Core.ViewModels.Comments;
+
+public class UpdateCommentModel
 {
-    public class UpdateCommentModel
-    {
-        public Guid Id { get; set; }
-        public string Content { get; set; } = null!;
-    }
+    public Guid Id { get; set; }
+    public string Content { get; set; } = null!;
 }

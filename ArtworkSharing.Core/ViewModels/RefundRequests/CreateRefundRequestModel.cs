@@ -6,5 +6,4 @@ public class CreateRefundRequestModel
     public DateTime RefundRequestDate { get; set; }
     public string Description { get; set; } = null!;
     public string Reason { get; set; } = null!;
-
 }

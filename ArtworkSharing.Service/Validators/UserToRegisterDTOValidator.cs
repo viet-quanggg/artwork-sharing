@@ -1,9 +1,8 @@
 ﻿using ArtworkSharing.Core.Domain.Dtos.UserDtos;
 using FluentValidation;
 
-namespace ArtworkSharing.Service.Validators
+namespace ArtworkSharing.Service.Validators;
+
+public class UserToRegisterDTOValidator : AbstractValidator<UserToRegisterDto>
 {
-    public class UserToRegisterDTOValidator : AbstractValidator<UserToRegisterDto>
-    {
-    }
 }

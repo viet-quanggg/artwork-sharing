@@ -1,4 +1,3 @@
-using System.Collections;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Artworks;
@@ -12,11 +11,12 @@ namespace ArtworkSharing.Controllers;
 public class AdminController : ControllerBase
 {
     private readonly IArtworkService _artworkService;
+
     public AdminController(IArtworkService artworkService)
     {
         _artworkService = artworkService;
     }
-    
+
     [HttpGet("artworks")]
     public async Task<ActionResult> GetArtworks(int pageNumber, int pageSize)
     {
@@ -44,7 +44,7 @@ public class AdminController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
-    
+
 
     [HttpPut("{artworkId}")]
     public async Task<IActionResult> UpdateArtworkAdmin([FromRoute] Guid artworkId, ArtworkUpdateModelAdmin aump)
@@ -52,7 +52,7 @@ public class AdminController : ControllerBase
         if (artworkId == Guid.Empty || aump == null) return BadRequest(new { Message = "Artwork not found!" });
         return Ok(await _artworkService.UpdateAdmin(artworkId, aump));
     }
-    
+
     [HttpDelete("{artworkId}")]
     public async Task<IActionResult> DeleteArtworkAdmin(Guid artworkId)
     {
@@ -66,14 +66,12 @@ public class AdminController : ControllerBase
         try
         {
             var artwork = AutoMapperConfiguration.Mapper.Map<Artwork>(acmd);
-            
-            return Ok(await _artworkService.CreateArtworkAdmin(artistId,acmd));
+
+            return Ok(await _artworkService.CreateArtworkAdmin(artistId, acmd));
         }
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
         }
     }
-    
-    
 }

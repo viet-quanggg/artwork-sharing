@@ -1,11 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ArtworkSharing.Core.Models
+namespace ArtworkSharing.Core.Models;
+
+public class ForgotPasswordModel
 {
-    public class ForgotPasswordModel
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-    }
+    [Required] [EmailAddress] public string Email { get; set; }
 }

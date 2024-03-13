@@ -9,7 +9,7 @@ namespace ArtworkSharing.Service.Services;
 
 public class ArtworkRequestService : IArtworkRequestService
 {
-    private UnitOfWork _unitOfWork;
+    private readonly UnitOfWork _unitOfWork;
 
     public ArtworkRequestService(UnitOfWork unitOfWork)
     {
@@ -20,7 +20,7 @@ public class ArtworkRequestService : IArtworkRequestService
     {
         try
         {
-            int itemsToSkip = (pageNumber - 1) * pageSize;
+            var itemsToSkip = (pageNumber - 1) * pageSize;
 
             var list = await _unitOfWork.ArtworkServiceRepository
                 .Include(a => a.Transactions)
@@ -37,10 +37,11 @@ public class ArtworkRequestService : IArtworkRequestService
     }
 
 
-
-    public async Task<ArtworkRequestViewModel> GetArtworkService(Guid guid) =>
-        AutoMapperConfiguration.Mapper.Map<ArtworkRequestViewModel>(
+    public async Task<ArtworkRequestViewModel> GetArtworkService(Guid guid)
+    {
+        return AutoMapperConfiguration.Mapper.Map<ArtworkRequestViewModel>(
             await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.Id == guid));
+    }
 
     public async Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam)
     {
@@ -71,6 +72,4 @@ public class ArtworkRequestService : IArtworkRequestService
 
         await _unitOfWork.CommitTransaction();
     }
-
-
 }

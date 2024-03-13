@@ -2,12 +2,11 @@
 using ArtworkSharing.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArtworkSharing.DAL.Repositories
+namespace ArtworkSharing.DAL.Repositories;
+
+public class MediaContentRepository : Repository<MediaContent>, IMediaContentRepository
 {
-    public class MediaContentRepository : Repository<MediaContent>, IMediaContentRepository
+    public MediaContentRepository(DbContext dbContext) : base(dbContext)
     {
-        public MediaContentRepository(DbContext dbContext) : base(dbContext)
-        {
-        }
     }
 }

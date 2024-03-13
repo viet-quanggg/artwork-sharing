@@ -9,8 +9,7 @@ public class ArtworkCreateModelAdmin
     public string? Description { get; set; }
     public float Price { get; set; }
 
-    [JsonIgnore]
-    public ICollection<Domain.Entities.MediaContent>? MediaContents { get; set; } = null;
-    [JsonIgnore]
-    public ICollection<Category>? Categories { get; set; }
+    [JsonIgnore] public ICollection<Domain.Entities.MediaContent>? MediaContents { get; set; } = null;
+
+    [JsonIgnore] public ICollection<Category>? Categories { get; set; }
 }

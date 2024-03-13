@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ArtworkSharing.Core.Models;
 
-namespace ArtworkSharing.Core.Models
+public class PaginatedResult
 {
-    public class PaginatedResult
-    {
-        public int PageIndex { get; set; }
-        public int PageSize { get; set; }
-        public long LastPage { get; set; }
-        public bool IsLastPage { get; set; }
-        public long Total { get; set; }
-        public object? Data { get; set; }
-    }
+    public int PageIndex { get; set; }
+    public int PageSize { get; set; }
+    public long LastPage { get; set; }
+    public bool IsLastPage { get; set; }
+    public long Total { get; set; }
+    public object? Data { get; set; }
 }

@@ -1,11 +1,10 @@
-﻿namespace ArtworkSharing.Core.Domain.Enums
+﻿namespace ArtworkSharing.Core.Domain.Enums;
+
+public enum ArtworkServiceStatus
 {
-    public enum ArtworkServiceStatus
-    {
-        Pending,
-        Accepted,
-        InProgress,
-        Rejected,
-        Completed   
-    }
+    Pending,
+    Accepted,
+    InProgress,
+    Rejected,
+    Completed
 }
