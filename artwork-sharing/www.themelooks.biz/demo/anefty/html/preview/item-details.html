@@ -41,7 +41,8 @@
                                 <form class="search-form d-none d-sm-block ms-4" action="#">
                                     <div class="form-group"><button type="submit"><img
                                                 src="assets/img/icons/search-gradient.svg" class="svg" alt=""></button>
-                                        <input type="text" class="form-control mb-0" placeholder="Search item…"></div>
+                                        <input type="text" class="form-control mb-0" placeholder="Search item…">
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -128,106 +129,75 @@
             <div class="row justify-content-between">
                 <div class="col-lg-6 order-1 order-lg-0">
                     <div class="item-details ov-hidden">
-                        <h2 class="product-title">Animal Girl Painting</h2>
+                        <h2 class="product-title" id="artwork-tilte">Animal Girl Painting</h2>
                         <div class="favorites">
-                            <h6 class="available">Available 12</h6>
-                            <div class="love-react-wrap d-flex align-items-center">
+                            <div id="like-artwork" class="love-react-wrap d-flex align-items-center">
                                 <div class="love-react style--two"></div>
                                 <div class="love-count">13.6k</div>
                             </div>
                         </div>
-                        <p>Anefty, a one-of-a-kind trading card is an NFTs – you can't just replace it with any others
+                        <p id="artwork-description">Anefty, a one-of-a-kind trading card is an NFTs – you can't just
+                            replace it with any others
                             card. If you these different from fungible items, which are often the same as each othes you
-                            have something. differ from fungible item <a href="#" class="read-more c1">read more...</a>
+                            have something. differ from fungible item
                         </p>
                         <div class="row pt-1">
                             <div class="col-sm-6">
                                 <div class="price mb-4 mb-sm-0">
                                     <h6>Item Price</h6>
-                                    <h3>1.69 ETH</h3>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="countdown-wrapper">
-                                    <h6>Countdown</h6>
-                                    <ul class="countdown">
-                                        <li>
-                                            <h3 class="hours">00</h3>
-                                        </li>
-                                        <li class="ms-1 me-1">:</li>
-                                        <li>
-                                            <h3 class="minutes">00</h3>
-                                        </li>
-                                        <li class="ms-1 me-1">:</li>
-                                        <li>
-                                            <h3 class="seconds">00</h3>
-                                        </li>
-                                    </ul>
+                                    <h3 id="price-artwork">1.69 ETH</h3>
                                 </div>
                             </div>
                         </div>
-                        <div class="row mb-4 mt-30 pt-2">
-                            <div class="col-sm-6">
-                                <div class="item-quantity mb-4 mb-sm-0">
-                                    <h6>Item Quantity</h6>
-                                    <div class="quantity d-flex align-items-center justify-content-between">
-                                        <h6 class="mb-0">Quantity of</h6>
-                                        <div><input type="text" class="input-text qty text" value="1"> <span
-                                                class="plus"><i class="fa fa-caret-up"></i> </span><span
-                                                class="minus"><i class="fa fa-caret-down"></i></span></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="item-price">
-                                    <h6>Item Price</h6>
-                                    <div class="item-price-inner align-items-center d-flex justify-content-between">
-                                        <h6 class="mb-0">Amount</h6>
-                                        <h6 class="mb-0">1.69 ETH</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <br>
                         <div class="button-group style--two"><a href="item-details.html"
                                 class="btn btn-border btn-sm"><img src="assets/img/icons/btn-buy-now-icon.svg" alt=""
-                                    class="svg"> Buy Now</a> <a href="item-details.html" class="btn btn-sm"><img
-                                    src="assets/img/icons/judge-icon.svg" alt="" class="svg"> Place Bid</a></div>
+                                    class="svg"> Buy Now</a> </div>
                         <div class="row mb-4 mt-40 pt-1">
                             <div class="col-sm-6"><a href="profile.html" class="hz-profile creator media mb-4 mb-sm-0">
                                     <div class="avatar"><img src="assets/img/media/creator-avatar.png" alt=""></div>
                                     <div class="content media-body">
-                                        <h6>Creator</h6>
-                                        <h5>Anehty_Yacht</h5>
-                                    </div>
-                                </a></div>
-                            <div class="col-sm-6"><a href="profile.html" class="hz-profile owner media">
-                                    <div class="avatar"><img src="assets/img/media/owner-avatar.png" alt=""></div>
-                                    <div class="content media-body">
-                                        <h6>Owner</h6>
-                                        <h5>Cyber_Kongz</h5>
+                                        <h6>Artist</h6>
+                                        <h5 id="name-artist">Anehty_Yacht</h5>
                                     </div>
                                 </a></div>
                         </div>
                         <ul class="nav tab-buttons style--two">
-                            <li><button class="active" data-bs-toggle="tab" data-bs-target="#info">Info</button></li>
-                            <li><button data-bs-toggle="tab" data-bs-target="#bids">Bids</button></li>
+                            <li><button class="active" data-bs-toggle="tab" data-bs-target="#info">Comments</button>
+                            </li>
                         </ul>
                         <div class="tab-content">
-                            <div class="tab-pane fade show active" id="info">
-                                <ul class="info-list">
-                                    <li>
-                                        <h6>NFTs ID</h6>
-                                        <h3>690563</h3>
+                            <div class="tab-pane fade show active cus-scroll" id="info">
+                                <ul id="u-cmt" class="info-list">
+                                    <!-- <li >
+                                        <h6><b>Michael</b></h6>
+                                        <h6>Nice picture</h6>
                                     </li>
                                     <li>
-                                        <h6>Mint Transactions</h6>
-                                        <h3>69b9ebde0178k7O7&export</h3>
+                                        <h6><b>Michael</b></h6>
+                                        <h6>Nice picture</h6>
                                     </li>
                                     <li>
-                                        <h6>Contact Address</h6>
-                                        <h3>kɒngtækt əˈdrɛs</h3>
+                                        <h6><b>Michael</b></h6>
+                                        <h6>Nice picture</h6>
                                     </li>
+                                    <li>
+                                        <h6><b>Michael</b></h6>
+                                        <h6>Nice picture</h6>
+                                    </li>
+                                    <li>
+                                        <h6><b>Michael</b></h6>
+                                        <h6>Nice picture</h6>
+                                    </li> -->
                                 </ul>
+                            </div>
+                            <div class="mb-3">
+                                <label for="exampleInputEmail1" class="form-label">Michael</label>
+                                <input style="border: 1px solid #ff0076; border-radius: 10px;" type="text"
+                                    class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                            </div>
+                            <div id="btn-send-cmt">
+                                <button onclick="Send-Cmt('')" type="button" class="btn btn-primary">Comments</button>
                             </div>
                             <div class="tab-pane fade" id="bids">
                                 <p>No active bids yet. Be the first to make a bid!</p>
@@ -320,6 +290,7 @@
             </div>
         </div>
     </footer><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
+    <script src="assets/js/item-detail.js"></script>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/plugins/particles/particles.min.js"></script>
