@@ -17,3 +17,4 @@ public class VNPayRefundRequestModel
     public string vnp_OrderInfo { get; set; }
     public string vnp_SecureHash { get; set; }
 }
+

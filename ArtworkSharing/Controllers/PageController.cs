@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ArtworkSharing.Controllers;
 
@@ -25,7 +26,6 @@ public class PageController : ControllerBase
                 System.IO.File.WriteAllText(filePath,
                     JsonConvert.SerializeObject(_configuration.AsEnumerable(), Formatting.Indented));
             }
-
             return Ok("API response saved to JSON file.");
         }
         catch (Exception ex)

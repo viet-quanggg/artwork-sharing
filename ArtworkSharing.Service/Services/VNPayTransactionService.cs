@@ -86,6 +86,7 @@ public class VNPayTransactionService : IVNPayTransactionService
         var transaction =
             await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == vNPayTransaction.TransactionId);
         if (transaction == null)
+
             return new VNPayResponseModel
             {
                 TransactionViewModel = null!,

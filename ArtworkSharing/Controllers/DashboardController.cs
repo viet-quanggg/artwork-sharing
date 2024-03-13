@@ -53,11 +53,13 @@ public class DashboardController : ControllerBase
                 .Take(pageSize)
                 .ToList();
             return Ok(filteredTransactions);
+
         }
         catch (Exception ex)
         {
             _logger.LogError($"Error getting transactions: {ex.Message}");
             return StatusCode(500, "Internal server error");
+
         }
     }
 
