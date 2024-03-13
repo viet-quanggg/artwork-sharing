@@ -2,21 +2,19 @@
 using ArtworkSharing.Core.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace ArtworkSharing.DAL.Repositories
+namespace ArtworkSharing.DAL.Repositories;
+
+public class UserRepository : Repository<User>, IUserRepository
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    private readonly DbContext _dbContext;
+
+    public UserRepository(DbContext dbContext) : base(dbContext)
     {
-        private readonly DbContext _context;
+        _dbContext = dbContext;
+    }
 
-        public UserRepository(DbContext dbContext) : base(dbContext)
-        {
-            _context = dbContext;
-        }
-
-        public void UpdateUser(User u)
-        {
-            _context.Entry(u).State = EntityState.Modified;
-        }
+    public void UpdateUser(User user)
+    {
+        _dbContext.Update(user);
     }
 }
-

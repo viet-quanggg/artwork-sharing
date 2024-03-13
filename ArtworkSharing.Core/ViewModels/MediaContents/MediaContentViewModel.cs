@@ -1,6 +1,5 @@
-﻿namespace ArtworkSharing.Core.ViewModels.MediaContents
+﻿namespace ArtworkSharing.Core.ViewModels.MediaContents;
+
+public class MediaContentViewModel
 {
-    public class MediaContentViewModel
-    {
-    }
 }

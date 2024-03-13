@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ArtworkSharing.Core.Domain.Entities
+namespace ArtworkSharing.Core.Domain.Entities;
+
+public class UserRole : IdentityUserRole<Guid>
 {
-    public class UserRole : IdentityUserRole<Guid>
-    {
-        public User User { get; set; }
-        public Role Role { get; set; }
-    }
+    public User User { get; set; }
+    public Role Role { get; set; }
 }
