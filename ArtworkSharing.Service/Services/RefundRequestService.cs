@@ -2,9 +2,11 @@
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
+using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -48,6 +50,7 @@ public class RefundRequestService : IRefundRequestService
     }
 
 
+
     public async Task<RefundRequestViewModel> GetRefundRequest(Guid id)
     {
         return AutoMapperConfiguration.Mapper.Map<RefundRequestViewModel>(
@@ -58,13 +61,42 @@ public class RefundRequestService : IRefundRequestService
     {
         var refundRequest = await _uow.RefundRequestRepository.FirstOrDefaultAsync(_ => _.Id == id);
         if (refundRequest == null) return null!;
+            refundRequest.Description = urm.Description ?? refundRequest.Description;
+            refundRequest.Reason = urm.Reason ?? refundRequest.Reason;
+            refundRequest.Status = urm.Status ?? refundRequest.Status;
+            // Add whatever you need
 
-        refundRequest.Description = urm.Description ?? refundRequest.Description;
-        refundRequest.Reason = urm.Reason ?? refundRequest.Reason;
-
-        // Add whatever you need
 
         _uow.RefundRequestRepository.UpdateRefundRequest(refundRequest);
+
+     }
+
+        IEnumerable<RefundRequest> IRefundRequestService.Get(Expression<Func<RefundRequest, bool>> filter, Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy, string includeProperties, int? pageIndex, int? pageSize)
+        {
+            try
+            {
+                
+
+                var PackageRepository = _uow.RefundRequestRepository.Get(filter, orderBy, includeProperties, pageIndex, pageSize);
+
+                return PackageRepository;
+            }
+            catch (Exception e)
+            {
+
+                return null;
+            }
+        }
+
+        public async Task<int> Count(Expression<Func<RefundRequest, bool>> filter = null)
+        {
+            IQueryable<RefundRequest> query = (IQueryable<RefundRequest>)_uow.RefundRequestRepository.GetAll();
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            return await query.CountAsync();
+        }
 
         await _uow.SaveChangesAsync();
         return await GetRefundRequest(id);

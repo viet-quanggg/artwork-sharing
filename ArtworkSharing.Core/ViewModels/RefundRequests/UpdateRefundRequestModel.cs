@@ -7,5 +7,11 @@ public class UpdateRefundRequestModel
     public string Description { get; set; } = null!;
     public string Reason { get; set; } = null!;
 
-    // Add whatever you need
+
+        public string Status { get; set; } = null!;
+
+   
+
+        // Add whatever you need
+    }
 }

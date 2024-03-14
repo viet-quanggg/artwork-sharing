@@ -37,7 +37,7 @@ var app = builder.Build();
 EnsureMigrate(app);
 // Configure the HTTP request pipeline.
 //app.UseMiddleware<ExceptionMiddleware>();
-
+app.UseCors(c => c.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
