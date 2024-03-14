@@ -11,9 +11,7 @@ public class ArtworkUpdateModelAdmin
     public DateTime CreatedDate { get; set; }
     public bool Status { get; set; }
 
-    [JsonIgnore]
-    public ICollection<Domain.Entities.MediaContent>? MediaContents { get; set; } = null!;
-    [JsonIgnore]
-    public ICollection<Category>? Categories { get; set; }
+    [JsonIgnore] public ICollection<Domain.Entities.MediaContent>? MediaContents { get; set; } = null!;
 
+    [JsonIgnore] public ICollection<Category>? Categories { get; set; }
 }

@@ -1,8 +1,11 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.Transactions;
 
-namespace ArtworkSharing.Core.Interfaces.Services
+namespace ArtworkSharing.Core.Interfaces.Services;
+
+public interface ITransactionService
 {
+
     public interface ITransactionService
     {
         Task<List<TransactionViewModel>> GetAll();

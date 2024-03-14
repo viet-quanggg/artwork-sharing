@@ -1,7 +1,6 @@
-﻿namespace ArtworkSharing.Core.ViewModels.Users
+﻿namespace ArtworkSharing.Core.ViewModels.Users;
+
+public class UserFilterModel
 {
-    public class UserFilterModel
-    {
-        public string Name { get; set; }
-    }
+    public string Name { get; set; }
 }

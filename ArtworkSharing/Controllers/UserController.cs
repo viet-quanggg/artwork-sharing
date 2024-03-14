@@ -5,6 +5,7 @@ using ArtworkSharing.Service.AutoMappings;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
+
 [ApiController]
 [Route("api/usercontroller")]
 public class UserController : Controller
@@ -28,7 +29,6 @@ public class UserController : Controller
         {
             throw new Exception(ex.Message);
         }
-
     }
 
     [HttpGet("getuser")]
@@ -68,10 +68,7 @@ public class UserController : Controller
             var user = await _userService.GetUserAdmin(userId);
             if (user == null)
                 return NotFound("User not found");
-            else
-            {
-                await _userService.DeleteUser(userId);
-            }
+            await _userService.DeleteUser(userId);
 
             return Ok("Deleted!");
         }
@@ -87,7 +84,4 @@ public class UserController : Controller
         if (userId == Guid.Empty || uuma == null) return BadRequest(new { Message = "User not found!" });
         return Ok(await _userService.UpdateUser(userId, uuma));
     }
-
-
-
 }

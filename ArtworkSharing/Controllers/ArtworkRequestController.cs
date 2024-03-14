@@ -2,7 +2,6 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
 using ArtworkSharing.Service.AutoMappings;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
@@ -17,6 +16,7 @@ public class ArtworkRequestController : Controller
     {
         _requestService = artworkRequestService;
     }
+
     [HttpGet]
     public async Task<IActionResult> GetAllArtworkRequests(int pageNumber, int pageSize)
     {
@@ -30,7 +30,7 @@ public class ArtworkRequestController : Controller
             throw new Exception(ex.Message);
         }
     }
-    
+
     [HttpGet("getartworkRequest")]
     public async Task<IActionResult> GetArtworkRequest(Guid artworkRequestId)
     {
@@ -51,7 +51,7 @@ public class ArtworkRequestController : Controller
         try
         {
             var createRequest = AutoMapperConfiguration.Mapper.Map<ArtworkService>(cam);
-             _requestService.CreateArtworkRequest(createRequest);
+            _requestService.CreateArtworkRequest(createRequest);
             return Ok(createRequest);
         }
         catch (Exception ex)

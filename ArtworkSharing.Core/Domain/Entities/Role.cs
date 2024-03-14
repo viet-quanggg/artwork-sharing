@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ArtworkSharing.Core.Domain.Entities
+namespace ArtworkSharing.Core.Domain.Entities;
+
+public class Role : IdentityRole<Guid>
 {
-    public class Role : IdentityRole<Guid>
-    {
-        public ICollection<UserRole> UserRoles { get; set; }
-    }
+    public ICollection<UserRole> UserRoles { get; set; }
 }

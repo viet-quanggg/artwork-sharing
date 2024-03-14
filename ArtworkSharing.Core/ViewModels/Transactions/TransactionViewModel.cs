@@ -1,3 +1,4 @@
+
 ﻿using System;
 using ArtworkSharing.Core.Domain.Enums;
 namespace ArtworkSharing.Core.ViewModels.Transactions

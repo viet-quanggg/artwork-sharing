@@ -1,11 +1,12 @@
-﻿namespace ArtworkSharing.Core.ViewModels.RefundRequests
+﻿namespace ArtworkSharing.Core.ViewModels.RefundRequests;
+
+public class UpdateRefundRequestModel
 {
-    public class UpdateRefundRequestModel
-    {
-        public Guid TransactionId { get; set; }
-        public DateTime RefundRequestDate { get; set; }
-        public string Description { get; set; } = null!;
-        public string Reason { get; set; } = null!;
+    public Guid TransactionId { get; set; }
+    public DateTime RefundRequestDate { get; set; }
+    public string Description { get; set; } = null!;
+    public string Reason { get; set; } = null!;
+
 
         public string Status { get; set; } = null!;
 

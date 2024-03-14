@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace ArtworkSharing.Core.Domain.Enums;
 
-namespace ArtworkSharing.Core.Domain.Enums
+public enum TransactionType
 {
-    public enum TransactionType
-    {
-        Artwork,
-        ArtworkService,
-        Package
-    }
+    Artwork,
+    ArtworkService,
+    Package
 }

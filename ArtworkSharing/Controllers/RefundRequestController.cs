@@ -6,18 +6,26 @@ using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
-namespace ArtworkSharing.Controllers
-{
-    [Route("[controller]")]
-    [ApiController]
-    public class RefundRequestController : ControllerBase
-    {
-        private readonly IRefundRequestService _refundRequestService;
+namespace ArtworkSharing.Controllers;
 
-        public RefundRequestController(IRefundRequestService refundRequestService)
-        {
-            _refundRequestService = refundRequestService;
-        }
+[Route("[controller]")]
+[ApiController]
+public class RefundRequestController : ControllerBase
+{
+    private readonly IRefundRequestService _refundRequestService;
+
+    public RefundRequestController(IRefundRequestService refundRequestService)
+    {
+        _refundRequestService = refundRequestService;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<RefundRequestViewModel>>> GetAllRefundRequests()
+    {
+        var refundRequests = await _refundRequestService.GetAll();
+        return Ok(refundRequests);
+    }
+
 
         //[HttpGet]
         //public async Task<ActionResult<List<RefundRequestViewModel>>> GetAllRefundRequests()
@@ -101,16 +109,10 @@ namespace ArtworkSharing.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRefundRequest(Guid id, UpdateRefundRequestModel refundRequestInput)
         {
-            try
-            {
-                await _refundRequestService.UpdateRefundRequest(id, refundRequestInput);
-                return Ok(refundRequestInput);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            return NotFound();
         }
+    }
+
 
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateRefundRequest(Guid id, string status)
@@ -161,21 +163,17 @@ namespace ArtworkSharing.Controllers
         //    }
         //}
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRefundRequest(Guid id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRefundRequest(Guid id)
+    {
+        try
         {
-            try
-            {
-                await _refundRequestService.DeleteRefundRequest(id);
-                return NoContent();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            await _refundRequestService.DeleteRefundRequest(id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
         }
     }
 }
-
-
-

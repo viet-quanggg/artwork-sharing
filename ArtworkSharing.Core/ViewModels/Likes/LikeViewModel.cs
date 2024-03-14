@@ -1,10 +1,9 @@
-﻿namespace ArtworkSharing.Core.ViewModels.Likes
-{
-    public class LikeViewModel
-    {
+﻿using ArtworkSharing.Core.ViewModels.User;
 
-        public Guid Id { get; set; }
-        public Guid LikedUserId { get; set; }
-        public Guid ArtworkId { get; set; }
-    }
+namespace ArtworkSharing.Core.ViewModels.Likes;
+
+public class LikeViewModel
+{
+    public Guid Id { get; set; }
+    public Guid ArtworkId { get; set; }
 }

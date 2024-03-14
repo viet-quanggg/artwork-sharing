@@ -15,5 +15,4 @@ public class ArtworkViewModelAdmin
     public ICollection<Transaction>? Transactions { get; set; }
     public ICollection<Category>? Categories { get; set; }
     public ICollection<Domain.Entities.MediaContent> MediaContents { get; set; } = null!;
-
 }
