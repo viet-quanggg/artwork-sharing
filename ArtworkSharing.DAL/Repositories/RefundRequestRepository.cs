@@ -15,6 +15,11 @@ public class RefundRequestRepository : Repository<RefundRequest>, IRefundRequest
 
     public void UpdateRefundRequest(RefundRequest refundRequest)
     {
-        _context.Update(refundRequest);
+        var entry = _context.Entry(refundRequest);
+        if (entry.State == EntityState.Detached)
+        {
+            _context.Attach(refundRequest);
+        }
+        _context.Entry(refundRequest).State = EntityState.Modified;
     }
 }

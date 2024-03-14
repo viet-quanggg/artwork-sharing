@@ -12,9 +12,5 @@ public class UpdateTransactionModel
     public DateTime CreatedDate { get; set; }
     public TransactionStatus Status { get; set; }
 
-
-        public Domain.Enums.TransactionType Type { get; set; }
-
-        // Add whatever you need
-    }
-
+    // Add whatever you need
+}
