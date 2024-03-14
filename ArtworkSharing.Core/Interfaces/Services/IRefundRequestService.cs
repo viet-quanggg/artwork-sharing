@@ -1,4 +1,6 @@
-﻿using ArtworkSharing.Core.ViewModels.RefundRequests;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.RefundRequests;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Core.Interfaces.Services;
 
