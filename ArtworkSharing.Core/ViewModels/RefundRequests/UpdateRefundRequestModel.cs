@@ -6,5 +6,13 @@ public class UpdateRefundRequestModel
     public DateTime RefundRequestDate { get; set; }
     public string Status { get; set; } = null!;
 
-    // Add whatever you need
-}
+
+
+        public string Status { get; set; } = null!;
+
+   
+
+        // Add whatever you need
+    }
+
+
