@@ -6,6 +6,7 @@ using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -30,6 +31,33 @@ namespace ArtworkSharing.Service.Services
             return rs > 0;
         }
 
+        public async Task<TransactionViewModel> CreateTransaction(TransactionViewModel transactionModel)
+        {
+            try
+            {
+                var transaction = new Transaction
+                {
+                    PackageId = transactionModel.PackageId,
+                    ArtworkId = transactionModel.ArtworkId,
+                    ArtworkServiceId = transactionModel.ArtworkServiceId,
+                    AudienceId = transactionModel.AudienceId,
+                    TotalBill = transactionModel.TotalBill,
+                    CreatedDate = DateTime.UtcNow,
+                    Status = transactionModel.Status, // Set default status
+                    Type = transactionModel.Type,
+                    // Add other properties as needed
+                };
+
+                await _uow.TransactionRepository.AddAsync(transaction);
+                await _uow.SaveChangesAsync();
+
+                return AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(transaction);
+            }
+            catch (Exception)
+            {
+                throw; // Handle the exception appropriately
+            }
+        }
         public async Task<List<TransactionViewModel>> GetTransactions(TransactionFilterModel transactionFilter)
         {
             var trans = _uow.TransactionRepository.GetAll().AsQueryable();

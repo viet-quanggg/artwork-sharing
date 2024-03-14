@@ -11,5 +11,7 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task<TransactionViewModel> UpdateTransaction(Guid transactionId, UpdateTransactionModel utm);
         Task<bool> DeleteTransaction(Guid id);
         Task<List<TransactionViewModel>> GetTransactions(TransactionFilterModel transactionFilter);
+
+        Task<TransactionViewModel> CreateTransaction(TransactionViewModel transactionModel);
     }
 }

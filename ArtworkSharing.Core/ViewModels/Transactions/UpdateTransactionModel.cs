@@ -12,6 +12,8 @@ namespace ArtworkSharing.Core.ViewModels.Transactions
         public DateTime CreatedDate { get; set; }
         public Domain.Enums.TransactionStatus Status { get; set; }
 
+        public Domain.Enums.TransactionType Type { get; set; }
+
         // Add whatever you need
     }
 }

@@ -7,6 +7,10 @@
         public string Description { get; set; } = null!;
         public string Reason { get; set; } = null!;
 
+        public string Status { get; set; } = null!;
+
+   
+
         // Add whatever you need
     }
 }
