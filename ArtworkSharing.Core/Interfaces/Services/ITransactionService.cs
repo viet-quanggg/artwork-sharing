@@ -6,6 +6,7 @@ namespace ArtworkSharing.Core.Interfaces.Services;
 public interface ITransactionService
 {
 
+
    
         Task<List<TransactionViewModel>> GetAll();
         Task<TransactionViewModel> GetTransaction(Guid id);

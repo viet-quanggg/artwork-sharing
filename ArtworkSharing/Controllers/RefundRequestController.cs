@@ -1,10 +1,6 @@
-using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
-using ArtworkSharing.Core.ViewModels.Package;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
-using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 
 namespace ArtworkSharing.Controllers;
 
@@ -24,6 +20,14 @@ public class RefundRequestController : ControllerBase
     {
         var refundRequests = await _refundRequestService.GetAll();
         return Ok(refundRequests);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)
+    {
+        var refundRequest = await _refundRequestService.GetRefundRequest(id);
+        if (refundRequest == null) return NotFound();
+        return Ok(refundRequest);
     }
 
 
@@ -94,6 +98,7 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
+
 
     //[HttpGet("{id}")]
     //public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)

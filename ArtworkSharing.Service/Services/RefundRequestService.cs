@@ -2,11 +2,9 @@
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
-using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -49,8 +47,6 @@ public class RefundRequestService : IRefundRequestService
             .GetAll().AsQueryable().ToListAsync());
     }
 
-
-
     public async Task<RefundRequestViewModel> GetRefundRequest(Guid id)
     {
         return AutoMapperConfiguration.Mapper.Map<RefundRequestViewModel>(
@@ -61,15 +57,13 @@ public class RefundRequestService : IRefundRequestService
     {
         var refundRequest = await _uow.RefundRequestRepository.FirstOrDefaultAsync(_ => _.Id == id);
         if (refundRequest == null) return null!;
-            refundRequest.Description = urm.Description ?? refundRequest.Description;
-            refundRequest.Reason = urm.Reason ?? refundRequest.Reason;
-            refundRequest.Status = urm.Status ?? refundRequest.Status;
-            // Add whatever you need
 
+        refundRequest.Status = urm.Status ?? refundRequest.Description;
 
         _uow.RefundRequestRepository.UpdateRefundRequest(refundRequest);
         await _uow.SaveChangesAsync();
         return await GetRefundRequest(id);
+
 
     }
 

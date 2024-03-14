@@ -1,7 +1,4 @@
-
-﻿using ArtworkSharing.Core.Domain.Entities;
-using ArtworkSharing.Core.ViewModels.RefundRequests;
-using System.Linq.Expressions;
+﻿using ArtworkSharing.Core.ViewModels.RefundRequests;
 
 namespace ArtworkSharing.Core.Interfaces.Services;
 
@@ -14,6 +11,7 @@ public interface IRefundRequestService
     Task<RefundRequestViewModel> UpdateRefundRequest(Guid id, UpdateRefundRequestModel urm);
 
     Task<bool> DeleteRefundRequest(Guid id);
+
 
 
         Task CreateRefundRequest(CreateRefundRequestModel crrm);

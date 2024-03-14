@@ -5,7 +5,6 @@ using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -16,6 +15,13 @@ public class TransactionService : ITransactionService
     public TransactionService(IUnitOfWork uow)
     {
         _uow = uow;
+    }
+
+    public async Task<TransactionViewModel> AddTransaction(Transaction transaction)
+    {
+        await _uow.TransactionRepository.AddAsync(transaction);
+        var rs = await _uow.SaveChangesAsync();
+        return await GetTransaction(transaction.Id);
     }
 
     public async Task<bool> DeleteTransaction(Guid id)
@@ -98,37 +104,4 @@ public class TransactionService : ITransactionService
         _uow.TransactionRepository.UpdateTransaction(transaction);
         await _uow.SaveChangesAsync();
         return await GetTransaction(id);
-}       
-
-        public async Task<TransactionViewModel> CreateTransaction(TransactionViewModel transactionModel)
-        {
-            try
-            {
-                var transaction = new Transaction
-                {
-                    PackageId = transactionModel.PackageId,
-                    ArtworkId = transactionModel.ArtworkId,
-                    ArtworkServiceId = transactionModel.ArtworkServiceId,
-                    AudienceId = transactionModel.AudienceId,
-                    TotalBill = transactionModel.TotalBill,
-                    CreatedDate = DateTime.UtcNow,
-                    Status = transactionModel.Status, // Set default status
-                    Type = transactionModel.Type,
-                    // Add other properties as needed
-                };
-
-                await _uow.TransactionRepository.AddAsync(transaction);
-                await _uow.SaveChangesAsync();
-
-                return AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(transaction);
-            }
-            catch (Exception)
-            {
-                throw; // Handle the exception appropriately
-            }
-        }
-       
-       
-       
-       
     }
