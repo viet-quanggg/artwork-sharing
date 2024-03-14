@@ -15,6 +15,5 @@ public interface ITransactionService
         Task<bool> DeleteTransaction(Guid id);
         Task<List<TransactionViewModel>> GetTransactions(TransactionFilterModel transactionFilter);
 
-        Task<TransactionViewModel> CreateTransaction(TransactionViewModel transactionModel);
     
 }
