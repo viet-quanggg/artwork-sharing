@@ -1,5 +1,6 @@
 ﻿using ArtworkSharing.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace ArtworkSharing.Controllers;
 
@@ -21,8 +22,8 @@ public class DashboardController : ControllerBase
         _ArtistService = artistService;
     }
 
-    [HttpGet(Name = "Getalltransactionfordashboard")]
-    public async Task<ActionResult<ManageOrderArtistController>> GetTransactionsByTimeRange(string timeRange, int page)
+    [HttpGet("/Transaction",Name = "Getalltransactionfordashboard")]
+    public async Task<IActionResult> GetTransactionsByTimeRange(string timeRange, int page)
     {
         try
         {
@@ -43,10 +44,12 @@ public class DashboardController : ControllerBase
                     return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
             }
 
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("Page.json", true, true)
-                .Build();
-            var pageSize = int.Parse(configuration.GetSection("Value").Value);
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
+            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
+            JObject jsonObject = JObject.Parse(jsonString);
+            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
+
+
             var transactions = await _TransactionService.GetAll();
             var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate)
                 .Skip((page - 1) * pageSize)
@@ -63,21 +66,23 @@ public class DashboardController : ControllerBase
         }
     }
 
-    [HttpGet(Name = "GetallArtworkforDashboard")]
-    public async Task<ActionResult<ManageOrderArtistController>> GetArtWork(int page)
+    [HttpGet("/Artwork",Name = "GetallArtworkforDashboard")]
+    public async Task<ActionResult> GetArtWork(int page)
     {
         try
         {
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("Page.json", true, true)
-                .Build();
-            var pageSize = int.Parse(configuration.GetSection("Value").Value);
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
+            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
+            JObject jsonObject = JObject.Parse(jsonString);
+            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
+
+
             var transactions = await _ArtworkService.GetAll();
-            var Pagefortransaction = transactions
-                .Skip((page - 1) * pageSize)
+            var pagetransaction = transactions.Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
-            return Ok(Pagefortransaction);
+
+            return Ok(pagetransaction);
         }
         catch (Exception ex)
         {
@@ -86,15 +91,17 @@ public class DashboardController : ControllerBase
         }
     }
 
-    [HttpGet(Name = "GetArtistforDashboard")]
-    public async Task<ActionResult<ManageOrderArtistController>> GetArtist(int page)
+    [HttpGet("/Artist",Name = "GetArtistforDashboard")]
+    public async Task<IActionResult> GetArtistforDashboard(int page)
     {
         try
         {
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("Page.json", true, true)
-                .Build();
-            var pageSize = int.Parse(configuration.GetSection("Value").Value);
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
+            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
+            JObject jsonObject = JObject.Parse(jsonString);
+            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
+
+
             var worker = await _ArtistService.GetAll();
             var Pageforworker = worker.Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -109,21 +116,68 @@ public class DashboardController : ControllerBase
         }
     }
 
-    [HttpGet(Name = "GetArtistforDashboard")]
-    public async Task<ActionResult<ManageOrderArtistController>> GetSearchArtist(string name, int page)
+    [HttpGet("/Search/{name}", Name = "GetSearchArtist")]
+    public async Task<IActionResult> GetSearchArtist(string name, int page)
     {
         try
         {
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddJsonFile("Page.json", true, true)
-                .Build();
-            var pageSize = int.Parse(configuration.GetSection("Value").Value);
-            var worker = await _ArtistService.GetAll();
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
+            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
+            JObject jsonObject = JObject.Parse(jsonString);
+            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
+
+
+            var worker = await _ArtistService.GetAllField();
             var Pageforworker = worker.Where(w => w.User.Name.Contains(name))
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
             ;
+            return Ok(Pageforworker);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting transactions: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+    [HttpGet("/GetNameArtist/{id}", Name = "GetNameArtist")]
+    public async Task<IActionResult> GetNameArtist(Guid id, int page)
+    {
+        try
+        {
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
+            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
+            JObject jsonObject = JObject.Parse(jsonString);
+            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
+
+            var worker = await _ArtistService.GetnameArtist(id);
+            var Pageforworker = worker.User.Name;
+
+            return Ok(Pageforworker);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting transactions: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+    [HttpGet("/SearchArtwork/{Name}", Name = "GetSearchArtwork")]
+    public async Task<IActionResult> GetSearchArtwork(String Name, int page)
+    {
+        try
+        {
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
+            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
+            JObject jsonObject = JObject.Parse(jsonString);
+            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
+
+            var worker = await _ArtworkService.GetAll();
+            var Pageforworker = worker.Where(i => i.Name.ToLower().Contains(Name.ToLower()))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
             return Ok(Pageforworker);
         }
         catch (Exception ex)

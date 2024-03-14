@@ -23,7 +23,7 @@ namespace ArtworkSharing.Controllers
         }
 
         [HttpGet("{entityId}", Name = "GetArtworkofArtist")]
-        public async Task<ActionResult<ManageOrderArtistController>> GetCombinedEntityById(Guid entityId, int page)
+        public async Task<IActionResult> GetCombinedEntityById(Guid entityId, int page)
         {
             try
             {
