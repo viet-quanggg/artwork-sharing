@@ -6,8 +6,7 @@ namespace ArtworkSharing.Core.Interfaces.Services;
 public interface ITransactionService
 {
 
-    public interface ITransactionService
-    {
+   
         Task<List<TransactionViewModel>> GetAll();
         Task<TransactionViewModel> GetTransaction(Guid id);
         Task<Transaction> GetOne(Guid id);
@@ -16,5 +15,5 @@ public interface ITransactionService
         Task<List<TransactionViewModel>> GetTransactions(TransactionFilterModel transactionFilter);
 
         Task<TransactionViewModel> CreateTransaction(TransactionViewModel transactionModel);
-    }
+    
 }

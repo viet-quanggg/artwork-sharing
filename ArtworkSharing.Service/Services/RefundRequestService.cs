@@ -68,8 +68,10 @@ public class RefundRequestService : IRefundRequestService
 
 
         _uow.RefundRequestRepository.UpdateRefundRequest(refundRequest);
+        await _uow.SaveChangesAsync();
+        return await GetRefundRequest(id);
 
-     }
+    }
 
         IEnumerable<RefundRequest> IRefundRequestService.Get(Expression<Func<RefundRequest, bool>> filter, Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy, string includeProperties, int? pageIndex, int? pageSize)
         {
@@ -98,7 +100,5 @@ public class RefundRequestService : IRefundRequestService
             return await query.CountAsync();
         }
 
-        await _uow.SaveChangesAsync();
-        return await GetRefundRequest(id);
+       
     }
-}
