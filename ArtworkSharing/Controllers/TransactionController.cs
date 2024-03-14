@@ -36,66 +36,8 @@ public class TransactionController : ControllerBase
     {
         if (id == Guid.Empty) return BadRequest();
 
-
-            return Ok(await _transactionService.GetTransaction(id));
-        }
-
-        /// <summary>
-        /// Create a new transaction
-        /// </summary>
-        /// <param name="transactionModel">The transaction data</param>
-        /// <returns>The created transaction</returns>
-        [HttpPost]
-        public async Task<IActionResult> CreateTransactionPackage(Guid PackageId, Guid AudienceId, float totalBill)
-        {
-            try
-            {
-                var transactionModel = new TransactionViewModel
-                {
-                    PackageId = PackageId,
-                    AudienceId = AudienceId,
-                    TotalBill = totalBill,
-                    Id = Guid.NewGuid(),
-                    ArtworkServiceId = null,
-                    CreatedDate = DateTime.UtcNow,
-                    ArtworkId = null,
-                    Status = Core.Domain.Enums.TransactionStatus.Success,
-                    Type = Core.Domain.Enums.TransactionType.Package
-                };
-
-
-                var createdTransaction = await _transactionService.CreateTransaction(transactionModel);
-                return Ok(createdTransaction);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError); // Internal Server Error
-            }
-        }
-
-        /// <summary>
-        /// Update an existing transaction
-        /// </summary>
-        /// <param name="id">The ID of the transaction to update</param>
-        /// <param name="transactionModel">The updated transaction data</param>
-        /// <returns>The updated transaction</returns>
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTransaction(Guid id, [FromBody] UpdateTransactionModel transactionModel)
-        {
-            try
-            {
-                var updatedTransaction = await _transactionService.UpdateTransaction(id, transactionModel);
-                if (updatedTransaction == null)
-                {
-                    return NotFound(); // Transaction not found
-                }
-                return Ok(updatedTransaction);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError); // Internal Server Error
-            }
-        }
-
+        return Ok(await _transactionService.GetTransaction(id));
     }
+
+
 }

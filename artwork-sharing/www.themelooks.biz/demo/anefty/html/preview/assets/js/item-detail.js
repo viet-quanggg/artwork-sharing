@@ -16,6 +16,7 @@ window.onload = async function LoadItemDetail() {
         document.getElementById('artwork-description').innerText = pTxt.description;
 
         await CheckLike(artworkId);
+        await GetComments(artworkId);
 
         pTxt.comments.forEach(element => {
             document.getElementById('u-cmt').innerHTML += `     <li>
@@ -23,7 +24,7 @@ window.onload = async function LoadItemDetail() {
             <h6>${element.content}</h6>
         </li>`
         });
-        document.getElementById('btn-send-cmt').innerHTML = `                                <button onclick="Send-Cmt('${artworkId}')" type="button" class="btn btn-primary">Comments</button>`
+        document.getElementById('btn-send-cmt').innerHTML = `                                <button onclick="SendCmt('${artworkId}')" type="button" class="btn btn-primary">Comments</button>`
     }
 }
 
@@ -35,6 +36,7 @@ async function CheckLike(id) {
     if (rs.ok) {
         var txt = await rs.text();
         var pTxt = JSON.parse(txt);
+
         console.log(pTxt);
         if (pTxt.result == "true") {
             document.getElementById('like-artwork').innerHTML = `  <div onclick="SendLike('${id}')"  class="love-react style--two is-active"></div>
@@ -48,8 +50,8 @@ async function CheckLike(id) {
 
 async function SendLike(id) {
     var obj = {
-        "userId": localStorage.getItem("uid"),
-        "artworkId": id,
+        "UserId": localStorage.getItem("uid"),
+        "ArtworkId": id,
     }
     var url = "https://localhost:7270/api/Like";
     var resquest = new Request(url);
@@ -58,12 +60,54 @@ async function SendLike(id) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                'Token': token,
             },
             body: JSON.stringify(obj)
         }
     );
     if (resultFet.ok) {
         await CheckLike(id);
+    }
+}
+
+async function GetComments(id) {
+    var url = "https://localhost:7270/api/Comment?id=" + id;
+    var request = new Request(url);
+    var rs = await fetch(request);
+    if (rs.ok) {
+        var txt = await rs.text();
+        var pTxt = JSON.parse(txt);
+        document.getElementById('u-cmt').innerHTML=``;
+        pTxt.forEach(element => {
+            document.getElementById('u-cmt').innerHTML += `<li >
+            <h6><b>${element.commentedUser.name}}</b></h6>
+            <h6>${element.content}</h6>
+        </li>`
+        });
+    }
+}
+
+async function SendCmt(id) {
+    var content = document.getElementById('content-cmt').value;
+    if ((content + "").trim() == "") {
+        return;
+    }
+    var obj = {
+        "CommentedUserId": localStorage.getItem("uid")+"",
+        "ArtworkId": id,
+        "Content": content
+    }
+    var url = "https://localhost:7270/api/Comment";
+    var resquest = new Request(url);
+    var resultFet = await fetch(url,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(obj)
+        }
+    );
+    if (resultFet.ok) {
+        await GetComments(id);
     }
 }
