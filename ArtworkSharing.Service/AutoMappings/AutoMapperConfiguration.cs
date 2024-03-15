@@ -43,6 +43,7 @@ public class MapperHandler : Profile
     {
         CreateMap<Transaction, TransactionViewModel>().ReverseMap();
         CreateMap<Transaction, UpdateTransactionModel>().ReverseMap();
+        CreateMap<Transaction, TransactionsViewModelUser>().ReverseMap();
 
         CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
         CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();

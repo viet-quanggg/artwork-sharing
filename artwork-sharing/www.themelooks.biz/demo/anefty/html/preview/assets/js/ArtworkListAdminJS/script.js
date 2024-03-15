@@ -38,8 +38,8 @@ $(document).ready(function() {
     // Initial data fetch when the page loads
     fetchData();
     // setInterval(fetchData, 5000);
-    
-    
+
+
 });
 
 $(document).ready(function () {

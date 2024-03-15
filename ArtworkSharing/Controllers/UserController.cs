@@ -84,4 +84,6 @@ public class UserController : Controller
         if (userId == Guid.Empty || uuma == null) return BadRequest(new { Message = "User not found!" });
         return Ok(await _userService.UpdateUser(userId, uuma));
     }
+
+   
 }
