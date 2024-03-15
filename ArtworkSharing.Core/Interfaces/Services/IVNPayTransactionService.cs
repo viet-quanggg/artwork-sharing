@@ -5,7 +5,7 @@ namespace ArtworkSharing.Core.Interfaces.Services;
 
 public interface IVNPayTransactionService
 {
-    string GetUrlFromTransaction(Transaction trans);
+    Task<string> GetUrlFromTransaction(Transaction trans);
     Task<VNPayResponseModel> HandleQuery(string query);
     Task<List<VNPayTransactionViewModel>> GetVNPayTransactions(VNPayFilter vNPayFilter);
     Task<VNPayTransactionViewModel> GetVNPayTransactionByTransactionId(Guid id);

@@ -29,7 +29,7 @@ public class PaymentController : ControllerBase
         var tran = await _transactionService.GetOne(id);
         if (tran == null!) return BadRequest();
 
-        return Ok(_VNPayTransactionService.GetUrlFromTransaction(tran));
+        return Ok(await _VNPayTransactionService.GetUrlFromTransaction(tran));
     }
 
     /// <summary>
@@ -77,9 +77,9 @@ public class PaymentController : ControllerBase
     [HttpPost("{id}")]
     public async Task<IActionResult> RefundTraction([FromRoute] Guid id)
     {
-        var uId = HttpContext.Items["UserId"] + "";
-        if (string.IsNullOrEmpty(uId)) return Unauthorized();
-        var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse(uId));
+        //var uId = HttpContext.Items["UserId"] + "";
+        //if (string.IsNullOrEmpty(uId)) return Unauthorized();
+        var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse("48485956-80A9-42AB-F8C2-08DC44567C01"));
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
         return Ok(rs.TransactionViewModel);
     }

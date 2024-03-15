@@ -18,6 +18,7 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
     {
     }
 
+
     public DbSet<Artwork> Artworks { get; set; }
     public DbSet<ArtistPackage> ArtistPackages { get; set; }
     public DbSet<Artist> Artists { get; set; }
@@ -33,6 +34,8 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<VNPayTransaction> VNPayTransactions { get; set; }
     public DbSet<VNPayTransactionRefund> VNPayTransactionRefunds { get; set; }
+
+    public DbSet<VNPayTransactionTransfer> VNPayTransactionTransfers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {

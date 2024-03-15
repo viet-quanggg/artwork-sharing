@@ -17,6 +17,13 @@ public class TransactionService : ITransactionService
         _uow = uow;
     }
 
+    public async Task<TransactionViewModel> AddTransaction(Transaction transaction)
+    {
+        await _uow.TransactionRepository.AddAsync(transaction);
+        var rs = await _uow.SaveChangesAsync();
+        return await GetTransaction(transaction.Id);
+    }
+
     public async Task<bool> DeleteTransaction(Guid id)
     {
         var transaction = await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);

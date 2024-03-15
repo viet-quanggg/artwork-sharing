@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArtworkSharing.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class Initdb : Migration
+    public partial class InitDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -100,6 +100,19 @@ namespace ArtworkSharing.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VNPayTransactionRefunds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VNPayTransactionTransfers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VNPayTransactionTransfers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -738,6 +751,9 @@ namespace ArtworkSharing.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "VNPayTransactions");
+
+            migrationBuilder.DropTable(
+                name: "VNPayTransactionTransfers");
 
             migrationBuilder.DropTable(
                 name: "Categories");

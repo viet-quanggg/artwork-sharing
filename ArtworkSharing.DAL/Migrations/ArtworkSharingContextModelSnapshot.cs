@@ -604,6 +604,23 @@ namespace ArtworkSharing.DAL.Migrations
                     b.ToTable("VNPayTransactionRefunds");
                 });
 
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransactionTransfer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VNPayTransactionTransfers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")

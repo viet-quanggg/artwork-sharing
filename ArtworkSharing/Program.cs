@@ -33,7 +33,6 @@ builder.Services.AddServices();
 builder.Services.AddConfigException();
 builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = false; });
 builder.Services.AddHttpClient();
-
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
 var app = builder.Build();
@@ -51,7 +50,7 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyOrigin());
 app.MapControllers();
 
 app.Run();

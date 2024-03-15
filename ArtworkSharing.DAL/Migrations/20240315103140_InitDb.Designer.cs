@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
-    [Migration("20240313071136_Initdb")]
-    partial class Initdb
+    [Migration("20240315103140_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -605,6 +605,23 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("VNPayTransactionRefunds");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransactionTransfer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VNPayTransactionTransfers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

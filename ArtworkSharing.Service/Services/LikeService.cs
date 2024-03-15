@@ -88,7 +88,13 @@ public class LikeService : ILikeService
 
         await _unitOfWork.LikeRepository.DeleteAsync(like);
 
-        return await _unitOfWork.SaveChangesAsync() > 0 ? await GetLikeByArtworkId(artworkId) : null!;
+        return await GetLikeByArtworkId(artworkId);
+    }
+    public async Task<CheckLikeModel> CheckLike(LikeModel lm)
+    {
+        var like = await _unitOfWork.LikeRepository.FirstOrDefaultAsync(x =>
+           x.UserId == lm.UserId && x.ArtworkId == lm.ArtworkId);
+        return new CheckLikeModel { LikeViewModels = await GetLikeByArtworkId(lm.ArtworkId), Result = like != null };
     }
 
     public async Task<List<LikeViewModel>> Update(LikeModel lm)
