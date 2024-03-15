@@ -58,10 +58,11 @@ public class MapperHandler : Profile
         CreateMap<User, UserDto>().ReverseMap();
         CreateMap<User, UpdateUserModelAdmin>().ReverseMap();
 
-        CreateMap<Artwork, ArtworkViewModelAdmin>().ReverseMap();
         CreateMap<Artwork, ArtworkCreateModelAdmin>().ReverseMap();
         CreateMap<Artwork, UpdateArtworkRequestModel>().ReverseMap();
+        CreateMap<Artwork, ArtworkViewModelAdmin>().ReverseMap();
 
+        
         CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
         CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
         CreateMap<MediaContent, MediaContentViewModel>().ReverseMap();
