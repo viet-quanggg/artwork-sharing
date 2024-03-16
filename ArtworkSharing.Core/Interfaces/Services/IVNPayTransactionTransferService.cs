@@ -4,6 +4,6 @@ namespace ArtworkSharing.Core.Interfaces.Services
 {
     public interface IVNPayTransactionTransferService
     {
-        Task<VNPayTransactionTransfer> CreateVNPayTransactionTransfer(Guid tran);
+        Task CreateVNPayTransactionTransfer(VNPayTransactionTransfer tran);
     }
 }

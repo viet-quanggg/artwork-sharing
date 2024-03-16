@@ -1,6 +1,7 @@
 using System.Reflection;
 using ArtworkSharing.Controllers;
 using ArtworkSharing.DAL.Data;
+using ArtworkSharing.Exceptions;
 using ArtworkSharing.Extensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,7 +37,7 @@ builder.Services.AddTransient<WatermarkController>();
 var app = builder.Build();
 EnsureMigrate(app);
 // Configure the HTTP request pipeline.
-//app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -44,11 +45,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseException();
-//app.UseHttpsRedirection();
+app.UseException();
+app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyOrigin());
+app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.MapControllers();
 
 app.Run();
