@@ -33,13 +33,22 @@ public class RefundRequestService : IRefundRequestService
 
     public async Task CreateRefundRequest(CreateRefundRequestModel crrm)
     {
-        await _uow.BeginTransaction();
-        var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
-        refund.RefundRequestDate = DateTime.Now;
-        var repo = _uow.RefundRequestRepository;
-        await repo.AddAsync(refund);
+        try
+        {
+            await _uow.BeginTransaction();
+            var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
+            refund.RefundRequestDate = DateTime.Now;
+            refund.Status = "Processing";
+            var repo = _uow.RefundRequestRepository;
+            await repo.AddAsync(refund);
 
-        await _uow.CommitTransaction();
+            await _uow.CommitTransaction();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+       
     }
 
     public async Task<List<RefundRequestViewModel>> GetAll()

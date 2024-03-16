@@ -12,6 +12,20 @@ public class RefundRequestController : ControllerBase
 {
     private readonly IRefundRequestService _refundRequestService;
 
+    [HttpPost("createRefundRequestUser")]
+    public async Task<ActionResult> CreateRefundRequestUser(CreateRefundRequestModel crrm)
+    {
+        try
+        {
+            await _refundRequestService.CreateRefundRequest(crrm);
+            return Ok(crrm);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+    
     public RefundRequestController(IRefundRequestService refundRequestService)
     {
         _refundRequestService = refundRequestService;
@@ -52,6 +66,8 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
+    
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<List<RefundRequestViewModel>>> GetDetailPackage(Guid id)
     {
