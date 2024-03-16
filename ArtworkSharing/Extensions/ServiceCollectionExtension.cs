@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Exceptions;
+using ArtworkSharing.Core.Helpers.MsgQueues;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Repositories;
 using ArtworkSharing.Core.Interfaces.Services;
@@ -12,6 +13,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ArtworkService = ArtworkSharing.Service.Services.ArtworkService;
 
@@ -61,11 +63,22 @@ public static class ServiceCollectionExtension
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
         services.AddScoped<ITransactionService, TransactionService>();
-
+        services.AddScoped<IPaymentEventService, PaymentEventService>();
+        services.AddScoped<IVNPayTransactionTransferService, VNPayTransactionTransferService>();
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
+
+
+
+        MessageChanel messageChanel = new();
+        services.AddSingleton<MessageChanel>(messageChanel.PaidRaise());
+        services.AddSingleton<IMessageSupport, MessageSupport>();
+        services.AddSingleton<MessagePaymentEvent>();
+        services.AddHostedService<MessagePaymentEvent>(_=>_.GetService<MessagePaymentEvent>());
+        services.AddHostedService<MessageSubscribe>();
+
 
         return services;
     }

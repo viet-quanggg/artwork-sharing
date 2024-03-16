@@ -34,6 +34,7 @@ public class UnitOfWork : IUnitOfWork
         VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
         VNPayTransactionRefundRepository = new VNPayTransactionRefundRepository(DbContext);
         VNPayTransactionTransferRepository = new VNPayTransactionTransferRepository(DbContext);
+        PaymentEventRepository = new PaymentEventRepository(DbContext);
     }
 
     public DbContext DbContext { get; }
@@ -69,6 +70,8 @@ public class UnitOfWork : IUnitOfWork
     public IVNPayTransactionRefundRepository VNPayTransactionRefundRepository { get; }
 
     public IVNPayTransactionTransferRepository VNPayTransactionTransferRepository { get; }
+
+    public IPaymentEventRepository PaymentEventRepository { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
