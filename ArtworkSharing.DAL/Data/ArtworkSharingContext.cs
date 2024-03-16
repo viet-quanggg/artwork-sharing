@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +35,8 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<VNPayTransaction> VNPayTransactions { get; set; }
     public DbSet<VNPayTransactionRefund> VNPayTransactionRefunds { get; set; }
-
     public DbSet<VNPayTransactionTransfer> VNPayTransactionTransfers { get; set; }
+    public DbSet<PaymentEvent> PaymentEvents { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
