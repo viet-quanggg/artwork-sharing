@@ -31,6 +31,11 @@ public class CategoryService : ICategoryService
         }
     }
 
+    public Task CreateCategory(Category category)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task Delete(Guid CategoryId)
     {
         try
@@ -50,9 +55,19 @@ public class CategoryService : ICategoryService
         }
     }
 
+    public Task DeleteCategory(Guid categoryId)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<IList<Category>> GetArtworkCategories()
     {
         return await _unitOfWork.CategoryRepository.GetAllAsync();
+    }
+
+    public Task<IList<Category>> GetCategories()
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<Category> GetCategory(Guid CategoryId)
@@ -76,5 +91,10 @@ public class CategoryService : ICategoryService
             await _unitOfWork.RollbackTransaction();
             throw;
         }
+    }
+
+    public Task UpdateCategory(Category category)
+    {
+        throw new NotImplementedException();
     }
 }

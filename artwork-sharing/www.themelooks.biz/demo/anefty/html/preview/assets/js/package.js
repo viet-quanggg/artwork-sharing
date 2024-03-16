@@ -28,21 +28,10 @@ function renderPackages(packages) {
             </div>
             <div class="product-bottom">
               <div class="button-group">
-                <a href="#" class="btn-circle love-react mr-10"></a>
-                <div class="dropdown mr-10">
-                  <button class="btn-circle btn-border dropdown-toggle" data-bs-toggle="dropdown">
-                    <img src="assets/img/icons/share.svg" alt="" class="svg" />
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" target="_blank" href="https://www.facebook.com/"><img src="assets/img/icons/facebook.svg" alt="" /> Share on Facebook</a></li>
-                    <li><a class="dropdown-item" target="_blank" href="https://www.twitter.com/"><img src="assets/img/icons/twitter.svg" alt="" /> Share on Twitter</a></li>
-                    <li><a class="dropdown-item" target="_blank" href="https://www.instagram.com/"><img src="assets/img/icons/instagram.svg" alt="" /> Share on Instagram</a></li>
-                    <li><a class="dropdown-item" target="_blank" href="https://www.linkedin.com/"><img src="assets/img/icons/linkedin.svg" alt="" /> Share on Linkedin</a></li>
-                  </ul>
-                </div>
-                <button onclick="redirectToItemDetails('${package.id}')" class="btn btn-border btn-sm">
-                <img src="assets/img/icons/judge-icon.svg" alt="" class="svg" /> Check Out
-              </button>
+                
+              <button data-id="${package.id}" class="btn btn-border btn-sm" onclick="checkoutButtonClickHandler(event)">
+              <img src="assets/img/icons/judge-icon.svg" alt="" class="svg" /> Check Out
+          </button>
               </div>
             </div>
           </div>
@@ -78,3 +67,58 @@ fetch(apiUrl)
     // Handle any errors that occurred during the fetch operation
     console.error('Error fetching data:', error);
   });
+
+  function checkoutButtonClickHandler(event) {
+    // Define the URL of the API endpoint for checkout
+    const packageId = event.target.dataset.id;
+    console.log("hi iam here"+ packageId)
+    const checkoutApiUrl = `https://localhost:7270/ManagePackage/9c68f75b-ed05-4718-b6b8-05211342a80f/checkout?PackageId=${packageId}`;
+  
+    fetch(checkoutApiUrl, {
+        method: "PUT", // Sử dụng phương thức PUT
+       
+    })
+    .then(response => {
+        // Check if the request was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        // Parse the JSON response
+        return response.json();
+    })
+    .then(responseData => {
+      console.log("Checkout successful:", responseData);
+      // Trích xuất requestUri từ đối tượng responseData
+      const requestUri = responseData.requestMessage.requestUri;
+      console.log("Request URI:", requestUri);
+      //window.location.href = "https://example.com";
+      convertlink(requestUri);
+      // Redirect or perform any other action after successful checkout
+    })
+}
+
+function convertlink(checkoutApiUrl){
+  fetch(checkoutApiUrl, {
+      method: "GET", // Sử dụng phương thức GET
+  })
+  .then(response => {
+      // Check if the request was successful
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      // Parse the response body as text
+      return response.text();
+  })
+  .then(responseText => {
+      // Process the response text
+      console.log("Response body:", responseText);
+      window.location.href = responseText;
+      // Điều chỉnh logic của bạn ở đây dựa trên nội dung của responseText
+  })
+  .catch(error => {
+      // Handle errors that occurred during the fetch operation
+      console.error('Error fetching data:', error);
+  });
+}
+
+  

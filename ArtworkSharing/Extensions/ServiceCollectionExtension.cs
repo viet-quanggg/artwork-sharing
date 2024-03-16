@@ -61,7 +61,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
         services.AddScoped<ITransactionService, TransactionService>();
-
+        services.AddScoped<IUserRoleService, UserRoleService>();
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
