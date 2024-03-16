@@ -1,4 +1,6 @@
-﻿namespace ArtworkSharing.Core.ViewModels.Transactions;
+﻿using ArtworkSharing.Core.Domain.Enums;
+
+namespace ArtworkSharing.Core.ViewModels.Transactions;
 
 public class TransactionViewModel
 {
@@ -8,6 +10,6 @@ public class TransactionViewModel
     public Guid AudienceId { get; set; }
     public float TotalBill { get; set; }
     public DateTime CreatedDate { get; set; }
+    public TransactionType Type { get; set; }
 
-    // Add whatever you need
 }

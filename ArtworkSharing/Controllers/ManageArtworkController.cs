@@ -1,6 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
-using ArtworkSharing.Core.ViewModels.Artworks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers
