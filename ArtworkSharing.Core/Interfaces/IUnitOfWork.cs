@@ -24,7 +24,11 @@ public interface IUnitOfWork : IDisposable
     IVNPayTransactionRefundRepository VNPayTransactionRefundRepository { get; }
     IVNPayTransactionTransferRepository VNPayTransactionTransferRepository { get; }
 
+<<<<<<< HEAD
+    IUserRoleRepository UserRoleRepository { get; }
+=======
     IPaymentEventRepository PaymentEventRepository { get; }
+>>>>>>> e9cf46968973864689cabb18726a9098ed81b417
     /// <summary>
     ///     Saves changes to database, previously opening a transaction
     ///     only when none exists. The transaction is opened with isolation
