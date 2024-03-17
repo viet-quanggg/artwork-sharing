@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using ArtworkSharing.Core.Domain.Dtos.UserDtos;
 using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.Models;
 using ArtworkSharing.Service.AutoMappings;
@@ -75,7 +76,7 @@ public class AuthController : ControllerBase
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
-            var roleResult = await _userManager.AddToRoleAsync(user, "Audience");
+            var roleResult = await _userManager.AddToRoleAsync(user, RoleOfSystem.Audience.ToString());
 
             if (!roleResult.Succeeded)
             {
