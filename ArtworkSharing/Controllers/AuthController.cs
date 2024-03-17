@@ -12,6 +12,7 @@ namespace ArtworkSharing.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
+
 public class AuthController : ControllerBase
 {
     private readonly IEmailSender _emailSender;
@@ -52,8 +53,8 @@ public class AuthController : ControllerBase
             var userMapping = AutoMapperConfiguration.Mapper.Map<User>(userToLoginDTO);
             var userToReturn = AutoMapperConfiguration.Mapper.Map<UserDto>(userMapping);
             userToReturn.Token = await _tokenService.CreateToken(userMapping);
-
-            return Ok(userToReturn);
+            SaveTokenToHttpContext(userToReturn.Token);
+            return Ok();
         }
         catch (Exception ex)
         {
@@ -71,28 +72,33 @@ public class AuthController : ControllerBase
             user.UserName = userToRegisterDTO.Email;
             var result = await _userManager.CreateAsync(user, userToRegisterDTO.Password);
 
-            if (!result.Succeeded) return BadRequest(result.Errors);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
             var roleResult = await _userManager.AddToRoleAsync(user, "Audience");
 
-            if (!roleResult.Succeeded) return BadRequest(result.Errors); //Rollback added user
+            if (!roleResult.Succeeded)
+            {
+                // Rollback added user if role assignment fails
+                await _userManager.DeleteAsync(user);
+                return BadRequest(result.Errors);
+            }
 
-            var returnUser = AutoMapperConfiguration.Mapper.Map<UserDto>(user);
-            returnUser.Token = await _tokenService.CreateToken(user);
-
-            //send confirmation email
+            // Send confirmation email
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action("ConfirmEmail", "Auth", new { userId = user.Id, token }, Request.Scheme);
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email",
                 $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>", true);
 
-
-            return Ok(returnUser);
+            // Return JSON response with redirect URL
+            return Ok(new { RedirectUrl = Url.Action("RegistrationSuccess", "Home") });
         }
         catch (Exception ex)
         {
             return BadRequest(ex.InnerException?.Message);
         }
     }
+
 
     [HttpPost]
     public async Task<IActionResult> Logout()
@@ -235,5 +241,10 @@ public class AuthController : ControllerBase
             <p>Regards,<br/>ArtworkSharing</p>
         </body>
     </html>";
+    }
+
+    private void SaveTokenToHttpContext(string token)
+    {        
+        Response.Cookies.Append("accessToken", token);
     }
 }
