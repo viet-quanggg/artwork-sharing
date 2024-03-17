@@ -1,18 +1,22 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
+using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.Package;
 
-namespace ArtworkSharing.Core.Interfaces.Services
+namespace ArtworkSharing.Core.Interfaces.Services;
+
+public interface IPackageService
 {
-    public interface IPackageService
-    {
-        Task<IList<Package>> GetAll();
-        Task<Package> GetOne(Guid packageId);
-        Task Update(Package package);
-        Task Add(Package package);
-        Task Delete(Guid packageId);
-    }
+    Task<IList<PackageViewModel>> GetAll();
+    Task<PackageViewModel> GetOne(Guid packageId);
+    Task Update(Package package);
+    Task Add(Package package);
+    Task Delete(Guid packageId);
+
+    IEnumerable<Package> Get(
+        Expression<Func<Package, bool>> filter = null,
+        Func<IQueryable<Package>, IOrderedQueryable<Package>> orderBy = null,
+        string includeProperties = "",
+        int? pageIndex = null,
+        int? pageSize = null
+    );
 }

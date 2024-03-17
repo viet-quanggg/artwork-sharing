@@ -1,17 +1,14 @@
 ﻿using ArtworkSharing.Core.Domain.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ArtworkSharing.Core.Domain.Enums;
 
-namespace ArtworkSharing.Core.Domain.Entities
+namespace ArtworkSharing.Core.Domain.Entities;
+
+public class Package : EntityBase<Guid>
 {
-    public class Package : EntityBase<Guid>
-    {
-        public string Name { get; set; } = null!;
-        public string? Description { get; set; }
-        public float Price { get; set; }
-        public int Duration { get; set; }
-    }
+    public string Name { get; set; } = null!;
+    public string? Description { get; set; }
+    public float Price { get; set; }
+    public int Duration { get; set; }
+
+    public PackageStatus Status { get; set; }
 }

@@ -1,32 +1,27 @@
 ﻿using ArtworkSharing.DAL.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ArtworkSharing.DAL
+namespace ArtworkSharing.DAL;
+
+public class DbFactory : IDisposable
 {
-    public class DbFactory : IDisposable
+    private DbContext _dbContext;
+    private bool _disposed;
+    private readonly Func<ArtworkSharingContext> _instanceFunc;
+
+    public DbFactory(Func<ArtworkSharingContext> dbContextFactory)
     {
-        private bool _disposed;
-        private Func<ArtworkSharingContext> _instanceFunc;
-        private DbContext _dbContext;
-        public DbContext DbContext => _dbContext ?? (_dbContext = _instanceFunc.Invoke());
+        _instanceFunc = dbContextFactory;
+    }
 
-        public DbFactory(Func<ArtworkSharingContext> dbContextFactory)
-        {
-            _instanceFunc = dbContextFactory;
-        }
+    public DbContext DbContext => _dbContext ?? (_dbContext = _instanceFunc.Invoke());
 
-        public void Dispose()
+    public void Dispose()
+    {
+        if (!_disposed && _dbContext != null)
         {
-            if (!_disposed && _dbContext != null)
-            {
-                _disposed = true;
-                _dbContext.Dispose();
-            }
+            _disposed = true;
+            _dbContext.Dispose();
         }
     }
 }

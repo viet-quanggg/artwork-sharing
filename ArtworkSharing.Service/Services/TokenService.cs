@@ -1,54 +1,54 @@
-﻿using ArtworkSharing.Core.Domain.Entities;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
-namespace ArtworkSharing.Service.Services
+namespace ArtworkSharing.Service.Services;
+
+public class TokenService : ITokenService
 {
-    public class TokenService : ITokenService
+    private readonly SymmetricSecurityKey _key;
+    private readonly UserManager<User> _userManager;
+
+    //private readonly UserManager<User> _userManager;
+    public TokenService(IConfiguration config, UserManager<User> userManager)
     {
-        private readonly SymmetricSecurityKey _key;
-        private readonly UserManager<User> _userManager;
+        _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("AppSettings:Token").Value));
+        _userManager = userManager;
+    }
 
-        //private readonly UserManager<User> _userManager;
-        public TokenService(IConfiguration config, UserManager<User> userManager)
+    public async Task<string> CreateToken(User user)
+    {
+        var claims = new List<Claim>
         {
-          
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("AppSettings:Token").Value));
-            _userManager = userManager;
-        }
-        public async Task<string> CreateToken(User user)
+            new(JwtRegisteredClaimNames.Email, user.Email),
+            new(JwtRegisteredClaimNames.NameId, user.Id.ToString())
+        };
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+
+        var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email.ToString()),
-                new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString())
-            };
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.Now.AddDays(7),
+            SigningCredentials = creds
+        };
 
-            var roles = await _userManager.GetRolesAsync(user);
+        var tokenHandler = new JwtSecurityTokenHandler();
 
-            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-  
-            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
-
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(7),
-                SigningCredentials = creds
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-
-            return tokenHandler.WriteToken(token);
-        }
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenToReturn = tokenHandler.WriteToken(token);
         
+        return tokenToReturn;
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace ArtworkSharing.Core.Interfaces.Services
+﻿namespace ArtworkSharing.Core.Interfaces.Services;
+
+public interface IEmailSender
 {
-    public interface IEmailSender
-    {
-        Task SendEmailAsync(string ToEmail, string Subject, string Body, bool IsBodyHtml = false);
-    }
+    Task SendEmailAsync(string ToEmail, string Subject, string Body, bool IsBodyHtml = false);
 }

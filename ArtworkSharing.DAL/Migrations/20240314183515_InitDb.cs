@@ -31,6 +31,7 @@ namespace ArtworkSharing.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false),
@@ -83,6 +84,38 @@ namespace ArtworkSharing.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VNPayTransactionRefunds",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ResponseId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TmnCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TxnRef = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    BankCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PayDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TransactionNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VNPayTransactionRefunds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VNPayTransactionTransfers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VNPayTransactionTransfers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -108,7 +141,8 @@ namespace ArtworkSharing.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -267,7 +301,8 @@ namespace ArtworkSharing.DAL.Migrations
                     RequestedPrice = table.Column<float>(type: "real", nullable: false),
                     RequestedDeposit = table.Column<float>(type: "real", nullable: false),
                     RequestedDeadlineDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ArtworkProduct = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -340,7 +375,7 @@ namespace ArtworkSharing.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LikedUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LikedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -354,8 +389,8 @@ namespace ArtworkSharing.DAL.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Likes_AspNetUsers_LikedUserId",
-                        column: x => x.LikedUserId,
+                        name: "FK_Likes_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -367,17 +402,11 @@ namespace ArtworkSharing.DAL.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Capacity = table.Column<float>(type: "real", nullable: false),
-                    Media = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ArtworkServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Media = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MediaContents", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MediaContents_ArtworkServices_ArtworkServiceId",
-                        column: x => x.ArtworkServiceId,
-                        principalTable: "ArtworkServices",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_MediaContents_Artworks_ArtworkId",
                         column: x => x.ArtworkId,
@@ -486,13 +515,39 @@ namespace ArtworkSharing.DAL.Migrations
                     TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RefundRequestDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RefundRequests", x => x.Id);
                     table.ForeignKey(
                         name: "FK_RefundRequests_Transactions_TransactionId",
+                        column: x => x.TransactionId,
+                        principalTable: "Transactions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VNPayTransactions",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    BankCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BankTranNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CardType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PayDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TmnCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TransactionNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VNPayTransactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VNPayTransactions_Transactions_TransactionId",
                         column: x => x.TransactionId,
                         principalTable: "Transactions",
                         principalColumn: "Id",
@@ -604,19 +659,14 @@ namespace ArtworkSharing.DAL.Migrations
                 column: "ArtworkId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Likes_LikedUserId",
+                name: "IX_Likes_UserId",
                 table: "Likes",
-                column: "LikedUserId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MediaContents_ArtworkId",
                 table: "MediaContents",
                 column: "ArtworkId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MediaContents_ArtworkServiceId",
-                table: "MediaContents",
-                column: "ArtworkServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_TransactionId",
@@ -647,6 +697,11 @@ namespace ArtworkSharing.DAL.Migrations
                 name: "IX_Transactions_PackageId",
                 table: "Transactions",
                 column: "PackageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VNPayTransactions_TransactionId",
+                table: "VNPayTransactions",
+                column: "TransactionId");
         }
 
         /// <inheritdoc />
@@ -690,6 +745,15 @@ namespace ArtworkSharing.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "RefundRequests");
+
+            migrationBuilder.DropTable(
+                name: "VNPayTransactionRefunds");
+
+            migrationBuilder.DropTable(
+                name: "VNPayTransactions");
+
+            migrationBuilder.DropTable(
+                name: "VNPayTransactionTransfers");
 
             migrationBuilder.DropTable(
                 name: "Categories");

@@ -1,12 +1,11 @@
-﻿namespace ArtworkSharing.Core.Domain.Dtos.UserDtos
+﻿namespace ArtworkSharing.Core.Domain.Dtos.UserDtos;
+
+public class UserDto
 {
-    public class UserDto
-    {
-        public Guid Id { get; set; } 
-        public string Name { get; set; } = null!;
-        public string Username { get; set; } = null!;
-        public string Email { get; set; } = null!;
-        public string Phone { get; set; } = null!;
-        public string Token { get; set; }
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; } = null!;
+    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string Phone { get; set; } = null!;
+    public string Token { get; set; }
 }

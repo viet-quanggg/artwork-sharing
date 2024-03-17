@@ -1,16 +1,15 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using ArtworkSharing.Core.ViewModels.Comments;
 
-namespace ArtworkSharing.Core.Interfaces.Services
+namespace ArtworkSharing.Core.Interfaces.Services;
+
+public interface ICommentService
 {
-	public interface ICommentService
-	{
-		Task<IList<Comment>> GetAll();
-		Task<Comment> GetOne(Guid commentId);
-		Task Update(Comment comment);
-		Task Add(Comment comment);
-		Task Delete(Guid commentId);
-	}
+    Task<List<CommentViewModel>> GetAll();
+    Task<Comment> GetOne(Guid commentId);
+    Task<CommentViewModel> GetComment(Guid commentId);
+    Task<List<CommentViewModel>> GetCommentByArtworkId(Guid id);
+    Task<CommentViewModel> Update(UpdateCommentModel comment);
+    Task<List<CommentViewModel>> Add(CreateCommentModel comment);
+    Task<bool> Delete(Guid commentId);
 }

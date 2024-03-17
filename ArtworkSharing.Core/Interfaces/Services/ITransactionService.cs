@@ -1,12 +1,20 @@
-﻿using ArtworkSharing.Core.ViewModels.Transactions;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.Transactions;
 
-namespace ArtworkSharing.Core.Interfaces.Services
+namespace ArtworkSharing.Core.Interfaces.Services;
+
+public interface ITransactionService
 {
-    public interface ITransactionService
-    {
+
+
+   
         Task<List<TransactionViewModel>> GetAll();
         Task<TransactionViewModel> GetTransaction(Guid id);
+        Task<Transaction> GetOne(Guid id);
         Task<TransactionViewModel> UpdateTransaction(Guid transactionId, UpdateTransactionModel utm);
         Task<bool> DeleteTransaction(Guid id);
-    }
+        Task<List<TransactionViewModel>> GetTransactions(TransactionFilterModel transactionFilter);
+
+        Task<TransactionViewModel> AddTransaction(Transaction transaction);
+
 }

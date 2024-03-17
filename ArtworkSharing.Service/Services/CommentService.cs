@@ -1,88 +1,77 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Comments;
+using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
+using Microsoft.EntityFrameworkCore;
 
-namespace ArtworkSharing.Service.Services
+namespace ArtworkSharing.Service.Services;
+
+public class CommentService : ICommentService
 {
-    public class CommentService : ICommentService
-	{
-		private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
-		public CommentService(IUnitOfWork unitOfWork)
-		{
-			_unitOfWork = unitOfWork;
-		}
+    public CommentService(IUnitOfWork unitOfWork)
+    {
+        _unitOfWork = unitOfWork;
+    }
 
-		public async Task Add(Comment comment)
-		{
-			try
-			{
-				await _unitOfWork.BeginTransaction();
+    public async Task<List<CommentViewModel>> Add(CreateCommentModel comment)
+    {
+        var cmt = AutoMapperConfiguration.Mapper.Map<Comment>(comment);
+        cmt.CommentedDate = DateTime.Now;
+        var commentRepository = _unitOfWork.CommentRepository;
+        await commentRepository.AddAsync(cmt);
+        await _unitOfWork.SaveChangesAsync();
+        return await GetCommentByArtworkId(comment.ArtworkId);
+    }
 
-				var commentRepository = _unitOfWork.CommentRepository;
-				await commentRepository.AddAsync(comment);
+    public async Task<bool> Delete(Guid commentId)
+    {
+        var commentRepository = _unitOfWork.CommentRepository;
+        var comment = await commentRepository.GetAsync(c => c.Id == commentId);
+        if (comment == null)
+            throw new KeyNotFoundException();
 
-				await _unitOfWork.CommitTransaction();
-			}
-			catch (Exception e)
-			{
-				await _unitOfWork.RollbackTransaction();
-				throw;
-			}
-		}
+        await commentRepository.DeleteAsync(comment);
 
-		public async Task Delete(Guid commentId)
-		{
-			try
-			{
-				await _unitOfWork.BeginTransaction();
+        return await _unitOfWork.SaveChangesAsync() > 0;
+    }
 
-				var commentRepository = _unitOfWork.CommentRepository;
-				var comment = await commentRepository.GetAsync(c => c.Id == commentId);
-				if (comment == null)
-					throw new KeyNotFoundException();
+    public async Task<List<CommentViewModel>> GetAll()
+    {
+        return AutoMapperConfiguration.Mapper.Map<List<CommentViewModel>>(await _unitOfWork.CommentRepository
+            .GetAllAsync());
+    }
 
-				await commentRepository.DeleteAsync(comment);
 
-				await _unitOfWork.CommitTransaction();
-			}
-			catch (Exception e)
-			{
-				await _unitOfWork.RollbackTransaction();
-				throw;
-			}
-		}
+    public async Task<List<CommentViewModel>> GetCommentByArtworkId(Guid id)
+    {
+        return AutoMapperConfiguration.Mapper.Map<List<CommentViewModel>>(await _unitOfWork.CommentRepository
+            .Where(x => x.ArtworkId == id).ToListAsync());
+    }
 
-		public async Task<IList<Comment>> GetAll()
-		{
-			return await _unitOfWork.CommentRepository.GetAllAsync();
-		}
+    public async Task<Comment> GetOne(Guid commentId)
+    {
+        return await _unitOfWork.CommentRepository.FindAsync(commentId);
+    }
 
-		public async Task<Comment> GetOne(Guid commentId)
-		{
-			return await _unitOfWork.CommentRepository.FindAsync(commentId);
-		}
+    public async Task<CommentViewModel> GetComment(Guid commentId)
+    {
+        return AutoMapperConfiguration.Mapper.Map<CommentViewModel>(
+            await _unitOfWork.CommentRepository.FirstOrDefaultAsync(x => x.Id == commentId));
+    }
 
-		public async Task Update(Comment comment)
-		{
-			try
-			{
-				await _unitOfWork.BeginTransaction();
+    public async Task<CommentViewModel> Update(UpdateCommentModel comment)
+    {
+        var commentRepository = _unitOfWork.CommentRepository;
+        var existingComment = await commentRepository.FirstOrDefaultAsync(x => x.Id == comment.Id);
+        if (existingComment == null)
+            throw new KeyNotFoundException();
 
-				var commentRepository = _unitOfWork.CommentRepository;
-				var existingComment = await commentRepository.FindAsync(comment.Id);
-				if (existingComment == null)
-					throw new KeyNotFoundException();
+        existingComment.Content = comment.Content;
 
-				// Update comment properties here if needed
-
-				await _unitOfWork.CommitTransaction();
-			}
-			catch (Exception e)
-			{
-				await _unitOfWork.RollbackTransaction();
-				throw;
-			}
-		}
-	}
+        return await _unitOfWork.SaveChangesAsync() > 0 ? await GetComment(comment.Id) : null!;
+    }
 }
