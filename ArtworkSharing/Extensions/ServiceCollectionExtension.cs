@@ -76,7 +76,7 @@ public static class ServiceCollectionExtension
         services.AddSingleton<MessageChanel>(messageChanel.PaidRaise());
         services.AddSingleton<IMessageSupport, MessageSupport>();
         services.AddSingleton<MessagePaymentEvent>();
-        services.AddHostedService<MessagePaymentEvent>(_=>_.GetService<MessagePaymentEvent>());
+        services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>());
         services.AddHostedService<MessageSubscribe>();
 
 
@@ -112,9 +112,19 @@ public static class ServiceCollectionExtension
             options.TokenLifespan = TimeSpan.FromHours(24); // Token expires after 24 hours
         });
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddCookie(x =>
+        {
+            x.Cookie.Name = "accessToken";
+        }
+            )
             .AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -123,8 +133,17 @@ public static class ServiceCollectionExtension
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Cookies["accessToken"];
+                     
+                        return Task.CompletedTask;
+                    }
+                };
             });
-
+        
         services.AddAuthentication()
             .AddGoogle(options =>
             {
