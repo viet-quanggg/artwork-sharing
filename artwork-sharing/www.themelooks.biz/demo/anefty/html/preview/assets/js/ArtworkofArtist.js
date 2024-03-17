@@ -1,12 +1,25 @@
 $(document).ready(async function() {
     try {
       await fetchData();
-      $('#searchArtist').on('submit', function(e) {
+      $('#searchArtist').on('click', function(e) {
         e.preventDefault();
         console.log("clicked");
         var searchTerm = $(this).find('input[type="text"]').val();
         searchArtists(searchTerm); 
     });
+    $('#Artworkcollected').on('click', '.delete-button', function(e) {
+      e.preventDefault();
+      var artworkId = $(this).data('id');
+  
+      // Add the code to delete the artwork with the ID
+  
+      // Add a confirmation message
+      if (confirm('Are you sure you want to delete this artwork?')) {
+        // Add the code to delete the artwork
+        DeletingArtwork(artworkId);
+        console.log(`Deleted artwork with ID ${artworkId}`);
+      }
+    });  
     } catch (error) {
       console.error('Error:', error);
     }
@@ -56,6 +69,9 @@ $(document).ready(async function() {
                       <button class="btn-circle btn-border dropdown-toggle" data-bs-toggle="dropdown">
                         <img src="assets/img/icons/share.svg" alt="" class="svg">
                       </button>
+                      <button class="btn btn-border btn-sm delete-button" data-id="${All.id}">
+                        <img src="assets/img/icons/trash.svg" alt="" class="svg">
+                      </button>
                       <ul class="dropdown-menu">
                         <li><a class="dropdown-item" target="_blank" href="https://www.facebook.com/">
                             <img src="assets/img/icons/facebook.svg" alt=""> Share on Facebook
@@ -101,4 +117,17 @@ $(document).ready(async function() {
       } catch (error) {
         console.error('Error fetching artwork data:', error);
       }
+  }
+  async function DeletingArtwork(artId){
+    $.ajax({
+      url: `/api/artwork/${artworkId}`,
+      type: 'DELETE',
+      success: function() {
+        console.log(`Artwork with ID ${artworkId} deleted`);
+        fetchData();
+      },
+      error: function() {
+        console.log(`Failed to delete artwork with ID ${artworkId}`);
+      }
+    });
   }
