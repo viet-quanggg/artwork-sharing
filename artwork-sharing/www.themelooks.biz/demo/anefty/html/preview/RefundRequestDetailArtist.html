@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/ranking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:22 GMT -->
+ 
   <head>
     <title>Anefty || NFT Marketplace HTML5 Template</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -25,29 +25,7 @@
     <link rel="stylesheet" href="assets/plugins/nice-select/nice-select.css" />
     <link rel="stylesheet" href="assets/css/style.css" />
     <link rel="stylesheet" href="assets/css/custom.css" />
-    <style>
-      .pagination {
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-    }
     
-    .pagination button {
-        margin-right: 5px;
-        padding: 5px 10px;
-        border: none;
-        background-color: #007bff;
-        color: #fff;
-        cursor: pointer;
-        border-radius: 5px;
-    }
-    
-    .pagination button:hover {
-        background-color: #0056b3;
-    }
-    
-    
-  </style>
   </head>
   <body>
     <div class="preloader">
@@ -122,11 +100,11 @@
                         <a href="#">Pages</a>
                         <ul class="sub-menu">
                           <li><a href="author.html">Author</a></li>
-                          <li class="current-menu-children">
-                            <a href="ranking.html">ranking</a>
-                          </li>
+                          <li><a href="ranking.html">ranking</a></li>
                           <li><a href="collection.html">Collection</a></li>
-                          <li><a href="item-details.html">Item Details</a></li>
+                          <li class="current-menu-children">
+                            <a href="item-details.html">Item Details</a>
+                          </li>
                           <li><a href="activity.html">Activity</a></li>
                           <li><a href="upload.html">Upload</a></li>
                           <li><a href="profile-edit.html">Profile Edit</a></li>
@@ -203,73 +181,89 @@
         </div>
       </div>
     </header>
-  
+   
     <section class="pt-120 pb-120">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-lg-7">
-            <div class="section-title text-white text-center mb-35">
-              <h2>WellCome Admin </h2>
-              <p>
-                RefundRequest Page
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <div class="d-flex flex-wrap justify-content-center mb-50">
-              <select class="select-rounded lg mb-10 mr-20">
-                <option value="7_days">Last 7 Day</option>
-                <option value="24_hours">24 Hours</option>
-                <option value="30_days">Last 30 Day</option>
-              </select>
-              <select class="select-rounded lg mb-10 mr-20">
-                <option value="categorys">all category</option>
-                <option value="digital_art">Digital Art</option>
-                <option value="memes">Memes</option>
-                <option value="virtual_fashion">Virtual Fashion</option>
-                <option value="domain_names">Domain Names</option>
-              </select>
-              <select class="select-rounded mb-10 lg">
-                <option value="offers">All Chains</option>
-                <option value="ethereum">Ethereum</option>
-                <option value="polygon">Polygon</option>
-                <option value="klaytn">Klaytn</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="row mt-n3">
-          <div class="col-12 pb-lg-3">
-            <div class="table-responsive">
-              <table class="text-nowrap">
-                <thead>
-                  <tr>
-                    <th>Id</th>
-                    <th>Time</th>
-                    <th>Description</th>
-                    <th>Reason</th>
-                    <th>Status</th>
-                    <th>Price</th>
-                    <th>Button</th>
-                  </tr>
-                </thead>
-                <tbody id="dataBody">
-                 
+        <div class="container" id="dataContainer">
+            <div class="row justify-content-between" id="row1">
+              <div class="col-lg-12 order-1 order-lg-0" id="col1">
+                <div class="item-details ov-hidden" id="item-details">
+                  <h2 class="product-title" id="product-title">Animal Girl Painting</h2>
                   
-                </tbody>
-              </table>
+                  <p id="paragraph">
+                    Kindly ensure a comprehensive examination of all transactions and contractual stipulations, along with a thorough consideration of the rationale outlined in the refund request description. Subsequently, it is imperative to make a judicious determination, meticulously adhering to the governing laws and established protocols.
+                    <a href="#" class="read-more c1" id="read-more">read more...</a>
+                  </p>
+                  <div class="row pt-1" id="row2">
+                    <div class="col-sm-6" id="col2">
+                      <div class="price mb-4 mb-sm-0" id="price">
+                        <h6>Description</h6>
+                        <h3>1.69 ETH</h3>
+                      </div>
+                    </div>
+                    <div class="col-sm-6" id="col2">
+                        <div class="price mb-4 mb-sm-0" id="reason">
+                          <h6>Description</h6>
+                          <h3>1.69 ETH</h3>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="row mb-4 mt-30 pt-2" id="row3">
+                    <div class="col-sm-6" id="col5">
+                        <div class="item-price" id="item-price">
+                          <h6>Price</h6>
+                          <div class="item-price-inner align-items-center d-flex justify-content-between" id="Price-Rf">
+                            <h6 class="mb-0">Amount</h6>
+                            <h6 class="mb-0">1.69 ETH</h6>
+                          </div>
+                        </div>
+                      </div>
+                    <div class="col-sm-6" id="col5">
+                      <div class="item-price" id="item-price">
+                        <h6>Time</h6>
+                        <div class="item-price-inner align-items-center d-flex justify-content-between" id="Time-Rf">
+                          <h6 class="mb-0">Amount</h6>
+                          <h6 class="mb-0">1.69 ETH</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="button-group style--two" id="button-group">
+                    <a class="btn btn-border btn-sm" id="btn-border">
+                      <img src="assets/img/icons/btn-buy-now-icon.svg" alt="" class="svg"/>
+                      Deny</a>
+                    <a  class="btn btn-sm" id="btn-sm">
+                      <img src="assets/img/icons/judge-icon.svg" alt="" class="svg"/>
+                      Accept</a>
+                  </div>
+                  <div class="row mb-4 mt-40 pt-1" id="row4">
+                    <div class="col-sm-6" id="col6">
+                      <a href="profile.html" class="hz-profile creator media mb-4 mb-sm-0" id="hz-profile-creator">
+                        <div class="avatar">
+                          <img src="assets/img/media/creator-avatar.png" alt="" id="creator-avatar"/>
+                        </div>
+                        <div class="content media-body" id="media-body-creator">
+                          <h6>Creator</h6>
+                          <h5>Anehty_Yacht</h5>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-sm-6" id="col7">
+                      <a href="profile.html" class="hz-profile owner media" id="hz-profile-owner">
+                        <div class="avatar">
+                          <img src="assets/img/media/owner-avatar.png" alt="" id="owner-avatar"/>
+                        </div>
+                        <div class="content media-body" id="media-body-owner">
+                          <h6>Owner</h6>
+                          <h5>Cyber_Kongz</h5>
+                        </div>
+                      </a>
+                    </div>
+                 
+                </div>
+              </div>
             </div>
           </div>
-          <div id="pagination" class="pagination">
-
-            
-          </div>
-        </div>
-        
-      </div>
-    
+          
     </section>
     <footer class="footer">
       <div class="footer-main">
@@ -397,8 +391,7 @@
     <script src="assets/plugins/counterup/jquery.counterup.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/custom.js"></script>
-    <script src="assets/js/RefundRequestHome.js"></script>
-    
+    <script src="assets/js/RefundRequestDetailArtist.js"></script>
   </body>
-  <!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/ranking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:25 GMT -->
+  <!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/item-details.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:22 GMT -->
 </html>

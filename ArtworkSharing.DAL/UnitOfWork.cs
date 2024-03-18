@@ -30,7 +30,7 @@ public class UnitOfWork : IUnitOfWork
         RatingRepository = new RatingRepository(DbContext);
         RefundRequestRepository = new RefundRequestRepository(DbContext);
         TransactionRepository = new TransactionRepository(DbContext);
-
+        
         VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
         VNPayTransactionRefundRepository = new VNPayTransactionRefundRepository(DbContext);
         VNPayTransactionTransferRepository = new VNPayTransactionTransferRepository(DbContext);
