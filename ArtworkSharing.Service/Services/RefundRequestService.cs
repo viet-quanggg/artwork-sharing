@@ -33,15 +33,70 @@ public class RefundRequestService : IRefundRequestService
 
     public async Task CreateRefundRequest(CreateRefundRequestModel crrm)
     {
-        await _uow.BeginTransaction();
-        var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
-        refund.RefundRequestDate = DateTime.Now;
-        var repo = _uow.RefundRequestRepository;
-        await repo.AddAsync(refund);
+        try
+        {
+            await _uow.BeginTransaction();
+            var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
+            refund.RefundRequestDate = DateTime.Now;
+            refund.Status = "Pending";
+            var repo = _uow.RefundRequestRepository;
+            await repo.AddAsync(refund);
 
-        await _uow.CommitTransaction();
+            await _uow.CommitTransaction();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+       
     }
 
+    public async Task<List<RefundRequestViewModelUser>> GetRefundRequestForUser(Guid userId)
+        => AutoMapperConfiguration.Mapper.Map<List<RefundRequestViewModelUser>>(await _uow.RefundRequestRepository
+            .Include(rr => rr.Transaction)
+            .ThenInclude(t => t.Artwork)
+            .Where(rr => rr.Transaction != null && rr.Transaction.AudienceId == userId)
+            .ToListAsync());
+
+    public async Task<RefundRequestViewModelUser> GetRefundRequestDetail(Guid refundId)
+        => AutoMapperConfiguration.Mapper.Map<RefundRequestViewModelUser>(await _uow.RefundRequestRepository
+            .Include(rr => rr.Transaction)
+            .ThenInclude(r => r.Artwork)
+            .ThenInclude(a => a.Artist)
+            .ThenInclude(u => u.User)
+            .FirstOrDefaultAsync(rr => rr.Id == refundId)
+            );
+
+    public async Task<bool> CancelRefundRequestByUser(Guid refundId)
+    {
+        try
+        {
+            await _uow.BeginTransaction();
+            var existedRefund = await _uow.RefundRequestRepository.FirstOrDefaultAsync(rr => rr.Id == refundId);
+            if (existedRefund == null)
+            {
+                throw new KeyNotFoundException();
+            }
+            else
+            {
+                if (existedRefund.Status.Equals("Pending"))
+                {
+                    existedRefund.Status = "Canceled By User";
+                    _uow.RefundRequestRepository.UpdateRefundRequest(existedRefund);
+                    await _uow.SaveChangesAsync();
+                    await _uow.CommitTransaction();
+                    return true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+
+        return false;
+    }
+    
     public async Task<List<RefundRequestViewModel>> GetAll()
     {
         return AutoMapperConfiguration.Mapper.Map<List<RefundRequestViewModel>>(await _uow.RefundRequestRepository

@@ -87,6 +87,7 @@ public class UserController : Controller
     }
 
 
+
     /// <summary>
     /// update user (name and phone)
     /// </summary>
@@ -99,4 +100,5 @@ public class UserController : Controller
         if (id == Guid.Empty || updateUserModel == null) return BadRequest(new { Message = "User not found!" });
         return Ok(await _userService.UpdateUser(id, updateUserModel));
     }
+
 }

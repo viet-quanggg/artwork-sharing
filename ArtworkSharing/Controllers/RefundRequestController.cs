@@ -4,6 +4,7 @@ using ArtworkSharing.Core.ViewModels.RefundRequests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ArtworkSharing.Controllers;
 
@@ -13,6 +14,20 @@ public class RefundRequestController : ControllerBase
 {
     private readonly IRefundRequestService _refundRequestService;
 
+    [HttpPost("createRefundRequestUser")]
+    public async Task<ActionResult> CreateRefundRequestUser(CreateRefundRequestModel crrm)
+    {
+        try
+        {
+            await _refundRequestService.CreateRefundRequest(crrm);
+            return Ok(crrm);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+    
     public RefundRequestController(IRefundRequestService refundRequestService)
     {
         _refundRequestService = refundRequestService;
@@ -49,6 +64,7 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
+
 
     [HttpGet("countAritst")]
     public async Task<ActionResult<int>> GetRefundRequestCountArist(Guid AristId)
@@ -221,5 +237,61 @@ public class RefundRequestController : ControllerBase
         {
             return NotFound();
         }
+    }
+
+
+    [HttpGet("/RefundRequestByUser/{userId}")]
+    public async Task<IActionResult> RefundRequestForUser(Guid userId)
+    {
+        try
+        {
+            if (userId != null)
+            {
+                return Ok(await _refundRequestService.GetRefundRequestForUser(userId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+    
+    [HttpGet("/RefundRequestDetailByUser/{refundId}")]
+    public async Task<IActionResult> RefundRequestDetailForUser(Guid refundId)
+    {
+        try
+        {
+            if (refundId != null)
+            {
+                return Ok(await _refundRequestService.GetRefundRequestDetail(refundId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    [HttpPut("/CancelRequestByUser/{refundId}")]
+    public async Task<IActionResult> CancelRequestByUser(Guid refundId)
+    {
+        try
+        {
+            if (refundId != null)
+            {
+                return Ok(await _refundRequestService.CancelRefundRequestByUser(refundId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        
     }
 }

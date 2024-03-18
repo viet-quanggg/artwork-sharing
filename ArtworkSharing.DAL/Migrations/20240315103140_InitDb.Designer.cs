@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
-    [Migration("20240314183515_InitDb")]
+    [Migration("20240315103140_InitDb")]
     partial class InitDb
     {
         /// <inheritdoc />
