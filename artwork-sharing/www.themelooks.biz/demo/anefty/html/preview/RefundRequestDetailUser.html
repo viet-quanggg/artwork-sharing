@@ -165,7 +165,7 @@
                         </div>
                         <br>
                         <div class="button-group style--two">
-                            <a href="" class="btn btn-border btn-sm"><img src="assets/img/icons/btn-buy-now-icon.svg" alt="" class="svg">Cancel request</a> 
+                            <a id="cancel-button" class="btn btn-border btn-sm"><img src="assets/img/icons/btn-buy-now-icon.svg" alt="" class="svg">Cancel request</a> 
                         </div>
                         <div class="row mb-4 mt-40 pt-1">
                             <div class="col-sm-6"><a href="profile.html" class="hz-profile creator media mb-4 mb-sm-0">
@@ -175,48 +175,7 @@
                                         <h5 id="artwork-artist"></h5>
                                     </div>
                                 </a></div>
-                        </div> 
-<!--                        <ul class="nav tab-buttons style&#45;&#45;two">-->
-<!--                            <li><button class="active" data-bs-toggle="tab" data-bs-target="#info">Comments</button>-->
-<!--                            </li>-->
-<!--                        </ul>-->
-<!--                        <div class="tab-content">-->
-<!--                            <div class="tab-pane fade show active cus-scroll" id="info">-->
-<!--                                <ul id="u-cmt" class="info-list">-->
-<!--                                    &lt;!&ndash; <li >-->
-<!--                                        <h6><b>Michael</b></h6>-->
-<!--                                        <h6>Nice picture</h6>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <h6><b>Michael</b></h6>-->
-<!--                                        <h6>Nice picture</h6>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <h6><b>Michael</b></h6>-->
-<!--                                        <h6>Nice picture</h6>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <h6><b>Michael</b></h6>-->
-<!--                                        <h6>Nice picture</h6>-->
-<!--                                    </li>-->
-<!--                                    <li>-->
-<!--                                        <h6><b>Michael</b></h6>-->
-<!--                                        <h6>Nice picture</h6>-->
-<!--                                    </li> &ndash;&gt;-->
-<!--                                </ul>-->
-<!--                            </div>-->
-<!--                            <div class="mb-3">-->
-<!--                                <label for="exampleInputEmail1" class="form-label">Michael</label>-->
-<!--                                <input id="content-cmt" style="border: 1px solid #ff0076; border-radius: 10px;" type="text"-->
-<!--                                    class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">-->
-<!--                            </div>-->
-<!--                            <div id="btn-send-cmt">-->
-<!--                                <button onclick="SendCmt('')" type="button" class="btn btn-primary">Comments</button>-->
-<!--                            </div>-->
-<!--                            <div class="tab-pane fade" id="bids">-->
-<!--                                <p>No active bids yet. Be the first to make a bid!</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        </div>
                     </div>
                 </div>
                 <div class="col-xl-5 col-lg-6 order-0 order-lg-1">
@@ -225,6 +184,38 @@
                 </div>
             </div>
         </div>
+
+        <div class="container">
+            <!--                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>-->
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Are you sure to cancel this request ?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <p>
+                                    Please note that canceling your refund request is irreversible and will result in the cancellation of your refund process !
+                                </p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="closeButton" type="button" class="btn btn-close" data-dismiss="modal">No</button>
+                            <button type="button" id="confirmButton" class="btn btn-primary">Yes</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        
     </section>
     <footer class="footer">
         <div class="footer-main">

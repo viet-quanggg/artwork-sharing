@@ -66,6 +66,37 @@ public class RefundRequestService : IRefundRequestService
             .ThenInclude(u => u.User)
             .FirstOrDefaultAsync(rr => rr.Id == refundId)
             );
+
+    public async Task<bool> CancelRefundRequestByUser(Guid refundId)
+    {
+        try
+        {
+            await _uow.BeginTransaction();
+            var existedRefund = await _uow.RefundRequestRepository.FirstOrDefaultAsync(rr => rr.Id == refundId);
+            if (existedRefund == null)
+            {
+                throw new KeyNotFoundException();
+            }
+            else
+            {
+                if (existedRefund.Status.Equals("Pending"))
+                {
+                    existedRefund.Status = "Canceled By User";
+                    _uow.RefundRequestRepository.UpdateRefundRequest(existedRefund);
+                    await _uow.SaveChangesAsync();
+                    await _uow.CommitTransaction();
+                    return true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+
+        return false;
+    }
+    
     public async Task<List<RefundRequestViewModel>> GetAll()
     {
         return AutoMapperConfiguration.Mapper.Map<List<RefundRequestViewModel>>(await _uow.RefundRequestRepository

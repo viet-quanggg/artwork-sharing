@@ -18,7 +18,7 @@ public interface IRefundRequestService
 
     Task<List<RefundRequestViewModelUser>> GetRefundRequestForUser(Guid userId);
     Task<RefundRequestViewModelUser> GetRefundRequestDetail(Guid refundId);
-
+    Task<bool> CancelRefundRequestByUser(Guid refundId);
 
     IEnumerable<RefundRequest> Get(
         Expression<Func<RefundRequest, bool>> filter = null,

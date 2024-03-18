@@ -3,6 +3,7 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ArtworkSharing.Controllers;
 
@@ -235,5 +236,24 @@ public class RefundRequestController : ControllerBase
         {
             throw new Exception(ex.Message);
         }
+    }
+
+    [HttpPut("/CancelRequestByUser/{refundId}")]
+    public async Task<IActionResult> CancelRequestByUser(Guid refundId)
+    {
+        try
+        {
+            if (refundId != null)
+            {
+                return Ok(await _refundRequestService.CancelRefundRequestByUser(refundId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        
     }
 }
