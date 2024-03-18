@@ -78,7 +78,6 @@ public class UnitOfWork : IUnitOfWork
 
     public IPaymentEventRepository PaymentEventRepository { get; }
     public IPaypalOrderRepository PaypalOrderRepository { get; }
-    public IPaypalTokenRepository PaypalTokenRepository { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

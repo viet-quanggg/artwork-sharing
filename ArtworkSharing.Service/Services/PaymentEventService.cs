@@ -14,7 +14,6 @@ namespace ArtworkSharing.Service.Services
         private readonly IUnitOfWork _uow;
         public PaymentEventService(IUnitOfWork unitOfWork)
         {
-            _configuration=configuration;
             _uow = unitOfWork;
         }
 

@@ -63,12 +63,11 @@ public static class ServiceCollectionExtension
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
         services.AddScoped<ITransactionService, TransactionService>();
-<<<<<<< HEAD
         services.AddScoped<IUserRoleService, UserRoleService>();
-=======
         services.AddScoped<IPaymentEventService, PaymentEventService>();
         services.AddScoped<IVNPayTransactionTransferService, VNPayTransactionTransferService>();
->>>>>>> e9cf46968973864689cabb18726a9098ed81b417
+        services.AddScoped<IPaypalOrderService, PaypalOrderService>();
+
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
