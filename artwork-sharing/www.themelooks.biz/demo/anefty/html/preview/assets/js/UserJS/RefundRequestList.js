@@ -40,9 +40,9 @@ $(document).ready(function() {
 //Add refundId to localStorage
 $(document).ready(function () {
     $(document).on('click', '#detailsButton', function () {
-        var id = $(this).data('id');
-        var userId = "32fddca3-6ebf-43c8-87ac-a6948626e2dc";
-        localStorage.setItem("userId", userId);
+        var refundId = $(this).data('id');
+       
+        localStorage.setItem("refundId", refundId);
     });
 
 });

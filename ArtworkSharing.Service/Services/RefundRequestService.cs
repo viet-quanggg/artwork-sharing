@@ -58,6 +58,14 @@ public class RefundRequestService : IRefundRequestService
             .Where(rr => rr.Transaction != null && rr.Transaction.AudienceId == userId)
             .ToListAsync());
 
+    public async Task<RefundRequestViewModelUser> GetRefundRequestDetail(Guid refundId)
+        => AutoMapperConfiguration.Mapper.Map<RefundRequestViewModelUser>(await _uow.RefundRequestRepository
+            .Include(rr => rr.Transaction)
+            .ThenInclude(r => r.Artwork)
+            .ThenInclude(a => a.Artist)
+            .ThenInclude(u => u.User)
+            .FirstOrDefaultAsync(rr => rr.Id == refundId)
+            );
     public async Task<List<RefundRequestViewModel>> GetAll()
     {
         return AutoMapperConfiguration.Mapper.Map<List<RefundRequestViewModel>>(await _uow.RefundRequestRepository

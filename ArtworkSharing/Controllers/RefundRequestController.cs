@@ -218,4 +218,22 @@ public class RefundRequestController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+    
+    [HttpGet("/RefundRequestDetailByUser/{refundId}")]
+    public async Task<IActionResult> RefundRequestDetailForUser(Guid refundId)
+    {
+        try
+        {
+            if (refundId != null)
+            {
+                return Ok(await _refundRequestService.GetRefundRequestDetail(refundId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 }
