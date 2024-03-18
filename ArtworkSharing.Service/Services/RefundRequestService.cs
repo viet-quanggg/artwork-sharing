@@ -38,7 +38,7 @@ public class RefundRequestService : IRefundRequestService
             await _uow.BeginTransaction();
             var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
             refund.RefundRequestDate = DateTime.Now;
-            refund.Status = "Processing";
+            refund.Status = "Pending";
             var repo = _uow.RefundRequestRepository;
             await repo.AddAsync(refund);
 
@@ -50,6 +50,13 @@ public class RefundRequestService : IRefundRequestService
         }
        
     }
+
+    public async Task<List<RefundRequestViewModelUser>> GetRefundRequestForUser(Guid userId)
+        => AutoMapperConfiguration.Mapper.Map<List<RefundRequestViewModelUser>>(await _uow.RefundRequestRepository
+            .Include(rr => rr.Transaction)
+            .ThenInclude(t => t.Artwork)
+            .Where(rr => rr.Transaction != null && rr.Transaction.AudienceId == userId)
+            .ToListAsync());
 
     public async Task<List<RefundRequestViewModel>> GetAll()
     {

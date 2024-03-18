@@ -66,6 +66,9 @@ public class MapperHandler : Profile
         
         CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
         CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
+        CreateMap<RefundRequest, RefundRequestViewModelUser>().ReverseMap();
+        
+        
         CreateMap<MediaContent, MediaContentViewModel>().ReverseMap();
         CreateMap<Package, PackageViewModel>().ReverseMap();
         CreateMap<Rating, RatingViewModel>().ReverseMap();

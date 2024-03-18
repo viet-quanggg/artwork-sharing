@@ -199,4 +199,23 @@ public class RefundRequestController : ControllerBase
             return NotFound();
         }
     }
+
+
+    [HttpGet("/RefundRequestByUser/{userId}")]
+    public async Task<IActionResult> RefundRequestForUser(Guid userId)
+    {
+        try
+        {
+            if (userId != null)
+            {
+                return Ok(await _refundRequestService.GetRefundRequestForUser(userId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 }

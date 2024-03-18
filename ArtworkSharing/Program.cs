@@ -45,12 +45,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyOrigin());
 
 //app.UseException();
 //app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyOrigin());
 app.MapControllers();
 
 app.Run();

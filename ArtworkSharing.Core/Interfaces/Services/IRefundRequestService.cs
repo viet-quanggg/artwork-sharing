@@ -16,6 +16,8 @@ public interface IRefundRequestService
 
     Task CreateRefundRequest(CreateRefundRequestModel crrm);
 
+    Task<List<RefundRequestViewModelUser>> GetRefundRequestForUser(Guid userId);
+
     IEnumerable<RefundRequest> Get(
         Expression<Func<RefundRequest, bool>> filter = null,
         Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = null,
