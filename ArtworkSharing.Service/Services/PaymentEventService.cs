@@ -1,20 +1,17 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Paypals;
 using ArtworkSharing.DAL.Extensions;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace ArtworkSharing.Service.Services
 {
     public class PaymentEventService : IPaymentEventService
     {
+        private readonly IConfiguration _configuration;
         private readonly IUnitOfWork _uow;
-
         public PaymentEventService(IUnitOfWork unitOfWork)
         {
             _uow = unitOfWork;

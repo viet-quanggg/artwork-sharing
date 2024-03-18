@@ -13,7 +13,7 @@ namespace ArtworkSharing.Core.Domain.Entities
         public string Description { get; set; }
         public int Quantity { get; set; }
         public string CurrencyCode { get; set; }
-        public string Value { get; set; }
+        public double Value { get; set; }
         public Guid PaypalOrderId { get; set; }
 
         public PaypalOrder PaypalOrder { get; set; }

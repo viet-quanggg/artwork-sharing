@@ -91,7 +91,7 @@ public class TransactionService : ITransactionService
 
     public async Task<Transaction> GetOne(Guid id)
     {
-        return await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);
+        return await _uow.TransactionRepository.Include(x=>x.Audience).Include(x=>x.Artwork).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<TransactionViewModel> GetTransaction(Guid id)
