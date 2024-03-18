@@ -51,24 +51,16 @@ public class PaymentController : ControllerBase
     {
         var rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
-
-        await _messageSupport.RaiseEventPayment(new Core.Models.MessageRaw
-        {
-            ExchangeName = Exchange.PaymentRaise,
-            RoutingKey = RoutingKey.PaymentRaise,
-            QueueName = Queue.PaymentRaiseQueue,
-            Message = JsonExtension.SerializeCategoryTransactionViewModel(rs.TransactionViewModel)
-        });
         return Ok(rs.TransactionViewModel);
     }
 
-    //[HttpGet("test")]
-    //public async Task<IActionResult> TestTest()
-    //{
-    //    await _paymentEventService.AddPaymentEvent(new Core.Domain.Entities.PaymentEvent { Data = JsonConvert.SerializeObject(new VNPayTransactionTransfer { Id = Guid.NewGuid(), IsCompleted = true, TransactionId = Guid.NewGuid() }) });
-    //    _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
-    //    return Ok();
-    //}
+    [HttpGet("test")]
+    public async Task<IActionResult> TestTest()
+    {
+        await _paymentEventService.AddPaymentEvent(new Core.Domain.Entities.PaymentEvent { Data = JsonConvert.SerializeObject(new VNPayTransactionTransfer { Id = Guid.NewGuid(), IsCompleted = true, TransactionId = Guid.NewGuid() }) });
+        _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
+        return Ok();
+    }
     /// <summary>
     ///     Get VNPay transaction by transactionId
     /// </summary>

@@ -16,7 +16,7 @@ public interface IUserService
     Task UpdateUser(User user);
 
     Task<bool> DeleteUser(Guid userId);
-    Task<ViewModels.Users.UserViewModel> UpdateUser(UpdateUserModel userModel);
+    Task<ViewModels.Users.UserViewModel> UpdateUser(Guid id,UpdateUserModel userModel);
     Task<ViewModels.Users.UserViewModel> CreateUser(CreateUserModel createUser);
     Task<ViewModels.Users.UserViewModel> GetOne(Guid id);
 }
