@@ -132,18 +132,18 @@ public class UserService : IUserService
     }
 
 
-    public async Task<UserViewModel> UpdateUser(UpdateUserModel um)
+    public async Task<UserViewModel> UpdateUser(Guid id,UpdateUserModel um)
     {
         var repo = _unitOfWork.UserRepository;
-        var u = await repo.FirstOrDefaultAsync(u => u.Id == um.Id);
+        var u = await repo.FirstOrDefaultAsync(u => u.Id == id);
         if (u == null) throw new KeyNotFoundException();
 
         u.Name = um.Name ?? u.Name;
-        u.Email = um.Email ?? u.Email;
+        u.PhoneNumber = um.Phone ?? u.PhoneNumber;
         _unitOfWork.UserRepository.UpdateUser(u);
 
         await _unitOfWork.SaveChangesAsync();
-        return await GetOne(um.Id);
+        return await GetOne(id);
     }
 
 

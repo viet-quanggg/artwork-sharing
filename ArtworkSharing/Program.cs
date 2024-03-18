@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var ArtworkSharing = "ArtworkSharing";
 
 // Add services to the container.
 
@@ -45,6 +46,15 @@ builder.Services.AddServices();
 builder.Services.AddConfigException();
 builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = false; });
 builder.Services.AddHttpClient();
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy(name: ArtworkSharing,
+//                      policy =>
+//                      {
+//                          policy.WithOrigins("http://127.0.0.1:5500/",
+//                                              "https://127.0.0.1:5500/").AllowAnyMethod().AllowAnyHeader();
+//                      });
+//});
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
 var app = builder.Build();
@@ -59,7 +69,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors(_ => _.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
 app.UseException();
 app.UseHttpsRedirection();
 app.UseAuthentication();
