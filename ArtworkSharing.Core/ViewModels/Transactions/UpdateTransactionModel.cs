@@ -12,5 +12,9 @@ public class UpdateTransactionModel
     public DateTime CreatedDate { get; set; }
     public TransactionStatus Status { get; set; }
 
+    public TransactionType Type { get; set; }
+
+    public Guid Id { get; set; }
+
     // Add whatever you need
 }

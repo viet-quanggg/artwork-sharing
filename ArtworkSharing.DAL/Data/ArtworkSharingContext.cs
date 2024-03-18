@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -100,5 +101,42 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
             .WithMany(a => a.ArtistPackages)
             .HasForeignKey(a => a.ArtistId)
             .OnDelete(DeleteBehavior.NoAction);
+                
+        SeedRoles(modelBuilder);
+
     }
+
+    private void SeedRoles(ModelBuilder modelBuilder)
+    {        
+        modelBuilder.Entity<Role>().HasData(new Role
+        {
+            Id = Guid.NewGuid(),
+            Name = RoleOfSystem.Admin.ToString(),
+                NormalizedName = RoleOfSystem.Admin.ToString().ToUpper(),
+                
+        });
+      
+        modelBuilder.Entity<Role>().HasData(new Role
+            {
+            Id= Guid.NewGuid(),
+            Name = RoleOfSystem.SuperAdmin.ToString(),
+            NormalizedName = RoleOfSystem.SuperAdmin.ToString().ToUpper(),
+            
+        });
+        modelBuilder.Entity<Role>().HasData(new Role
+        {
+            Id = Guid.NewGuid(),
+            Name = RoleOfSystem.Artist.ToString(),
+            NormalizedName = RoleOfSystem.Artist.ToString().ToUpper(),
+
+        });
+        modelBuilder.Entity<Role>().HasData(new Role
+        {
+            Id = Guid.NewGuid(),
+            Name = RoleOfSystem.Audience.ToString(),
+            NormalizedName = RoleOfSystem.Audience.ToString().ToUpper(),
+
+        });      
+    }
+   
 }

@@ -30,6 +30,8 @@ function renderDataOnHTML(data) {
 //   document.getElementById('media-body-owner').getElementsByTagName('h5')[0].textContent = data.owner.name;
   
 }
+
+// Hàm chuyển đổi định dạng thời gian
 function formatDate(dateString) {
   // Chuyển đổi ngày thành đối tượng Date
   var date = new Date(dateString);
@@ -47,6 +49,8 @@ function formatDate(dateString) {
   
   return formattedDateTime;
 }
+
+
 // Fetch data from the API
 fetch(apiUrl)
   .then(response => {
@@ -71,13 +75,13 @@ fetch(apiUrl)
 
   // Khi nhấp vào nút "Deny"
 $('#btn-border').click(function() {
-    updateRefundRequestStatus('Deny');
+    updateRefundRequestStatus('deny');
    
 });
 
 // Khi nhấp vào nút "Accept"
 $('#btn-sm').click(function() {
-    updateRefundRequestStatus('Accept');
+    updateRefundRequestStatus('accept');
    
 });
 
@@ -92,7 +96,7 @@ function updateRefundRequestStatus(status) {
         console.error('Refund request id not found');
         return;
     }
-     status = status+"ByAdmin";
+
     // Gọi API để cập nhật trạng thái của refund request
     const apiUrl = `https://localhost:7270/RefundRequest/${id}/status?status=${status}`;
     $.ajax({
