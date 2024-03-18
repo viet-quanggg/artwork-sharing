@@ -63,8 +63,12 @@ public static class ServiceCollectionExtension
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
         services.AddScoped<ITransactionService, TransactionService>();
+<<<<<<< HEAD
+        services.AddScoped<IUserRoleService, UserRoleService>();
+=======
         services.AddScoped<IPaymentEventService, PaymentEventService>();
         services.AddScoped<IVNPayTransactionTransferService, VNPayTransactionTransferService>();
+>>>>>>> e9cf46968973864689cabb18726a9098ed81b417
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
@@ -76,7 +80,7 @@ public static class ServiceCollectionExtension
         services.AddSingleton<MessageChanel>(messageChanel.PaidRaise());
         services.AddSingleton<IMessageSupport, MessageSupport>();
         services.AddSingleton<MessagePaymentEvent>();
-        services.AddHostedService<MessagePaymentEvent>(_=>_.GetService<MessagePaymentEvent>());
+        services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>());
         services.AddHostedService<MessageSubscribe>();
 
 
@@ -112,9 +116,19 @@ public static class ServiceCollectionExtension
             options.TokenLifespan = TimeSpan.FromHours(24); // Token expires after 24 hours
         });
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddCookie(x =>
+        {
+            x.Cookie.Name = "accessToken";
+        }
+            )
             .AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -123,8 +137,17 @@ public static class ServiceCollectionExtension
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Cookies["accessToken"];
+                     
+                        return Task.CompletedTask;
+                    }
+                };
             });
-
+        
         services.AddAuthentication()
             .AddGoogle(options =>
             {

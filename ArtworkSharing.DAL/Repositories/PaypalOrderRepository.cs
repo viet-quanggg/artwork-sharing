@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.DAL.Repositories
 {
-    public class CommentRepository : Repository<Comment>, ICommentRepository
+    public class PaypalOrderRepository : Repository<PaypalOrder>, IPaypalOrderRepository
     {
-        public CommentRepository(DbContext dbContext) : base(dbContext)
+        public PaypalOrderRepository(DbContext dbContext) : base(dbContext)
         {
         }
     }

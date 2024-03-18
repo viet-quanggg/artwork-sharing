@@ -9,4 +9,6 @@ public interface IArtistPackageService
     Task Update(ArtistPackage artistPackage);
     Task Add(ArtistPackage artistPackage);
     Task Delete(Guid artistPackageId);
+
+    Task CheckAndUpdatePackageExpiration();
 }

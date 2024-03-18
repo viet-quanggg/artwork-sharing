@@ -2,6 +2,7 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 
 namespace ArtworkSharing.Controllers;
@@ -17,20 +18,14 @@ public class RefundRequestController : ControllerBase
         _refundRequestService = refundRequestService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<RefundRequestViewModel>>> GetAllRefundRequests()
-    {
-        var refundRequests = await _refundRequestService.GetAll();
-        return Ok(refundRequests);
-    }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)
-    {
-        var refundRequest = await _refundRequestService.GetRefundRequest(id);
-        if (refundRequest == null) return NotFound();
-        return Ok(refundRequest);
-    }
+    //[HttpGet("{id}")]
+    //public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)
+    //{
+    //    var refundRequest = await _refundRequestService.GetRefundRequest(id);
+    //    if (refundRequest == null) return NotFound();
+    //    return Ok(refundRequest);
+    //}
 
 
     //[HttpGet]
@@ -39,6 +34,8 @@ public class RefundRequestController : ControllerBase
     //    var refundRequests = await _refundRequestService.GetAll();
     //    return Ok(refundRequests);
     //}
+
+    // 5990f7bd-5ee5-4c52-9cce-2c57d90c34ec id aritst
     [HttpGet("count")]
     public async Task<ActionResult<int>> GetRefundRequestCount()
     {
@@ -52,6 +49,22 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
+
+    [HttpGet("countAritst")]
+    public async Task<ActionResult<int>> GetRefundRequestCountArist(Guid AristId)
+    {
+        try
+        {
+            Expression<Func<RefundRequest, bool>> filter = r => (r.Transaction.Artwork.ArtistId == AristId) && (r.Status.Equals("AcceptByAdmin"));
+            int count = await _refundRequestService.Count(filter);
+            return Ok(count);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500); // Lỗi máy chủ nội bộ
+        }
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<List<RefundRequestViewModel>>> GetDetailPackage(Guid id)
     {
@@ -76,7 +89,7 @@ public class RefundRequestController : ControllerBase
         }
     }
 
-    [HttpGet(Name = "GetRefundRequestWithPaging")]
+    [HttpGet("GetRefundRequestWithPaging")]
     public async Task<ActionResult<List<RefundRequestViewModel>>> GetPackageWithPaging(
  [FromQuery] int? pageIndex = null,
  [FromQuery] int? pageSize = null)
@@ -100,6 +113,32 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
+
+    [HttpGet("GetRefundRequestWithPagingArist")]
+    public async Task<ActionResult<List<RefundRequestViewModel>>> GetPackageWithPagingArist( Guid AristId,
+[FromQuery] int? pageIndex = null,
+[FromQuery] int? pageSize = null)
+    {
+        try
+        {
+
+            Expression<Func<RefundRequest, bool>> filter = r => ( r.Transaction.Artwork.ArtistId == AristId) && ( r.Status.Equals("AcceptByAdmin")); 
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = q => q.OrderByDescending(p => p.RefundRequestDate);
+
+            string includeProperties = "Transaction";
+
+            var packages = _refundRequestService.Get(filter, orderBy, includeProperties, pageIndex, pageSize);
+            // Chuyển đổi sang view model nếu cần
+            // var packageViewModels = packages.Select(p => new PackageViewModel { ... }).ToList();
+            return Ok(packages);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500); // Lỗi máy chủ nội bộ
+        }
+    }
+
 
 
     //[HttpGet("{id}")]

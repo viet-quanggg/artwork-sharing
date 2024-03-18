@@ -1,9 +1,9 @@
-﻿using System.Data;
-using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Repositories;
 using ArtworkSharing.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace ArtworkSharing.DAL;
 
@@ -34,7 +34,10 @@ public class UnitOfWork : IUnitOfWork
         VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
         VNPayTransactionRefundRepository = new VNPayTransactionRefundRepository(DbContext);
         VNPayTransactionTransferRepository = new VNPayTransactionTransferRepository(DbContext);
+        UserRepository = new UserRepository(DbContext);
+        UserRoleRepository = new UserRoleRepository(DbContext);
         PaymentEventRepository = new PaymentEventRepository(DbContext);
+        PaypalOrderRepository = new PaypalOrderRepository(DbContext);
     }
 
     public DbContext DbContext { get; }
@@ -71,7 +74,11 @@ public class UnitOfWork : IUnitOfWork
 
     public IVNPayTransactionTransferRepository VNPayTransactionTransferRepository { get; }
 
+    public IUserRoleRepository UserRoleRepository { get; }
+
     public IPaymentEventRepository PaymentEventRepository { get; }
+    public IPaypalOrderRepository PaypalOrderRepository { get; }
+    public IPaypalTokenRepository PaypalTokenRepository { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
