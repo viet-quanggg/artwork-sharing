@@ -15,8 +15,8 @@ $(document).ready(function() {
                 // Populate table with API data
                 $.each(response, function(index, item) {
                     var statusText = item.status ? 'Showing' : 'Not Showing';
-                    var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">Details</a>' + ' | ' +
-                        '<a class="text-capitalize"  id="statusButton" data-id="' + item.id + '" href="">' + '<button>Change Status</button>'+ '</a>';
+                    var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">' + '<button class="btn btn-primary">Details</button>' + '</a>' + ' | ' +
+                        '<a class="text-capitalize"  id="statusButton" data-id="' + item.id + '" href="">' + '<button class="btn btn-primary">Change Status</button>'+ '</a>';
                     $('#artworkTable').DataTable().row.add([
                         item.name,
                         item.artist.user.name,
@@ -50,8 +50,8 @@ $(document).ready(function () {
         $.ajax({
             url: 'https://localhost:7270/api/admin/disableArtwork/' + id,
             method: 'put',
-            success: function () {
-                alert(id + "Has been updated!");
+             success: function () {
+                location.reload();
             }
         })
         
