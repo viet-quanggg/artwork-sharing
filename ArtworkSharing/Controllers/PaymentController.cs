@@ -127,9 +127,12 @@ public class PaymentController : ControllerBase
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
-    [HttpGet("paypal/token/{token}")]
-    public async Task<IActionResult> CompletedTransaction([FromRoute]string token)
+    [HttpGet("paypal/token/")]
+    public async Task<IActionResult> CompletedTransaction()
     {
+        var query = Request.QueryString + "";
+        string token = (query.Split("&")[0]).Split("=")[1];
+
         if (string.IsNullOrEmpty(token)) return BadRequest();
 
         var paypal = await _paypalOrderService.GetPaypalOrder(token);
