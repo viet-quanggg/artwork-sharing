@@ -92,7 +92,7 @@ public class AuthController : ControllerBase
                 $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>", true);
 
             // Return JSON response with redirect URL
-            return Ok(new { RedirectUrl = Url.Action("RegistrationSuccess", "Home") });
+            return Ok();
         }
         catch (Exception ex)
         {
