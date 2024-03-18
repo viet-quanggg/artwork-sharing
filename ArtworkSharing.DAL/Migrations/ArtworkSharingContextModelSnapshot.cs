@@ -296,9 +296,29 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaymentEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentEvents");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Rating", b =>
@@ -380,6 +400,32 @@ namespace ArtworkSharing.DAL.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("f87c6834-e88a-488e-9c82-3ad3ae4297a0"),
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("77d22bf1-0d8b-4707-8c19-3520af5deb43"),
+                            Name = "SuperAdmin",
+                            NormalizedName = "SUPERADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("bd8d2ad8-386c-46b4-869d-fee2d5c66f22"),
+                            Name = "Artist",
+                            NormalizedName = "ARTIST"
+                        },
+                        new
+                        {
+                            Id = new Guid("cddca8be-e19a-4e62-aeee-4c1e2cc1ff6b"),
+                            Name = "Audience",
+                            NormalizedName = "AUDIENCE"
+                        });
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Transaction", b =>

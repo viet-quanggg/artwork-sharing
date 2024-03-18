@@ -30,10 +30,17 @@ public class UnitOfWork : IUnitOfWork
         RatingRepository = new RatingRepository(DbContext);
         RefundRequestRepository = new RefundRequestRepository(DbContext);
         TransactionRepository = new TransactionRepository(DbContext);
-
+        
         VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
         VNPayTransactionRefundRepository = new VNPayTransactionRefundRepository(DbContext);
         VNPayTransactionTransferRepository = new VNPayTransactionTransferRepository(DbContext);
+<<<<<<< HEAD
+        UserRepository = new UserRepository(DbContext);
+        UserRoleRepository = new UserRoleRepository(DbContext);
+
+=======
+        PaymentEventRepository = new PaymentEventRepository(DbContext);
+>>>>>>> e9cf46968973864689cabb18726a9098ed81b417
     }
 
     public DbContext DbContext { get; }
@@ -69,6 +76,12 @@ public class UnitOfWork : IUnitOfWork
     public IVNPayTransactionRefundRepository VNPayTransactionRefundRepository { get; }
 
     public IVNPayTransactionTransferRepository VNPayTransactionTransferRepository { get; }
+
+<<<<<<< HEAD
+    public IUserRoleRepository UserRoleRepository { get; }
+=======
+    public IPaymentEventRepository PaymentEventRepository { get; }
+>>>>>>> e9cf46968973864689cabb18726a9098ed81b417
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

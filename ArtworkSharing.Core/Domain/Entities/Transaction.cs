@@ -6,8 +6,9 @@ namespace ArtworkSharing.Core.Domain.Entities;
 public class Transaction : EntityBase<Guid>
 {
     public Guid? PackageId { get; set; }
-    public Guid? ArtworkId { get; set; }
+    public Guid? ArtworkId { get; set; }    
     public Guid? ArtworkServiceId { get; set; }
+
     public Guid AudienceId { get; set; }
     public float TotalBill { get; set; }
     public DateTime CreatedDate { get; set; }

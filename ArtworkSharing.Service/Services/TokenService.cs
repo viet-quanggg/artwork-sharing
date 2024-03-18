@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -46,7 +47,8 @@ public class TokenService : ITokenService
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
-
-        return tokenHandler.WriteToken(token);
+        var tokenToReturn = tokenHandler.WriteToken(token);
+        
+        return tokenToReturn;
     }
 }

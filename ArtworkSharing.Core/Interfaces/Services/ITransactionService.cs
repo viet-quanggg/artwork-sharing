@@ -17,5 +17,7 @@ public interface ITransactionService
 
         Task<List<TransactionsViewModelUser>> GetTransactionsForUser(Guid userId);
 
+        Task<TransactionViewModel> AddTransaction(Transaction transaction);
+
 
 }

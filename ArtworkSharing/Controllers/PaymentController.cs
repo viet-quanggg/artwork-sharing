@@ -1,6 +1,11 @@
-﻿using ArtworkSharing.Core.Interfaces.Services;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.VNPAYS;
+using ArtworkSharing.Extensions;
+using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ArtworkSharing.Controllers;
 
@@ -8,11 +13,16 @@ namespace ArtworkSharing.Controllers;
 [ApiController]
 public class PaymentController : ControllerBase
 {
+    private readonly IPaymentEventService _paymentEventService;
+    private readonly MessagePaymentEvent _messagePaymentEvent;
     private readonly ITransactionService _transactionService;
     private readonly IVNPayTransactionService _VNPayTransactionService;
+    private readonly IMessageSupport _messageSupport;
 
-    public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService)
+    public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService, MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService)
     {
+        _paymentEventService = paymentEventService;
+        _messagePaymentEvent = messagePaymentEvent;
         _transactionService = transactionService;
         _VNPayTransactionService = vNPayTransactionService;
     }
@@ -41,10 +51,16 @@ public class PaymentController : ControllerBase
     {
         var rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
-
         return Ok(rs.TransactionViewModel);
     }
 
+    [HttpGet("test")]
+    public async Task<IActionResult> TestTest()
+    {
+        await _paymentEventService.AddPaymentEvent(new Core.Domain.Entities.PaymentEvent { Data = JsonConvert.SerializeObject(new VNPayTransactionTransfer { Id = Guid.NewGuid(), IsCompleted = true, TransactionId = Guid.NewGuid() }) });
+        _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
+        return Ok();
+    }
     /// <summary>
     ///     Get VNPay transaction by transactionId
     /// </summary>

@@ -1,6 +1,7 @@
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.User;
+using ArtworkSharing.Core.ViewModels.Users;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.AspNetCore.Mvc;
 
@@ -85,5 +86,19 @@ public class UserController : Controller
         return Ok(await _userService.UpdateUser(userId, uuma));
     }
 
-   
+
+
+    /// <summary>
+    /// update user (name and phone)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="updateUserModel"></param>
+    /// <returns></returns>
+    [HttpPut("update/{id}")]
+    public async Task<ActionResult> UpdateUser([FromRoute] Guid id, UpdateUserModel updateUserModel)
+    {
+        if (id == Guid.Empty || updateUserModel == null) return BadRequest(new { Message = "User not found!" });
+        return Ok(await _userService.UpdateUser(id, updateUserModel));
+    }
+
 }

@@ -20,13 +20,16 @@ public interface IRefundRequestService
     Task<RefundRequestViewModelUser> GetRefundRequestDetail(Guid refundId);
     Task<bool> CancelRefundRequestByUser(Guid refundId);
 
+
     IEnumerable<RefundRequest> Get(
-        Expression<Func<RefundRequest, bool>> filter = null,
-        Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = null,
-        string includeProperties = "",
-        int? pageIndex = null,
-        int? pageSize = null
+    Expression<Func<RefundRequest, bool>> filter = null,
+    Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = null,
+    string includeProperties = "",
+    int? pageIndex = null,
+    int? pageSize = null
     );
 
     Task<int> Count(Expression<Func<RefundRequest, bool>> filter = null);
+
 }
+
