@@ -9,4 +9,6 @@ public interface IFireBaseService
     Task<string> UploadImages(List<IFormFile> files);
 
     Task<string> UploadImageSingleNotList(IFormFile files);
+
+    Task<string> UploadImageSingleNotList(byte[] imageBytes, string imageType);
 }

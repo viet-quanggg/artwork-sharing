@@ -71,6 +71,10 @@ builder.Services.AddCors(options =>
 //});
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 var app = builder.Build();
 EnsureMigrate(app);
 
@@ -83,6 +87,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 app.UseCors(_ => _.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 

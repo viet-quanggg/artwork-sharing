@@ -68,6 +68,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IVNPayTransactionTransferService, VNPayTransactionTransferService>();
         services.AddScoped<IPaypalOrderService, PaypalOrderService>();
 
+
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
