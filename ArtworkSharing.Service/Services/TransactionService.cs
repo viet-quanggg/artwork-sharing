@@ -73,6 +73,17 @@ public class TransactionService : ITransactionService
         return AutoMapperConfiguration.Mapper.Map<List<TransactionViewModel>>(await trans.ToListAsync());
     }
 
+    public async Task<List<TransactionsViewModelUser>> GetTransactionsForUser(Guid userId) =>
+        AutoMapperConfiguration.Mapper.Map<List<TransactionsViewModelUser>>(await _uow.TransactionRepository
+            .Include(t => t.Audience)
+            .ThenInclude(a => a.UserRoles)
+            .Include(t => t.Artwork)
+            .Where(t => t.AudienceId == userId)
+            .AsQueryable()
+            .ToListAsync());
+       
+    
+
     public async Task<List<TransactionViewModel>> GetAll()
     {
         return AutoMapperConfiguration.Mapper.Map<List<TransactionViewModel>>(await _uow.TransactionRepository.GetAll()
@@ -81,7 +92,7 @@ public class TransactionService : ITransactionService
 
     public async Task<Transaction> GetOne(Guid id)
     {
-        return await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);
+        return await _uow.TransactionRepository.Include(x=>x.Audience).Include(x=>x.Artwork).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<TransactionViewModel> GetTransaction(Guid id)

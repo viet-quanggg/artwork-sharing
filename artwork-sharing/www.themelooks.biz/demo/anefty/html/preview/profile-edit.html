@@ -41,7 +41,8 @@
                                 <form class="search-form d-none d-sm-block ms-4" action="#">
                                     <div class="form-group"><button type="submit"><img
                                                 src="assets/img/icons/search-gradient.svg" class="svg" alt=""></button>
-                                        <input type="text" class="form-control mb-0" placeholder="Search item…"></div>
+                                        <input type="text" class="form-control mb-0" placeholder="Search item…">
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -138,7 +139,7 @@
                             <div class="user-avatar"><img src="assets/img/media/profile-avatar.png" alt=""> <span
                                     class="upload-btn"><img src="assets/img/icons/plus.svg" class="svg" alt=""> <input
                                         type="file" accept="image/*"></span></div>
-                            <h5 class="user_name text-white">AneftyPunks</h5>
+                            <h5 id="big-name" class="user_name text-white">AneftyPunks</h5>
                         </div>
                     </div>
                 </div>
@@ -178,40 +179,12 @@
                     <form action="#" class="edit-profile-form text-white">
                         <div class="card mb-60">
                             <div class="card-body">
-                                <div class="profile-images">
-                                    <div class="row">
-                                        <div class="col-lg-6">
-                                            <div class="profile-edit mb-5 mb-lg-0">
-                                                <h3>Profile Image</h3>
-                                                <div class="author-cover author-cover-edit"><img
-                                                        src="assets/img/media/profile-edit.png" alt=""> <span
-                                                        class="upload-btn"><img src="assets/img/icons/plus.svg"
-                                                            class="svg" alt=""> <input type="file"
-                                                            accept="image/*"></span></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6">
-                                            <div class="profile-cover-edit">
-                                                <h3>Profile Banner</h3>
-                                                <div class="author-cover author-cover-edit"><img
-                                                        src="assets/img/media/profile-edit2.png" alt=""> <span
-                                                        class="upload-btn"><img src="assets/img/icons/plus.svg"
-                                                            class="svg" alt=""> <input type="file"
-                                                            accept="image/*"></span></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-60">
-                            <div class="card-body">
                                 <div class="account-info">
                                     <h3>Account Information</h3>
                                     <div class="form-group"><label for="name">Display Name</label> <input type="text"
                                             class="form-control" id="name" placeholder="Example @alex_anderson "></div>
-                                    <div class="form-group"><label for="custom-url">Custom URL</label> <input type="url"
-                                            class="form-control" id="custom-url" placeholder="Example @www.anefty.com/">
+                                    <div class="form-group"><label for="custom-url">Phone</label> <input type="number"
+                                            class="form-control" id="custom-phone" placeholder="Example 0386472250">
                                     </div>
                                     <div class="form-group">
                                         <div class="row justify-content-between"><label for="email"
@@ -223,32 +196,10 @@
                                             type="button"><img src="assets/img/icons/btn-check.svg" alt="" class="svg">
                                             Confirm</button>
                                     </div>
-                                    <div class="form-group mb-0"><label for="bio">Bio</label> <textarea id="bio"
-                                            class="form-control mb-0" placeholder="Write your bio"></textarea></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="social-media">
-                                    <h3>Social Media</h3>
-                                    <div class="form-group"><label for="facebook">Facebook Account</label> <input
-                                            type="text" class="form-control" id="facebook"
-                                            placeholder="Example @anefty_alexder"> <button class="btn btn-sm"
-                                            type="button"><img src="assets/img/icons/btn-fb.svg" alt="" class="svg">
-                                            Connect Facebook</button></div>
-                                    <div class="form-group"><label for="twitter">Twitter Account</label> <input
-                                            type="text" class="form-control" id="twitter"
-                                            placeholder="Example @anefty_alexder"> <button class="btn btn-sm"
-                                            type="button"><img src="assets/img/icons/btn-twitter.svg" alt=""
-                                                class="svg"> Connect Twitter</button></div>
-                                    <div class="form-group"><label for="tiktok">Tiktok Account</label> <input
-                                            type="text" class="form-control" id="tiktok"
-                                            placeholder="Example @anefty_alexder"> <button class="btn btn-sm"
-                                            type="button"><img src="assets/img/icons/btn-tiktok.svg" alt="" class="svg">
-                                            Connect Tiktok</button></div>
-                                    <div class="d-flex justify-content-end"><button type="submit" class="btn"><img
-                                                src="assets/img/icons/btn-save.svg" class="svg" alt=""> Save
+                                    <br>
+                                    <div onclick="updtprofile()" class="d-flex justify-content-end"><button
+                                            type="button" class="btn"><img src="assets/img/icons/btn-save.svg"
+                                                class="svg" alt=""> Save
                                             Now</button></div>
                                 </div>
                             </div>
@@ -336,6 +287,7 @@
             </div>
         </div>
     </footer><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
+    <script src="assets/js/profile-edit.js"></script>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/plugins/particles/particles.min.js"></script>

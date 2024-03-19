@@ -109,6 +109,7 @@ public class ArtworkService : IArtworkService
             var list = await repos
                 .Include(a => a.Transactions)
                 .Include(a => a.Artist)
+                .ThenInclude(a => a.User)
                 .Include(a => a.Categories)
                 .Include(a => a.MediaContents)
                 .Skip(itemsToSkip)
@@ -159,10 +160,20 @@ public class ArtworkService : IArtworkService
                 throw new KeyNotFoundException();
             }
 
-            updateArtwork.Status = false;
-            await _unitOfWork.SaveChangesAsync();
-            await _unitOfWork.CommitTransaction();
-            return true;
+            if(updateArtwork.Status == true){
+                updateArtwork.Status = false;
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+            else
+            {
+                updateArtwork.Status = true;
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+           
         }
         catch (Exception ex)
         {

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
-    [Migration("20240314183515_InitDb")]
-    partial class InitDb
+    [Migration("20240317174037_UpdatePackageAddStatus")]
+    partial class UpdatePackageAddStatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -299,9 +299,29 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaymentEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentEvents");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Rating", b =>
