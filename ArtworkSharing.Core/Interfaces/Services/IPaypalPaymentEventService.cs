@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ArtworkSharing.Core.Interfaces.Services
 {
-    public interface IPaypalPaymentEventRepository
+    public interface IPaypalPaymentEventService
     {
     }
 }
