@@ -1,6 +1,9 @@
 ﻿using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Transactions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using System.Transactions;
 
 namespace ArtworkSharing.Controllers;
 
@@ -55,6 +58,48 @@ public class DashboardController : ControllerBase
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
+            return Ok(filteredTransactions);
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting transactions: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+
+        }
+    }
+
+    [HttpGet("/Transaction/Chart", Name = "GetalltransactionforChart")]
+    public async Task<IActionResult> GetalltransactionforChart(string timeRange)
+    {
+        try
+        {
+           
+
+            DateTime startDate;
+            if (timeRange.IsNullOrEmpty())
+            {
+                startDate = DateTime.Now.AddYears(-1);
+            }
+            else { 
+            switch (timeRange.ToLower())
+            {
+                case "day":
+                    startDate = DateTime.Now.AddDays(-10);
+                        break;
+                case "month":
+                    startDate = DateTime.Now.AddMonths(-5);
+                        break;
+                case "year":
+                    startDate = DateTime.Now.AddYears(-5);
+                        break;
+                default:
+                    return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
+            }
+            }
+            var transactions = await _TransactionService.GetAll();
+            var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
+
             return Ok(filteredTransactions);
 
         }
@@ -142,7 +187,7 @@ public class DashboardController : ControllerBase
         }
     }
     [HttpGet("/GetNameArtist/{id}", Name = "GetNameArtist")]
-    public async Task<IActionResult> GetNameArtist(Guid id, int page)
+    public async Task<IActionResult> GetNameArtist(Guid id)
     {
         try
         {
