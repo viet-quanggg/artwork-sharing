@@ -24,4 +24,6 @@ public interface ILikeService
 
 
     Task<List<LikeViewModel>> Update(LikeModel like);
+
+    Task<CheckLikeModel> CheckLike(LikeModel lm);
 }

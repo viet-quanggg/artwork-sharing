@@ -1,4 +1,6 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
+using ArtworkSharing.Core.Interfaces.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +20,7 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
     {
     }
 
+
     public DbSet<Artwork> Artworks { get; set; }
     public DbSet<ArtistPackage> ArtistPackages { get; set; }
     public DbSet<Artist> Artists { get; set; }
@@ -33,12 +36,17 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<VNPayTransaction> VNPayTransactions { get; set; }
     public DbSet<VNPayTransactionRefund> VNPayTransactionRefunds { get; set; }
+    public DbSet<VNPayTransactionTransfer> VNPayTransactionTransfers { get; set; }
+    public DbSet<PaymentEvent> PaymentEvents { get; set; }
+    public DbSet<PaypalAmount> PaypalAmounts { get; set; }
+    public DbSet<PaypalItem> PaypalItems { get; set; }
+    public DbSet<PaypalOrder> PaypalOrders { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         if (!options.IsConfigured)
             options.UseSqlServer(
-                "server =(local); database = ArtworkSharing;uid=sa;pwd=123456@Aa; TrustServerCertificate=True");
+                "server =(local); database = ArtworkSharing;uid=sa;pwd=12345; TrustServerCertificate=True");
     }
 
 
@@ -93,5 +101,42 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
             .WithMany(a => a.ArtistPackages)
             .HasForeignKey(a => a.ArtistId)
             .OnDelete(DeleteBehavior.NoAction);
+                
+        SeedRoles(modelBuilder);
+
     }
+
+    private void SeedRoles(ModelBuilder modelBuilder)
+    {        
+        modelBuilder.Entity<Role>().HasData(new Role
+        {
+            Id = Guid.NewGuid(),
+            Name = RoleOfSystem.Admin.ToString(),
+                NormalizedName = RoleOfSystem.Admin.ToString().ToUpper(),
+                
+        });
+      
+        modelBuilder.Entity<Role>().HasData(new Role
+            {
+            Id= Guid.NewGuid(),
+            Name = RoleOfSystem.SuperAdmin.ToString(),
+            NormalizedName = RoleOfSystem.SuperAdmin.ToString().ToUpper(),
+            
+        });
+        modelBuilder.Entity<Role>().HasData(new Role
+        {
+            Id = Guid.NewGuid(),
+            Name = RoleOfSystem.Artist.ToString(),
+            NormalizedName = RoleOfSystem.Artist.ToString().ToUpper(),
+
+        });
+        modelBuilder.Entity<Role>().HasData(new Role
+        {
+            Id = Guid.NewGuid(),
+            Name = RoleOfSystem.Audience.ToString(),
+            NormalizedName = RoleOfSystem.Audience.ToString().ToUpper(),
+
+        });      
+    }
+   
 }

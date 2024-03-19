@@ -42,4 +42,19 @@ public class LikeController : ControllerBase
             ? Ok(rs)
             : StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Action failed" });
     }
+
+    /// <summary>
+    /// Check like by userid and artworkid
+    /// </summary>
+    /// <param name="artworkId"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> CheckLike(Guid artworkId, Guid userId)
+    {
+        if (userId == Guid.Empty || artworkId == Guid.Empty) return BadRequest();
+        var rs = await _likeService.CheckLike(new LikeModel { ArtworkId = artworkId, UserId = userId });
+
+        return Ok(rs);
+    }
 }

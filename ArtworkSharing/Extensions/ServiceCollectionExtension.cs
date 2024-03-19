@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Exceptions;
+using ArtworkSharing.Core.Helpers.MsgQueues;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Repositories;
 using ArtworkSharing.Core.Interfaces.Services;
@@ -12,6 +13,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ArtworkService = ArtworkSharing.Service.Services.ArtworkService;
 
@@ -61,11 +63,25 @@ public static class ServiceCollectionExtension
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
         services.AddScoped<ITransactionService, TransactionService>();
+        services.AddScoped<IUserRoleService, UserRoleService>();
+        services.AddScoped<IPaymentEventService, PaymentEventService>();
+        services.AddScoped<IVNPayTransactionTransferService, VNPayTransactionTransferService>();
+        services.AddScoped<IPaypalOrderService, PaypalOrderService>();
 
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
+
+
+
+        MessageChanel messageChanel = new();
+        services.AddSingleton<MessageChanel>(messageChanel.PaidRaise());
+        services.AddSingleton<IMessageSupport, MessageSupport>();
+        services.AddSingleton<MessagePaymentEvent>();
+        services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>());
+        services.AddHostedService<MessageSubscribe>();
+
 
         return services;
     }
@@ -99,9 +115,19 @@ public static class ServiceCollectionExtension
             options.TokenLifespan = TimeSpan.FromHours(24); // Token expires after 24 hours
         });
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddCookie(x =>
+        {
+            x.Cookie.Name = "accessToken";
+        }
+            )
             .AddJwtBearer(options =>
             {
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -110,8 +136,17 @@ public static class ServiceCollectionExtension
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Cookies["accessToken"];
+                     
+                        return Task.CompletedTask;
+                    }
+                };
             });
-
+        
         services.AddAuthentication()
             .AddGoogle(options =>
             {

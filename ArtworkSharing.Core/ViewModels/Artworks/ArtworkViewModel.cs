@@ -1,3 +1,5 @@
+using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.Artists;
 using ArtworkSharing.Core.ViewModels.Categories;
 using ArtworkSharing.Core.ViewModels.Comments;
 using ArtworkSharing.Core.ViewModels.Likes;
@@ -8,6 +10,7 @@ namespace ArtworkSharing.Core.ViewModels.Artworks;
 
 public class ArtworkViewModel
 {
+    public Guid Id { get; set; }
     public Guid ArtistId { get; set; }
     public string Name { get; set; } = null!;
     public string? Description { get; set; }
@@ -15,7 +18,10 @@ public class ArtworkViewModel
     public DateTime CreatedDate { get; set; }
     public bool Status { get; set; }
 
-    public UserViewModel Artist { get; set; } = null!;
+    // why UserViewModel
+    //public UserViewModel Artist { get; set; } = null!;
+
+    public ArtistViewModel Artist { get; set; } = null!;
     public List<MediaContentViewModel> MediaContents { get; set; } = null!;
     public List<LikeViewModel>? Likes { get; set; }
     public List<CommentViewModel>? Comments { get; set; }

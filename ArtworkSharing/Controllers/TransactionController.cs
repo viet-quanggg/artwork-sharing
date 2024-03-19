@@ -38,4 +38,13 @@ public class TransactionController : ControllerBase
 
         return Ok(await _transactionService.GetTransaction(id));
     }
+    
+    [HttpGet("userTransactions/{userId}")]
+    public async Task<ActionResult> GetUserTransaction(Guid userId)
+    {
+        if (userId == Guid.Empty) return BadRequest(new { Message = "User not found!" });
+        return Ok(await _transactionService.GetTransactionsForUser(userId));
+    }
+
+    
 }

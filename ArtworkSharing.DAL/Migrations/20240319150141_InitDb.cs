@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace ArtworkSharing.DAL.Migrations
 {
     /// <inheritdoc />
@@ -76,11 +78,25 @@ namespace ArtworkSharing.DAL.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<float>(type: "real", nullable: false),
-                    Duration = table.Column<int>(type: "int", nullable: false)
+                    Duration = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Packages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentEvents", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -100,6 +116,19 @@ namespace ArtworkSharing.DAL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VNPayTransactionRefunds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VNPayTransactionTransfers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VNPayTransactionTransfers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -475,6 +504,31 @@ namespace ArtworkSharing.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PaypalOrders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Intent = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PayeeEmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MerchantId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaypalOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaypalOrders_Transactions_TransactionId",
+                        column: x => x.TransactionId,
+                        principalTable: "Transactions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Ratings",
                 columns: table => new
                 {
@@ -539,6 +593,62 @@ namespace ArtworkSharing.DAL.Migrations
                         principalTable: "Transactions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaypalAmounts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CurrencyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<double>(type: "float", nullable: false),
+                    ItemTotalCurrencyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ItemTotalValue = table.Column<double>(type: "float", nullable: false),
+                    PaypalOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaypalAmounts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaypalAmounts_PaypalOrders_PaypalOrderId",
+                        column: x => x.PaypalOrderId,
+                        principalTable: "PaypalOrders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaypalItems",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    CurrencyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Value = table.Column<double>(type: "float", nullable: false),
+                    PaypalOrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaypalItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaypalItems_PaypalOrders_PaypalOrderId",
+                        column: x => x.PaypalOrderId,
+                        principalTable: "PaypalOrders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { new Guid("71800a7e-10ad-48cf-8347-4123d31133d3"), null, "Admin", "ADMIN" },
+                    { new Guid("7f5d0978-e182-464f-b954-a55946bfe41c"), null, "SuperAdmin", "SUPERADMIN" },
+                    { new Guid("c0ab44dd-daf0-400f-9df2-1fdb02699e43"), null, "Audience", "AUDIENCE" },
+                    { new Guid("d32555bf-2c43-443a-acc6-2921a816f25b"), null, "Artist", "ARTIST" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -656,6 +766,21 @@ namespace ArtworkSharing.DAL.Migrations
                 column: "ArtworkId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PaypalAmounts_PaypalOrderId",
+                table: "PaypalAmounts",
+                column: "PaypalOrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaypalItems_PaypalOrderId",
+                table: "PaypalItems",
+                column: "PaypalOrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaypalOrders_TransactionId",
+                table: "PaypalOrders",
+                column: "TransactionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Ratings_TransactionId",
                 table: "Ratings",
                 column: "TransactionId");
@@ -728,6 +853,15 @@ namespace ArtworkSharing.DAL.Migrations
                 name: "MediaContents");
 
             migrationBuilder.DropTable(
+                name: "PaymentEvents");
+
+            migrationBuilder.DropTable(
+                name: "PaypalAmounts");
+
+            migrationBuilder.DropTable(
+                name: "PaypalItems");
+
+            migrationBuilder.DropTable(
                 name: "Ratings");
 
             migrationBuilder.DropTable(
@@ -740,10 +874,16 @@ namespace ArtworkSharing.DAL.Migrations
                 name: "VNPayTransactions");
 
             migrationBuilder.DropTable(
+                name: "VNPayTransactionTransfers");
+
+            migrationBuilder.DropTable(
                 name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "PaypalOrders");
 
             migrationBuilder.DropTable(
                 name: "Transactions");

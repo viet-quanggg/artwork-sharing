@@ -131,7 +131,7 @@
                                 <h2>Register New Account</h2>
                                 <p>Already account yet? <a href="login.html" class="c1">Login Now!</a></p>
                             </div>
-                            <form action="#">
+                            <form id="register-form">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group"><label for="display_name" class="mb-2">Display
@@ -143,10 +143,15 @@
                                             <input type="email" id="email" class="form-control"
                                                 placeholder="anefty@gmail.com"></div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group"><label for="username" class="mb-2">Username</label>
-                                            <input type="text" id="username" class="form-control"
-                                                placeholder="e.g@alex_anefty"></div>
+                                    <div class="col-md-6">                                        
+                                                <div class="form-group">
+                                                    <label for="gender" class="mb-2">Gender</label>
+                                                    <select class="form-control" id="gender" name="gender">
+                                                        <option value="male">Male</option>
+                                                        <option value="female">Female</option>
+                                                        <option value="other">Other</option>
+                                                    </select>
+                                                </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group"><label for="phone_num" class="mb-2">Phone Number</label>
@@ -163,6 +168,8 @@
                                                 Password</label> <input type="password" id="re-password"
                                                 class="form-control" placeholder="*** **** *** ****"></div>
                                     </div>
+                                    <!-- Error message display -->
+                <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
                                     <div class="col-12 pt-2"><button type="submit" class="btn"><img
                                                 src="assets/img/icons/btn-login.svg" alt="" class="svg"> register
                                             now</button></div>
@@ -174,6 +181,60 @@
             </div>
         </div>
     </div><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
+    <script>
+        async function registerUser() {
+            const displayName = document.getElementById('display_name').value;
+            const email = document.getElementById('email').value;
+            const gender = document.getElementById('gender').value;
+            const phoneNumber = document.getElementById('phone_num').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('re-password').value;
+    
+            const data = {
+                Email: email,
+                Name: displayName,
+                Password: password,
+                ConfirmPassword: confirmPassword,
+                Gender: gender, 
+                Phone: phoneNumber
+            };
+    
+            try {
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            displayErrorMessage(errorMessage);
+            return;
+        }
+
+        const responseData = await response.json();
+        window.location.href = responseData.redirectUrl;
+    } catch (error) {
+        console.error('Error:', error);
+        displayErrorMessage('An error occurred while processing your request. Please try again later.');
+    }
+        }
+    
+        // Function to display error message
+        function displayErrorMessage(message) {
+            const errorMessageElement = document.getElementById('error-message');
+            errorMessageElement.textContent = message;
+            errorMessageElement.style.display = 'block';
+        }
+    
+        // Add an event listener to the register form
+        document.getElementById('register-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            registerUser(); // Call the registerUser function to handle the registration process
+        });
+    </script>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/plugins/particles/particles.min.js"></script>

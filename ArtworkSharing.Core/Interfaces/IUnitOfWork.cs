@@ -21,8 +21,13 @@ public interface IUnitOfWork : IDisposable
     IRefundRequestRepository RefundRequestRepository { get; }
     ITransactionRepository TransactionRepository { get; }
     IVNPayTransactionRepository VNPayTransactionRepository { get; }
-
     IVNPayTransactionRefundRepository VNPayTransactionRefundRepository { get; }
+    IVNPayTransactionTransferRepository VNPayTransactionTransferRepository { get; }
+    IUserRoleRepository UserRoleRepository { get; }
+    IPaymentEventRepository PaymentEventRepository { get; }
+    IPaypalOrderRepository PaypalOrderRepository { get; }
+    IPaypalAmountRepository PaypalAmountRepository { get; }
+    IPaypalItemRepository PaypalItemRepository { get; }
 
     /// <summary>
     ///     Saves changes to database, previously opening a transaction

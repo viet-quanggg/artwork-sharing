@@ -36,8 +36,33 @@ public class VNPayTransactionService : IVNPayTransactionService
 
     private VNPay Vnpay { get; } = new();
 
-    public string GetUrlFromTransaction(Transaction trans)
+    public async Task<string> GetUrlFromTransaction(Transaction trans)
     {
+        bool check = false;
+        var transactionTransfers = await _uow.VNPayTransactionTransferRepository.Where(x => x.TransactionId == trans.Id).ToListAsync();
+        VNPayTransactionTransfer vNPayTransactionTransfer = new VNPayTransactionTransfer();
+
+        foreach (var item in transactionTransfers)
+        {
+            if (!item.IsCompleted)
+            {
+                vNPayTransactionTransfer = item;
+                check = true;
+            }
+        }
+
+        if (!check)
+        {
+            vNPayTransactionTransfer = new VNPayTransactionTransfer
+            {
+                Id = Guid.NewGuid(),
+                IsCompleted = false,
+                TransactionId = trans.Id,
+            };
+            await _uow.VNPayTransactionTransferRepository.AddAsync(vNPayTransactionTransfer);
+            await _uow.SaveChangesAsync();
+        }
+
         var vnpay = new VnPayLibrary();
 
         vnpay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
@@ -52,7 +77,7 @@ public class VNPayTransactionService : IVNPayTransactionService
         vnpay.AddRequestData("vnp_OrderInfo", "Artwork Sharing Payment");
         vnpay.AddRequestData("vnp_OrderType", "other");
         vnpay.AddRequestData("vnp_ReturnUrl", Vnpay.ReturnUrl);
-        vnpay.AddRequestData("vnp_TxnRef", trans.Id.ToString());
+        vnpay.AddRequestData("vnp_TxnRef", vNPayTransactionTransfer.Id.ToString());
 
         return vnpay.CreateRequestUrl(Vnpay.Url, Vnpay.HashSetcret);
     }
@@ -71,9 +96,29 @@ public class VNPayTransactionService : IVNPayTransactionService
                     RspCode = "99"
                 }
             };
+
+
+
+
+        var transactionTransfer = await _uow.VNPayTransactionTransferRepository.FirstOrDefaultAsync(x => x.Id == Guid.Parse(pParams["vnp_TxnRef"] + "") && !x.IsCompleted);
+        if (transactionTransfer == null!)
+        {
+            return new VNPayResponseModel
+            {
+                TransactionViewModel = null!,
+                IpnResponseViewModel = new IpnResponseViewModel
+                {
+                    Message = ResponseMessage.TransactionNotFound,
+                    RspCode = "01"
+                }
+            };
+        }
+        transactionTransfer.IsCompleted = true;
+        _uow.VNPayTransactionTransferRepository.UpdateVNPayTransactionTransfer(transactionTransfer);
+        await _uow.SaveChangesAsync();
         var vNPayTransaction = new VNPayTransaction
         {
-            TransactionId = Guid.Parse(pParams["vnp_TxnRef"] + ""),
+            TransactionId = transactionTransfer.TransactionId,
             Amount = double.Parse(pParams["vnp_Amount"] + ""),
             BankCode = pParams["vnp_BankCode"],
             BankTranNo = pParams["vnp_BankTranNo"],
@@ -81,10 +126,12 @@ public class VNPayTransactionService : IVNPayTransactionService
             PayDate = DateTime.ParseExact(pParams["vnp_PayDate"] + "", "yyyyMMddHHmmss", CultureInfo.InvariantCulture),
             TmnCode = pParams["vnp_TmnCode"],
             TransactionNo = pParams["vnp_TransactionNo"],
-            Id = new Guid(pParams["vnp_TxnRef"] + "")
+            Id = transactionTransfer.Id
         };
+
         var transaction =
             await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == vNPayTransaction.TransactionId);
+
         if (transaction == null)
 
             return new VNPayResponseModel
@@ -112,7 +159,6 @@ public class VNPayTransactionService : IVNPayTransactionService
                     }
                 };
         }
-
         await _uow.VNPayTransactionRepository.AddAsync(vNPayTransaction);
         await _uow.SaveChangesAsync();
         return new VNPayResponseModel
@@ -136,9 +182,11 @@ public class VNPayTransactionService : IVNPayTransactionService
 
     public async Task<VNPayResponseModel> RefundVNPay(Guid id, Guid userId)
     {
-        var transVNPay = await _uow.VNPayTransactionRepository.Include(x => x.Transaction)
-            .FirstOrDefaultAsync(x => x.Id == id);
-        if (transVNPay == null)
+        var transactionTransfers = await _uow.VNPayTransactionTransferRepository.Where(x => x.TransactionId == id && x.IsCompleted).ToListAsync();
+        var tran = await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (transactionTransfers == null || transactionTransfers.Count == 0)
+        {
             return new VNPayResponseModel
             {
                 TransactionViewModel = null!,
@@ -148,72 +196,23 @@ public class VNPayTransactionService : IVNPayTransactionService
                     RspCode = "01"
                 }
             };
-
-        var vNPayRefund = new VNPayRefundRequestModel
-        {
-            vnp_RequestId = DateTime.Now.Ticks.ToString(),
-            vnp_Version = VnPayLibrary.VERSION,
-            vnp_Command = "refund",
-            vnp_TmnCode = Vnpay.TmnCode,
-            vnp_TransactionType = "02",
-            vnp_TxnRef = Convert.ToInt64(transVNPay.Transaction.TotalBill) * 100,
-            vnp_Amount = transVNPay.Id + "",
-            vnp_TransactionNo = transVNPay.TransactionNo,
-            vnp_TransactionDate = transVNPay.PayDate.ToString("yyyyMMddHHmmss"),
-            vnp_CreateBy = userId + "",
-            vnp_CreateDate = DateTime.Now.ToString("yyyyMMddHHmmss"),
-            vnp_IpAddr = GetIPAddress(),
-            vnp_OrderInfo = "Refund transaction with id: " + id,
-            vnp_SecureHash = ""
-        };
-
-        var data = vNPayRefund.vnp_RequestId + "|" + vNPayRefund.vnp_Version + "|" + vNPayRefund.vnp_Command + "|" +
-                   Vnpay.TmnCode + "|" + vNPayRefund.vnp_TransactionType + "|" + vNPayRefund.vnp_TxnRef + "|" +
-                   vNPayRefund.vnp_Amount + "|" + vNPayRefund.vnp_TransactionNo + "|" +
-                   vNPayRefund.vnp_TransactionDate + "|" + vNPayRefund.vnp_CreateBy + "|" + vNPayRefund.vnp_CreateDate +
-                   "|" + vNPayRefund.vnp_IpAddr + "|" + vNPayRefund.vnp_OrderInfo;
-
-        vNPayRefund.vnp_SecureHash = Utils.HmacSHA512(Vnpay.HashSetcret, data);
-
-        var jsonData = JsonConvert.SerializeObject(vNPayRefund);
-        var httpWebRequest = (HttpWebRequest)WebRequest.Create(Vnpay.RfApi)!;
-        httpWebRequest.ContentType = "application/json";
-        httpWebRequest.Method = "POST";
-
-        using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
-        {
-            streamWriter.Write(jsonData);
         }
-
-        var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-        var strData = "";
-        using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-        {
-            strData = streamReader.ReadToEnd();
-        }
-
-        var vNPayRefundResponse = JsonConvert.DeserializeObject<VNPayRefundResponseModel>(strData)!;
-
-        if (vNPayRefundResponse.vnp_ResponseCode == "00")
-        {
-            var vNPayTransactionRefund = new VNPayTransactionRefund
+        if (tran == null)
+            return new VNPayResponseModel
             {
-                Id = transVNPay.Id,
-                Amount = vNPayRefundResponse.vnp_Amount,
-                BankCode = vNPayRefundResponse.vnp_BankCode,
-                PayDate = DateTime.ParseExact(vNPayRefundResponse.vnp_PayDate, "yyyyMMddHHmmss",
-                    CultureInfo.InvariantCulture),
-                ResponseId = vNPayRefundResponse.vnp_ResponseId,
-                TmnCode = vNPayRefundResponse.vnp_TmnCode,
-                TransactionId = transVNPay.Id,
-                TransactionNo = vNPayRefundResponse.vnp_TransactionNo,
-                TxnRef = vNPayRefundResponse.vnp_TxnRef
+                TransactionViewModel = null!,
+                IpnResponseViewModel = new IpnResponseViewModel
+                {
+                    Message = ResponseMessage.TransactionNotFound,
+                    RspCode = "01"
+                }
             };
+        foreach (var item in transactionTransfers)
+        {
+            var transVNPay = await _uow.VNPayTransactionRepository.Include(x => x.Transaction)
+          .FirstOrDefaultAsync(x => x.Id == item.Id);
 
-            await _uow.VNPayTransactionRefundRepository.AddAsync(vNPayTransactionRefund);
-            var rs = await _uow.SaveChangesAsync();
-            var tran = await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);
-            if (tran == null)
+            if (transVNPay == null)
                 return new VNPayResponseModel
                 {
                     TransactionViewModel = null!,
@@ -223,36 +222,110 @@ public class VNPayTransactionService : IVNPayTransactionService
                         RspCode = "01"
                     }
                 };
-            if (rs > 0)
+
+            var vNPayRefund = new VNPayRefundRequestModel
+            {
+                vnp_RequestId = DateTime.Now.Ticks.ToString(),
+                vnp_Version = VnPayLibrary.VERSION,
+                vnp_Command = "refund",
+                vnp_TmnCode = Vnpay.TmnCode,
+                vnp_TransactionType = "02",
+                vnp_TxnRef = transVNPay.Id + "",
+                vnp_Amount = Convert.ToInt64(transVNPay.Transaction.TotalBill) * 100,
+                vnp_TransactionNo = transVNPay.TransactionNo,
+                vnp_TransactionDate = transVNPay.PayDate.ToString("yyyyMMddHHmmss"),
+                vnp_CreateBy = userId + "",
+                vnp_CreateDate = DateTime.Now.ToString("yyyyMMddHHmmss"),
+                vnp_IpAddr = GetIPAddress(),
+                vnp_OrderInfo = "Refund transaction with id: " + id,
+                vnp_SecureHash = ""
+            };
+
+            var data = vNPayRefund.vnp_RequestId + "|" + vNPayRefund.vnp_Version + "|" + vNPayRefund.vnp_Command + "|" +
+                       Vnpay.TmnCode + "|" + vNPayRefund.vnp_TransactionType + "|" + vNPayRefund.vnp_TxnRef + "|" +
+                       vNPayRefund.vnp_Amount + "|" + vNPayRefund.vnp_TransactionNo + "|" +
+                       vNPayRefund.vnp_TransactionDate + "|" + vNPayRefund.vnp_CreateBy + "|" + vNPayRefund.vnp_CreateDate +
+                       "|" + vNPayRefund.vnp_IpAddr + "|" + vNPayRefund.vnp_OrderInfo;
+
+            vNPayRefund.vnp_SecureHash = Utils.HmacSHA512(Vnpay.HashSetcret, data);
+
+            var jsonData = JsonConvert.SerializeObject(vNPayRefund);
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(Vnpay.RfApi)!;
+            httpWebRequest.ContentType = "application/json";
+            httpWebRequest.Method = "POST";
+
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
+            {
+                streamWriter.Write(jsonData);
+            }
+
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            var strData = "";
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                strData = streamReader.ReadToEnd();
+            }
+
+            var vNPayRefundResponse = JsonConvert.DeserializeObject<VNPayRefundResponseModel>(strData)!;
+
+            if (vNPayRefundResponse.vnp_ResponseCode == "00")
+            {
+                var vNPayTransactionRefund = new VNPayTransactionRefund
+                {
+                    Id = transVNPay.Id,
+                    Amount = vNPayRefundResponse.vnp_Amount,
+                    BankCode = vNPayRefundResponse.vnp_BankCode,
+                    PayDate = DateTime.ParseExact(vNPayRefundResponse.vnp_PayDate, "yyyyMMddHHmmss",
+                        CultureInfo.InvariantCulture),
+                    ResponseId = vNPayRefundResponse.vnp_ResponseId,
+                    TmnCode = vNPayRefundResponse.vnp_TmnCode,
+                    TransactionId = transVNPay.Id,
+                    TransactionNo = vNPayRefundResponse.vnp_TransactionNo,
+                    TxnRef = vNPayRefundResponse.vnp_TxnRef
+                };
+
+                await _uow.VNPayTransactionRefundRepository.AddAsync(vNPayTransactionRefund);
+                var rs = await _uow.SaveChangesAsync();
+
+
+
+                if (rs <= 0)
+                {
+                    return new VNPayResponseModel
+                    {
+                        TransactionViewModel = null!,
+                        IpnResponseViewModel = new IpnResponseViewModel
+                        {
+                            Message = ResponseMessage.Error,
+                            RspCode = "99"
+                        }
+                    };
+                }
+            }
+            else
+            {
                 return new VNPayResponseModel
                 {
-                    TransactionViewModel = AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(tran),
+                    TransactionViewModel = null!,
                     IpnResponseViewModel = new IpnResponseViewModel
                     {
-                        Message = vNPayRefundResponse.vnp_Message,
-                        RspCode = vNPayRefundResponse.vnp_ResponseCode
+                        Message = ResponseMessage.Error,
+                        RspCode = "99"
                     }
                 };
-            return new VNPayResponseModel
-            {
-                TransactionViewModel = null!,
-                IpnResponseViewModel = new IpnResponseViewModel
-                {
-                    Message = ResponseMessage.Error,
-                    RspCode = "99"
-                }
-            };
+            }
         }
-
         return new VNPayResponseModel
         {
-            TransactionViewModel = null!,
+            TransactionViewModel = AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(tran),
             IpnResponseViewModel = new IpnResponseViewModel
             {
-                Message = ResponseMessage.TransactionNotFound,
-                RspCode = "01"
+                Message = ResponseMessage.Success,
+                RspCode = "00"
             }
         };
+
     }
 
     public async Task<VNPayTransactionViewModel> GetVNPayTransactionByTransactionId(Guid id)

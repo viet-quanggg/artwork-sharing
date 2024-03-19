@@ -7,6 +7,6 @@ public class BrowseArtworkModel
     public string? Description { get; set; }
     public bool IsPopular { get; set; }
     public bool IsAscRecent { get; set; }
-    public int PageSize { get; set; }
+    public int PageSize { get; set; } 
     public int PageIndex { get; set; }
 }

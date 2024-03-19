@@ -64,7 +64,11 @@ public class ArtworkService : IArtworkService
 
     public async Task<Artwork> GetOne(Guid artworkId)
     {
-        return await _unitOfWork.ArtworkRepository.FindAsync(artworkId);
+
+        return await _unitOfWork.ArtworkRepository.Include(x => x.Likes)
+            .Include(x => x.Comments).ThenInclude(x => x.CommentedUser)!
+            .Include(x => x.Artist)
+            .ThenInclude(x => x.User).FirstOrDefaultAsync(x => x.Id == artworkId);
     }
 
     public async Task Update(Artwork artwork)
@@ -105,6 +109,7 @@ public class ArtworkService : IArtworkService
             var list = await repos
                 .Include(a => a.Transactions)
                 .Include(a => a.Artist)
+                .ThenInclude(a => a.User)
                 .Include(a => a.Categories)
                 .Include(a => a.MediaContents)
                 .Skip(itemsToSkip)
@@ -155,10 +160,20 @@ public class ArtworkService : IArtworkService
                 throw new KeyNotFoundException();
             }
 
-            updateArtwork.Status = false;
-            await _unitOfWork.SaveChangesAsync();
-            await _unitOfWork.CommitTransaction();
-            return true;
+            if(updateArtwork.Status == true){
+                updateArtwork.Status = false;
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+            else
+            {
+                updateArtwork.Status = true;
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+           
         }
         catch (Exception ex)
         {
@@ -195,18 +210,21 @@ public class ArtworkService : IArtworkService
 
     public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!)
     {
-        var artworks = _unitOfWork.ArtworkRepository.GetAll().OrderByDescending(x => x.CreatedDate).AsQueryable();
+        var artworks = await _unitOfWork.ArtworkRepository
+            .Include(x => x.Likes)
+            .Include(x => x.Comments)
+            .OrderByDescending(x => x.CreatedDate).ToListAsync();
 
         if (bam != null)
         {
-            if (bam.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(bam.Name!.ToLower()));
+            if (bam.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(bam.Name!.ToLower())).ToList();
             if (bam.Description + "" != "")
-                artworks = artworks.Where(x => x.Description!.ToLower().Contains(bam.Description!.ToLower()));
-            if (bam.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count);
-            if (bam.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate);
-            if (bam.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == bam.ArtistId);
+                artworks = artworks.Where(x => x.Description!.ToLower().Contains(bam.Description!.ToLower())).ToList();
+            if (bam.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count).ToList();
+            if (bam.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate).ToList();
+            if (bam.ArtistId != null && bam.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == bam.ArtistId).ToList();
+            artworks = artworks.Skip((bam.PageIndex - 1) * bam.PageSize).Take(bam.PageSize).ToList();
         }
-
-        return await artworks.ToListAsync();
+        return artworks.ToList();
     }
 }
