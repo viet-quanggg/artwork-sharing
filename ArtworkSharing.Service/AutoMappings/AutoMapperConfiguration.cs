@@ -88,6 +88,8 @@ public class MapperHandler : Profile
         CreateMap<User, UserToRegisterDto>().ReverseMap();
         CreateMap<User, UserDto>().ReverseMap();
 
+        CreateMap<Artist, ArtistProfileViewModel>().ReverseMap();
+
         CreateMap<Like, LikeModel>().ReverseMap();
         CreateMap<Like, LikeViewModel>().ReverseMap();
 

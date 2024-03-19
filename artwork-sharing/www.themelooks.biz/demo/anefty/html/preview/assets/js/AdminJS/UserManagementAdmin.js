@@ -45,7 +45,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(function () {
-    $(document).on('click', '#statusButton', function () {
+        $(document).on('click', '#statusButton', function () {
         var id = $(this).data('id');
 
         $.ajax({
