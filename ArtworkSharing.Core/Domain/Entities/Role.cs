@@ -1,15 +1,8 @@
-﻿using ArtworkSharing.Core.Domain.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace ArtworkSharing.Core.Domain.Entities
+namespace ArtworkSharing.Core.Domain.Entities;
+
+public class Role : IdentityRole<Guid>
 {
-    public class Role : EntityBase<Guid>
-    {
-        public string Name { get; set; } = null!;
-       
-    }
+    public ICollection<UserRole> UserRoles { get; set; }
 }

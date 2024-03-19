@@ -17,10 +17,25 @@ namespace ArtworkSharing.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.15")
+                .HasAnnotation("ProductVersion", "7.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("ArtworkCategory", b =>
+                {
+                    b.Property<Guid>("ArtworksId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CategoriesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ArtworksId", "CategoriesId");
+
+                    b.HasIndex("CategoriesId");
+
+                    b.ToTable("ArtworkCategory");
+                });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Artist", b =>
                 {
@@ -28,7 +43,16 @@ namespace ArtworkSharing.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("BankAccount")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Artists");
                 });
@@ -94,27 +118,6 @@ namespace ArtworkSharing.DAL.Migrations
                     b.ToTable("Artworks");
                 });
 
-            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkCategory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ArtworkId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CategoryId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArtworkId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("ArtworkCategories");
-                });
-
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkService", b =>
                 {
                     b.Property<Guid>("Id")
@@ -123,6 +126,9 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.Property<Guid>("ArtistId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ArtworkProduct")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("AudienceId")
                         .HasColumnType("uniqueidentifier");
@@ -236,14 +242,14 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<DateTime>("LikedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("LikedUserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ArtworkId");
 
-                    b.HasIndex("LikedUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Likes");
                 });
@@ -257,9 +263,6 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<Guid>("ArtworkId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ArtworkServiceId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<float>("Capacity")
                         .HasColumnType("real");
 
@@ -270,8 +273,6 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArtworkId");
-
-                    b.HasIndex("ArtworkServiceId");
 
                     b.ToTable("MediaContents");
                 });
@@ -295,9 +296,29 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaymentEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Data")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentEvents");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Rating", b =>
@@ -339,6 +360,10 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<DateTime>("RefundRequestDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("TransactionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -355,13 +380,52 @@ namespace ArtworkSharing.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("f87c6834-e88a-488e-9c82-3ad3ae4297a0"),
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("77d22bf1-0d8b-4707-8c19-3520af5deb43"),
+                            Name = "SuperAdmin",
+                            NormalizedName = "SUPERADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("bd8d2ad8-386c-46b4-869d-fee2d5c66f22"),
+                            Name = "Artist",
+                            NormalizedName = "ARTIST"
+                        },
+                        new
+                        {
+                            Id = new Guid("cddca8be-e19a-4e62-aeee-4c1e2cc1ff6b"),
+                            Name = "Audience",
+                            NormalizedName = "AUDIENCE"
+                        });
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Transaction", b =>
@@ -382,6 +446,9 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("PackageId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -399,6 +466,8 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.HasIndex("AudienceId");
 
+                    b.HasIndex("PackageId");
+
                     b.ToTable("Transactions");
                 });
 
@@ -408,42 +477,308 @@ namespace ArtworkSharing.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BankAccount")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("IsArtistId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Username")
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("AspNetUserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BankCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BankTranNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CardType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PayDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TmnCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TransactionNo")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IsArtistId");
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("VNPayTransactions");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransactionRefund", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("BankCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PayDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResponseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TmnCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TransactionNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TxnRef")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VNPayTransactionRefunds");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransactionTransfer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("VNPayTransactionTransfers");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("AspNetRoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("ArtworkCategory", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", null)
+                        .WithMany()
+                        .HasForeignKey("ArtworksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Artist", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtistPackage", b =>
@@ -482,25 +817,6 @@ namespace ArtworkSharing.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Artist");
-                });
-
-            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkCategory", b =>
-                {
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", "Artwork")
-                        .WithMany("Categories")
-                        .HasForeignKey("ArtworkId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Artwork");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkService", b =>
@@ -570,7 +886,7 @@ namespace ArtworkSharing.DAL.Migrations
 
                     b.HasOne("ArtworkSharing.Core.Domain.Entities.User", "LikedUser")
                         .WithMany("Likes")
-                        .HasForeignKey("LikedUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -586,10 +902,6 @@ namespace ArtworkSharing.DAL.Migrations
                         .HasForeignKey("ArtworkId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.ArtworkService", null)
-                        .WithMany("ArtworkProduct")
-                        .HasForeignKey("ArtworkServiceId");
 
                     b.Navigation("Artwork");
                 });
@@ -618,11 +930,11 @@ namespace ArtworkSharing.DAL.Migrations
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Transaction", b =>
                 {
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", null)
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artwork", "Artwork")
                         .WithMany("Transactions")
                         .HasForeignKey("ArtworkId");
 
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.ArtworkService", null)
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.ArtworkService", "ArtworkService")
                         .WithMany("Transactions")
                         .HasForeignKey("ArtworkServiceId");
 
@@ -632,26 +944,83 @@ namespace ArtworkSharing.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Package", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId");
+
+                    b.Navigation("Artwork");
+
+                    b.Navigation("ArtworkService");
+
                     b.Navigation("Audience");
+
+                    b.Navigation("Package");
                 });
 
-            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.User", b =>
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.UserRole", b =>
                 {
-                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Artist", "IsArtist")
-                        .WithMany()
-                        .HasForeignKey("IsArtistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ArtworkSharing.Core.Domain.Entities.Role", "Role")
-                        .WithMany()
+                        .WithMany("UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("IsArtist");
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.VNPayTransaction", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Artist", b =>
@@ -665,8 +1034,6 @@ namespace ArtworkSharing.DAL.Migrations
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Artwork", b =>
                 {
-                    b.Navigation("Categories");
-
                     b.Navigation("Comments");
 
                     b.Navigation("Likes");
@@ -678,9 +1045,12 @@ namespace ArtworkSharing.DAL.Migrations
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.ArtworkService", b =>
                 {
-                    b.Navigation("ArtworkProduct");
-
                     b.Navigation("Transactions");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.User", b =>
@@ -696,6 +1066,8 @@ namespace ArtworkSharing.DAL.Migrations
                     b.Navigation("Likes");
 
                     b.Navigation("Transactions");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
