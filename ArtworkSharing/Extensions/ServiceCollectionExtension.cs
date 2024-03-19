@@ -147,8 +147,8 @@ public static class ServiceCollectionExtension
         services.AddAuthentication()
             .AddGoogle(options =>
             {
-                options.ClientId = "[Your Google Client ID]";
-                options.ClientSecret = "[Your Google Client Secret]";
+                options.ClientId = "174880392812-f1j7r9aeo67ertkh2k46o5g0gl5o2l4n.apps.googleusercontent.com";
+                options.ClientSecret = "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";
                 // You can set other options as needed.
             });
         //services.AddAuthorization(opt =>
