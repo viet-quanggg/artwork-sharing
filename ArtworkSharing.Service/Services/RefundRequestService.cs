@@ -6,6 +6,7 @@ using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using ArtworkSharing.Core.Domain.Enums;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -38,7 +39,7 @@ public class RefundRequestService : IRefundRequestService
             await _uow.BeginTransaction();
             var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
             refund.RefundRequestDate = DateTime.Now;
-            refund.Status = "Pending";
+            refund.Status = RefundRequestStatus.Pending.ToString();
             var repo = _uow.RefundRequestRepository;
             await repo.AddAsync(refund);
 
@@ -81,7 +82,7 @@ public class RefundRequestService : IRefundRequestService
             {
                 if (existedRefund.Status.Equals("Pending"))
                 {
-                    existedRefund.Status = "Canceled By User";
+                    existedRefund.Status = RefundRequestStatus.CanceledByUser.ToString();
                     _uow.RefundRequestRepository.UpdateRefundRequest(existedRefund);
                     await _uow.SaveChangesAsync();
                     await _uow.CommitTransaction();

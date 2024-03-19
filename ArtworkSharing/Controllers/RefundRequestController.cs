@@ -4,6 +4,7 @@ using ArtworkSharing.Core.ViewModels.RefundRequests;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ArtworkSharing.Controllers;
@@ -258,6 +259,7 @@ public class RefundRequestController : ControllerBase
         }
     }
     
+    // [Authorize("")]
     [HttpGet("/RefundRequestDetailByUser/{refundId}")]
     public async Task<IActionResult> RefundRequestDetailForUser(Guid refundId)
     {
