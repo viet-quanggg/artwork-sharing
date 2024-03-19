@@ -1,7 +1,7 @@
 const pageSize = 3; // Định nghĩa pageSize ở đầu tập tin hoặc ở phạm vi có thể truy cập trước khi sử dụng
 let keyword = '';
 // Define the URL of the API endpoint
-const apiUrl = 'https://localhost:7270/ManageOrder/GeTransactionWithPaging?pageIndex=1&pageSize=3';
+const apiUrl = 'https://localhost:7270/ManageOrder/GeTransactionWithPagingArtist?ArtistId=1baa3322-d509-4db4-a56f-0f48e3171ae9&pageIndex=1&pageSize=3';
 // Function to handle search form submission
 document.getElementById('searchForm').addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent the default form submission behavior
@@ -110,7 +110,7 @@ function renderPagination(totalPages,keyword) {
 function fetchRefundRequests(pageIndex,keyword) {
   //console.log(keyword+"me") pa(keyword);
 
-  const apiUrl = `https://localhost:7270/ManageOrder/GeTransactionWithPaging?pageIndex=${pageIndex}&pageSize=${pageSize}&searchKeyword=${keyword}`; // Sử dụng biến pageSize đã được định nghĩa
+  const apiUrl = `https://localhost:7270/ManageOrder/GeTransactionWithPagingArtist?ArtistId=1baa3322-d509-4db4-a56f-0f48e3171ae9&pageIndex=${pageIndex}&pageSize=${pageSize}&searchKeyword=${keyword}`; // Sử dụng biến pageSize đã được định nghĩa
   fetch(apiUrl)
     .then(response => {
       if (!response.ok) {
@@ -127,7 +127,7 @@ function fetchRefundRequests(pageIndex,keyword) {
 }
 function pa(keyword) {
   let countApiUrl;
-  const apiUrlCount = `https://localhost:7270/ManageOrder/count?searchKeyword=${keyword}`;
+  const apiUrlCount = `https://localhost:7270/ManageOrder/countArtist?ArtistId=1baa3322-d509-4db4-a56f-0f48e3171ae9&searchKeyword=${keyword}`;
   fetch(apiUrlCount)
     .then(response => {
       if (!response.ok) {
