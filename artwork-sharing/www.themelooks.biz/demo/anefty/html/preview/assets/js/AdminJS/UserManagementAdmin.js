@@ -1,29 +1,31 @@
 $(document).ready(function() {
     // Initialize DataTable
-    $('#artworkTable').DataTable();
+    $('#userTable').DataTable();
 
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/api/admin/artworks?pageNumber=1&pageSize=10',
+            url: 'https://localhost:7270/api/usercontroller',
             type: 'GET',
             success: function(response) {
                 console.log(response);
                 // Clear existing table data
-                $('#artworkTable').DataTable().clear().destroy();
+                $('#userTable').DataTable().clear().destroy();
 
                 // Populate table with API data
                 $.each(response, function(index, item) {
-                    var statusText = item.status ? 'Showing' : 'Not Showing';
+                    var statusText = item.status ? 'Active' : 'Deactivate';
                     var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">' + '<button class="btn btn-primary">Details</button>' + '</a>' + ' | ' +
                         '<a class="text-capitalize"  id="statusButton" data-id="' + item.id + '" href="">' + '<button class="btn btn-primary">Change Status</button>'+ '</a>';
-                    $('#artworkTable').DataTable().row.add([
+                    $('#userTable').DataTable().row.add([
                         item.name,
-                        item.artist.user.name,
-                        item.createdDate,
-                        item.description,
-                        item.price,
+                        item.bankAccount,
+                        item.gender,
                         statusText,
+                        item.normalizedUserName.toLowerCase(),
+                        item.normalizedEmail.toLowerCase(),
+                        item.phoneNumber,
+                        // item.roleId,
                         links
                         // Add more data if needed
                     ]).draw();
@@ -44,17 +46,16 @@ $(document).ready(function() {
 
 $(document).ready(function () {
     $(document).on('click', '#statusButton', function () {
-        // alert($(this).data('id'));
         var id = $(this).data('id');
-        
+
         $.ajax({
-            url: 'https://localhost:7270/api/admin/disableArtwork/' + id,
+            url: 'https://localhost:7270/ChangeUserStatus/' + id,
             method: 'put',
-             success: function () {
+            success: function () {
                 location.reload();
             }
         })
-        
+
     } )
-    
+
 })

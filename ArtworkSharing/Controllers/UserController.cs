@@ -3,6 +3,7 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.User;
 using ArtworkSharing.Core.ViewModels.Users;
 using ArtworkSharing.Service.AutoMappings;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
@@ -19,11 +20,11 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetAllUsers(int pageNumber, int pageSize)
+    public async Task<ActionResult> GetAllUsers()
     {
         try
         {
-            var userList = await _userService.GetUsers(pageNumber, pageSize);
+            var userList = await _userService.GetUsers();
             return Ok(userList);
         }
         catch (Exception ex)
@@ -84,6 +85,13 @@ public class UserController : Controller
     {
         if (userId == Guid.Empty || uuma == null) return BadRequest(new { Message = "User not found!" });
         return Ok(await _userService.UpdateUser(userId, uuma));
+    }
+
+    [HttpPut("/ChangeUserStatus/{userId}")]
+    public async Task<IActionResult> ChangeUserStatus(Guid userId)
+    {
+        if (userId == Guid.Empty) return BadRequest(new { Message = "User not found!" });
+        return Ok(await _userService.ChangeUserStatus(userId));
     }
 
 

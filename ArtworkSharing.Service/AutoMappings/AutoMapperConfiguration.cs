@@ -79,7 +79,8 @@ public class MapperHandler : Profile
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();
 
         CreateMap<User, UserViewModel>().ReverseMap();
-        CreateMap<User, Core.ViewModels.Users.UserViewModel>().ReverseMap();
+        CreateMap<User, UserViewModel>().ReverseMap();
+        CreateMap<User, Core.ViewModels.Users.UserViewModel>();
         CreateMap<User, UpdateUserModel>().ReverseMap();
         CreateMap<User, CreateUserModel>().ReverseMap();
         CreateMap<User, UserToLoginDto>().ReverseMap();
