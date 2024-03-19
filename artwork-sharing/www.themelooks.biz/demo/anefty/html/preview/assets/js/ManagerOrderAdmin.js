@@ -1,22 +1,33 @@
 const pageSize = 3; // Định nghĩa pageSize ở đầu tập tin hoặc ở phạm vi có thể truy cập trước khi sử dụng
-
+let keyword = '';
 // Define the URL of the API endpoint
-const apiUrl = 'https://localhost:7270/RefundRequest/GetRefundRequestWithPaging?pageIndex=1&pageSize=3';
+const apiUrl = 'https://localhost:7270/ManageOrder/GeTransactionWithPaging?pageIndex=1&pageSize=3';
+// Function to handle search form submission
+document.getElementById('searchForm').addEventListener('submit', function(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
+
+  const keyword = document.getElementById('searchInput').value;
+
+ // dataBody.innerHTML = '';
+  pa(keyword);
+
+  fetchRefundRequests(1, keyword); // Fetch refund requests for the first page with the search keyword
+});
 
 // Function to render refund requests on the HTML template
 function renderRefundRequests(refundRequests) {
   const dataBody = document.getElementById('dataBody');
   dataBody.innerHTML = '';
   refundRequests.forEach(request => {
-    const formattedDate = formatDate(request.refundRequestDate);
+    const formattedDate = formatDate(request.createdDate);
     const requestHtml = `
       <tr>
-        <td>${request.transaction.audience.name}</td>
+        <td>${request.audience.name}</td>
         <td>${formattedDate}</td>
-        <td>${request.description}</td>
-        <td>${request.reason}</td>
+        <td>${request.audience.bankAccount}</td>
+        <td>${request.audience.gender}</td>
         <td>${request.status}</td>
-        <td>${request.transaction.totalBill}</td>
+        <td>${request.totalBill}</td>
         <td><button class="btn btn-primary btn-sm details-button" data-id="${request.id}">Details</button></td> <!-- Thêm nút Details -->
       </tr>
     `;
@@ -57,21 +68,23 @@ function formatDate(dateString) {
 }
 const pagination = document.getElementById('pagination');
 const totalPages =3;
-function renderPagination(totalPages) {
-  pagination.innerHTML = '';
+function renderPagination(totalPages,keyword) {
+  pagination.innerHTML = ''; 
   for (let i = 1; i <= totalPages; i++) {
     
     const pageButton = document.createElement('button');
     pageButton.textContent = i;
     pageButton.addEventListener('click', () => {
-      fetchRefundRequests(i);
+      fetchRefundRequests(i,keyword);
     });
     pagination.appendChild(pageButton);
   }
 }
 
-function fetchRefundRequests(pageIndex) {
-  const apiUrl = `https://localhost:7270/RefundRequest/GetRefundRequestWithPaging?pageIndex=${pageIndex}&pageSize=${pageSize}`; // Sử dụng biến pageSize đã được định nghĩa
+function fetchRefundRequests(pageIndex,keyword) {
+  //console.log(keyword+"me") pa(keyword);
+
+  const apiUrl = `https://localhost:7270/ManageOrder/GeTransactionWithPaging?pageIndex=${pageIndex}&pageSize=${pageSize}&searchKeyword=${keyword}`; // Sử dụng biến pageSize đã được định nghĩa
   fetch(apiUrl)
     .then(response => {
       if (!response.ok) {
@@ -86,38 +99,39 @@ function fetchRefundRequests(pageIndex) {
       console.error('Error fetching data:', error);
     });
 }
+function pa(keyword) {
+  let countApiUrl;
+  const apiUrlCount = `https://localhost:7270/ManageOrder/count?searchKeyword=${keyword}`;
+  fetch(apiUrlCount)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      countApiUrl = data;
+      // Sau khi lấy được dữ liệu, bạn có thể tiếp tục thực hiện các thao tác khác ở đây
+      fetch(apiUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          const totalPages = Math.ceil(countApiUrl / pageSize);
+          renderPagination(totalPages,keyword);
+          fetchRefundRequests(1, keyword);
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+}
 
-let countApiUrl;
-
-fetch('https://localhost:7270/RefundRequest/count')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    countApiUrl = data;
-  })
-  .catch(error => {
-    console.error('Error fetching data:', error);
-  });
-
-fetch(apiUrl)
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.json();
-  })
-  .then(data => {
-    
-    const totalPages = Math.ceil(countApiUrl / pageSize);
-    
-    renderPagination(totalPages);
-    renderRefundRequests(data);
-  })
-  .catch(error => {
-    console.error('Error fetching data:', error);
-  });
- 
+// Gọi hàm pa với giá trị của keyword
+pa(keyword);
