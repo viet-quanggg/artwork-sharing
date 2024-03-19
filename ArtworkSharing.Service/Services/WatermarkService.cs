@@ -19,14 +19,14 @@ namespace ArtworkSharing.Service.Services
             _fireBaseService = fireBaseService;
         }
 
-        public async Task<string> AddWatermarkAsync(string modelMainImgaUrl)
+        public async Task<string> AddWatermarkAsync(string UrlImage)
         {
             try
             {
                 // Prepare the request body
                 var request = new
                 {
-                    mainImageUrl = modelMainImgaUrl,
+                    mainImageUrl = UrlImage,
                     markImageUrl = "https://upload.wikimedia.org/wikipedia/commons/6/63/NU_Watermark_Logo.png",
                     markRatio = 0.5,
                     opacity = 0,
@@ -45,7 +45,7 @@ namespace ArtworkSharing.Service.Services
                 var imageBytes = await response.Content.ReadAsByteArrayAsync();
 
                 // Call the FireBaseService to upload the watermarked image and get the image link
-                var imageUrl = await _fireBaseService.UploadImageSingleNotList(imageBytes, "jpeg");
+                var imageUrl = await _fireBaseService.UploadImageWatermarkIntoFireBase(imageBytes, "jpeg");
                 // Read response content as byte array
                 return imageUrl;
             }
