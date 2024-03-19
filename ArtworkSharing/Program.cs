@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 using ArtworkSharing.Controllers;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Exceptions;
@@ -34,6 +35,10 @@ builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = 
 builder.Services.AddHttpClient();
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 var app = builder.Build();
 EnsureMigrate(app);
 // Configure the HTTP request pipeline.
@@ -44,12 +49,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseException();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
 app.MapControllers();
 
 app.Run();

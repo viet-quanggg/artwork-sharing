@@ -47,6 +47,43 @@ public class FireBaseService : IFireBaseService
 
         return imageLink;
     }
+    public async Task<string> UploadImageSingleNotList(byte[] imageBytes, string imageType)
+    {
+        var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+
+        // get authentication token
+        var authResultTask = auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+        var authResult = await authResultTask;
+        var token = authResult.FirebaseToken;
+
+        var imageLink = "";
+
+        // Kiểm tra xem mảng byte của hình ảnh không phải là rỗng và kiểm tra xem chuỗi MIME type được cung cấp
+        // có hợp lệ không
+        if (imageBytes != null && !string.IsNullOrEmpty(imageType))
+        {
+            // Tạo stream từ mảng byte của hình ảnh
+            using (var stream = new MemoryStream(imageBytes))
+            {
+                // Bắt đầu quá trình tải lên hình ảnh lên Firebase Storage
+                var result = await new FirebaseStorage(Bucket,
+                    new FirebaseStorageOptions
+                    {
+                        AuthTokenAsyncFactory = () => Task.FromResult(token)
+                    })
+                    .Child("products")
+                    .Child(Guid.NewGuid().ToString()) // Đổi tên ngẫu nhiên cho hình ảnh để tránh trùng lặp
+                    .PutAsync(stream, new CancellationTokenSource().Token, $"image/{imageType}");
+
+                // Lấy đường dẫn của hình ảnh sau khi tải lên thành công
+                imageLink = result;
+            }
+        }
+
+        return imageLink;
+    }
+
+
 
     public async Task<string> UploadImageSingle(List<IFormFile> files)
     {

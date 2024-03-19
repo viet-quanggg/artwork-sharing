@@ -1,7 +1,9 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Package;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
+using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
@@ -95,5 +97,23 @@ public class RefundRequestService : IRefundRequestService
             return await query.CountAsync();
         }
 
-       
+
+    public async Task<RefundRequestViewModel> UpdateRefundRequestStatus(Guid id, string Status)
+    {
+        var refundRequest = await _uow.RefundRequestRepository.FirstOrDefaultAsync(_ => _.Id == id);
+        if (refundRequest == null) return null!;
+
+        refundRequest.Status = Status;
+
+        _uow.RefundRequestRepository.UpdateRefundRequest(refundRequest);
+        await _uow.SaveChangesAsync();
+        return await GetRefundRequest(id);
+
+
     }
+
+    public Task CheckOutRefundRequest(TransactionViewModel transaction)
+    {
+        throw new NotImplementedException();
+    }
+}

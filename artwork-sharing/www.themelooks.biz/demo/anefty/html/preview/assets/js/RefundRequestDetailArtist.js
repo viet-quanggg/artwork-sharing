@@ -13,7 +13,7 @@ const apiUrl = `https://localhost:7270/RefundRequest/${id}`;
 
 // Function to render data on the HTML template
 function renderDataOnHTML(data) {
-  document.getElementById('product-title').textContent = data[0].id;
+  document.getElementById('product-title').textContent = data[0].transaction.audience.name;
   //document.getElementById('available').textContent = `Available ${data.id}`;
   //document.getElementById('love-count').textContent = data.id;
   //document.getElementById('paragraph').textContent = data.paragraph;
@@ -75,13 +75,13 @@ fetch(apiUrl)
 
   // Khi nhấp vào nút "Deny"
 $('#btn-border').click(function() {
-    updateRefundRequestStatus('deny');
+    updateRefundRequestStatus('DenyByArist');
    
 });
 
 // Khi nhấp vào nút "Accept"
 $('#btn-sm').click(function() {
-    updateRefundRequestStatus('accept');
+    updateRefundRequestStatus('AcceptByArist');
    
 });
 
@@ -105,7 +105,7 @@ function updateRefundRequestStatus(status) {
         success: function(response) {
             console.log(`Refund request ${id} status updated to ${status}`);
             // Thực hiện các hành động phản hồi sau khi cập nhật thành công
-            window.location.href = 'RefundRequestHome.html';
+            window.location.href = 'RefundRequestHomeArtist.html';
         },
         error: function(xhr, status, error) {
             console.error('Error updating refund request status:', error);

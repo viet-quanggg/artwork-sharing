@@ -1,6 +1,7 @@
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
+using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
@@ -13,9 +14,15 @@ public class RefundRequestController : ControllerBase
 {
     private readonly IRefundRequestService _refundRequestService;
 
-    public RefundRequestController(IRefundRequestService refundRequestService)
+    private readonly ITransactionService _transactionService;
+
+    private readonly IArtworkService _artworkService;
+
+    public RefundRequestController(IRefundRequestService refundRequestService, ITransactionService transactionService, IArtworkService artworkService)
     {
         _refundRequestService = refundRequestService;
+        _artworkService = artworkService;
+        _transactionService = transactionService;   
     }
 
 
@@ -41,7 +48,8 @@ public class RefundRequestController : ControllerBase
     {
         try
         {
-            int count = await _refundRequestService.Count();
+            Expression<Func<RefundRequest, bool>> filter = r => ( (r.Status.Equals("Pending")));
+            int count = await _refundRequestService.Count(filter);
             return Ok(count);
         }
         catch (Exception)
@@ -70,6 +78,23 @@ public class RefundRequestController : ControllerBase
     {
         try
         {
+            // Sử dụng phương thức Join để kết nối các bảng
+            Expression<Func<Transaction, bool>> filtert = null;
+
+
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderByt = q => q.OrderByDescending(p => p.CreatedDate);
+
+            string includePropertiest = "Package,Artwork,ArtworkService,Audience";
+
+            var transactions = _transactionService.Get(filtert, orderByt, includePropertiest, null, null);
+
+            // Lấy TransactionId từ danh sách các Transaction
+            List<Guid> listId = new List<Guid> { };
+            foreach (var transac in transactions)
+            {
+                listId.Add(transac.Id);
+            }
             Expression<Func<RefundRequest, bool>> filter = refundRequest => refundRequest.Id == id;
 
 
@@ -90,13 +115,31 @@ public class RefundRequestController : ControllerBase
     }
 
     [HttpGet("GetRefundRequestWithPaging")]
-    public async Task<ActionResult<List<RefundRequestViewModel>>> GetPackageWithPaging(
+    public async Task<ActionResult<List<RefundRequest>>> GetPackageWithPaging(
  [FromQuery] int? pageIndex = null,
  [FromQuery] int? pageSize = null)
     {
         try
         {
-            Expression<Func<RefundRequest, bool>> filter = null;
+            // Sử dụng phương thức Join để kết nối các bảng
+            Expression<Func<Transaction, bool>> filtert =null;
+
+
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderByt = q => q.OrderByDescending(p => p.CreatedDate);
+
+            string includePropertiest = "Package,Artwork,ArtworkService,Audience";
+
+            var transactions = _transactionService.Get(filtert, orderByt, includePropertiest, null, null);
+
+            // Lấy TransactionId từ danh sách các Transaction
+            List<Guid> listId = new List<Guid> { };
+            foreach (var transac in transactions)
+            {
+                listId.Add(transac.Id);
+            }
+
+            Expression<Func<RefundRequest, bool>> filter =  r => ( (r.Status.Equals("Pending")));
 
             // Khởi tạo hàm sắp xếp giảm dần theo thời gian
             Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = q => q.OrderByDescending(p => p.RefundRequestDate);
@@ -115,14 +158,31 @@ public class RefundRequestController : ControllerBase
     }
 
     [HttpGet("GetRefundRequestWithPagingArist")]
-    public async Task<ActionResult<List<RefundRequestViewModel>>> GetPackageWithPagingArist( Guid AristId,
+    public async Task<ActionResult<List<RefundRequest>>> GetPackageWithPagingArist( Guid AristId,
 [FromQuery] int? pageIndex = null,
 [FromQuery] int? pageSize = null)
     {
         try
         {
+            // Sử dụng phương thức Join để kết nối các bảng
+            Expression<Func<Transaction, bool>> filtert = t => t.Artwork.ArtistId == AristId;
+        
 
-            Expression<Func<RefundRequest, bool>> filter = r => ( r.Transaction.Artwork.ArtistId == AristId) && ( r.Status.Equals("AcceptByAdmin")); 
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderByt = q => q.OrderByDescending(p => p.CreatedDate);
+
+            string includePropertiest = "Package,Artwork,ArtworkService,Audience";
+
+            var transactions = _transactionService.Get(filtert, orderByt, includePropertiest, null, null);
+
+            // Lấy TransactionId từ danh sách các Transaction
+            List<Guid> listId = new List<Guid> {  };
+            foreach(var transac in transactions)
+            {
+                listId.Add(transac.Id);
+            }
+
+            Expression<Func<RefundRequest, bool>> filter = r => (listId.Contains(r.TransactionId)) && ( r.Status.Equals("AcceptByAdmin")); 
             // Khởi tạo hàm sắp xếp giảm dần theo thời gian
             Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = q => q.OrderByDescending(p => p.RefundRequestDate);
 
