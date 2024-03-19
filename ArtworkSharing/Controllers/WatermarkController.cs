@@ -46,7 +46,7 @@ public class WatermarkController : ControllerBase
             var imageBytes = await response.Content.ReadAsByteArrayAsync();
 
             // Call the FireBaseService to upload the watermarked image and get the image link
-            var imageUrl = await _fireBaseService.UploadImageSingleNotList(imageBytes, "jpeg");
+            var imageUrl = await _fireBaseService.UploadImageWatermarkIntoFireBase(imageBytes, "jpeg");
 
             // Return the image link
             return Ok(new { imageUrl });
