@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Artists;
 using ArtworkSharing.Core.ViewModels.User;
 using ArtworkSharing.Core.ViewModels.Users;
 using ArtworkSharing.DAL.Extensions;
@@ -108,7 +109,12 @@ public class UserService : IUserService
     public async Task<Core.ViewModels.User.UserViewModel> GetUserAdmin(Guid userId)
     {
         return AutoMapperConfiguration.Mapper.Map<Core.ViewModels.User.UserViewModel>(
-            await _unitOfWork.UserRepository.FirstOrDefaultAsync(u => u.Id == userId));
+            await _unitOfWork.UserRepository
+                .Include(u => u.Followers)
+                .Include(u => u.Followings)
+                .Include(u => u.Transactions)
+                .Include(u => u.ArtworkServices)
+                .FirstOrDefaultAsync(u => u.Id == userId));
     }
 
 
@@ -219,4 +225,6 @@ public class UserService : IUserService
         await _unitOfWork.SaveChangesAsync();
         return await GetOne(u.Id);
     }
+
+    
 }
