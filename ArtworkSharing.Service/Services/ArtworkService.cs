@@ -208,22 +208,28 @@ public class ArtworkService : IArtworkService
         return true;
     }
 
-    public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!)
+    public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? browserArtworkModel = null!)
     {
         var artworks = await _unitOfWork.ArtworkRepository
             .Include(x => x.Likes)
             .Include(x => x.Comments)
+            .Include(x=>x.Artist)
             .OrderByDescending(x => x.CreatedDate).ToListAsync();
 
-        if (bam != null)
+        if (browserArtworkModel != null)
         {
-            if (bam.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(bam.Name!.ToLower())).ToList();
-            if (bam.Description + "" != "")
-                artworks = artworks.Where(x => x.Description!.ToLower().Contains(bam.Description!.ToLower())).ToList();
-            if (bam.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count).ToList();
-            if (bam.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate).ToList();
-            if (bam.ArtistId != null && bam.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == bam.ArtistId).ToList();
-            artworks = artworks.Skip((bam.PageIndex - 1) * bam.PageSize).Take(bam.PageSize).ToList();
+            if (browserArtworkModel.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(browserArtworkModel.Name!.ToLower())).ToList();
+
+            if (browserArtworkModel.Description + "" != "")
+                artworks = artworks.Where(x => x.Description!.ToLower().Contains(browserArtworkModel.Description!.ToLower())).ToList();
+
+            if (browserArtworkModel.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count).ToList();
+
+            if (browserArtworkModel.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate).ToList();
+
+            if (browserArtworkModel.ArtistId != null && browserArtworkModel.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == browserArtworkModel.ArtistId).ToList();
+
+            artworks = artworks.Skip((browserArtworkModel.PageIndex - 1) * browserArtworkModel.PageSize).Take(browserArtworkModel.PageSize).ToList();
         }
         return artworks.ToList();
     }

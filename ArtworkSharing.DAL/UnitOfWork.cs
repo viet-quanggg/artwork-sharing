@@ -30,7 +30,6 @@ public class UnitOfWork : IUnitOfWork
         RatingRepository = new RatingRepository(DbContext);
         RefundRequestRepository = new RefundRequestRepository(DbContext);
         TransactionRepository = new TransactionRepository(DbContext);
-
         VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
         VNPayTransactionRefundRepository = new VNPayTransactionRefundRepository(DbContext);
         VNPayTransactionTransferRepository = new VNPayTransactionTransferRepository(DbContext);
@@ -40,7 +39,9 @@ public class UnitOfWork : IUnitOfWork
         PaypalOrderRepository = new PaypalOrderRepository(DbContext);
         PaypalAmountRepository = new PaypalAmountRepository(DbContext);
         PaypalItemRepository = new PaypalItemRepository(DbContext);
-
+        PaymentRefundEventRepository =  new PaymentRefundEventRepository(DbContext);
+        PaypalPaymentEventRepository = new PaypalPaymentEventRepository(DbContext);
+        PaypalRefundEventRepository = new PaypalRefundEventRepository(DbContext);
     }
 
     public DbContext DbContext { get; }
@@ -86,6 +87,11 @@ public class UnitOfWork : IUnitOfWork
 
     public IPaypalItemRepository PaypalItemRepository { get; }
 
+    public IPaymentRefundEventRepository PaymentRefundEventRepository { get; }
+
+    public IPaypalPaymentEventRepository PaypalPaymentEventRepository { get; }
+
+    public IPaypalRefundEventRepository PaypalRefundEventRepository { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

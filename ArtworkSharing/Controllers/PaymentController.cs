@@ -53,13 +53,25 @@ public class PaymentController : ControllerBase
     {
         var rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
+
+        //await _paymentEventService.AddPaymentEvent(
+        // new Core.Domain.Entities.PaymentEvent
+        // {
+        //     Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
+        // });
+
+        //_messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
         return Ok(rs.TransactionViewModel);
     }
 
     [HttpGet("test")]
     public async Task<IActionResult> TestTest()
     {
-        await _paymentEventService.AddPaymentEvent(new Core.Domain.Entities.PaymentEvent { Data = JsonConvert.SerializeObject(new VNPayTransactionTransfer { Id = Guid.NewGuid(), IsCompleted = true, TransactionId = Guid.NewGuid() }) });
+        await _paymentEventService.AddPaymentEvent(
+            new Core.Domain.Entities.PaymentEvent
+            {
+                Data = JsonConvert.SerializeObject(new VNPayTransactionTransfer { Id = Guid.NewGuid(), IsCompleted = true, TransactionId = Guid.NewGuid() })
+            });
         _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
         return Ok();
     }
@@ -99,6 +111,8 @@ public class PaymentController : ControllerBase
         //if (string.IsNullOrEmpty(uId)) return Unauthorized();
         var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse("48485956-80A9-42AB-F8C2-08DC44567C01"));
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
+
+
         return Ok(rs.TransactionViewModel);
     }
 
@@ -142,7 +156,13 @@ public class PaymentController : ControllerBase
         var rs = await _paypalOrderService.CompletedOrder(paypal);
 
         if (rs == null) return StatusCode(StatusCodes.Status500InternalServerError);
+        //await _paymentEventService.AddPaymentEvent(
+        // new Core.Domain.Entities.PaymentEvent
+        // {
+        //     Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
+        // });
 
+        //_messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
         return Ok(rs.TransactionViewModel);
     }
 }

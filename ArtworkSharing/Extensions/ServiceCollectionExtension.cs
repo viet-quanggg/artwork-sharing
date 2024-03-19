@@ -77,6 +77,7 @@ public static class ServiceCollectionExtension
 
         MessageChanel messageChanel = new();
         services.AddSingleton<MessageChanel>(messageChanel.PaidRaise());
+        services.AddSingleton<MessageChanel>(messageChanel.PaypalPaidRaise());
         services.AddSingleton<IMessageSupport, MessageSupport>();
         services.AddSingleton<MessagePaymentEvent>();
         services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>());

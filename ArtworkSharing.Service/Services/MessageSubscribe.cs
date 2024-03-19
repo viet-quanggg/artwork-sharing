@@ -23,6 +23,7 @@ namespace ArtworkSharing.Service.Services
             _messageChannels = messageChanels;
             _serviceScope = serviceScope;
         }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             foreach (var item in _messageChannels)

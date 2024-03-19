@@ -43,19 +43,17 @@ namespace ArtworkSharing.Service.Services
                         var events = await _paymentEventService.GetPaymentEvents();
                         foreach (var e in events)
                         {
-                            var body = Encoding.UTF8.GetBytes(e.Data);
-
                             await _messageSupport.RaiseEventPayment(new Core.Models.MessageRaw
                             {
                                 ExchangeName = Exchange.PaidRaise,
                                 Message = e.Data,
                                 QueueName = Queue.PaidRaiseQueue,
                                 RoutingKey = RoutingKey.PaidRaise
-
                             });
                             await _paymentEventService.RemovePaymentEvent(e);
                         }
                     }
+
                     using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_wakeupCancelationTokenSource.Token, stoppingToken);
                     try
                     {
