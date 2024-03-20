@@ -48,7 +48,7 @@ public class CommentService : ICommentService
 
     public async Task<List<CommentViewModel>> GetCommentByArtworkId(Guid id)
     {
-        return AutoMapperConfiguration.Mapper.Map<List<CommentViewModel>>(await _unitOfWork.CommentRepository
+        return AutoMapperConfiguration.Mapper.Map<List<CommentViewModel>>(await _unitOfWork.CommentRepository.Include(x=>x.CommentedUser)
             .Where(x => x.ArtworkId == id).ToListAsync());
     }
 

@@ -1,6 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Artists;
+using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -83,6 +87,22 @@ public class ArtistService : IArtistService
         {
             await _unitOfWork.RollbackTransaction();
             throw;
+        }
+    }
+    
+    public async Task<ArtistProfileViewModel> GetArtistProfile(Guid artistId)
+    {
+        if (artistId != null)
+        {
+            return AutoMapperConfiguration.Mapper.Map<ArtistProfileViewModel>(await _unitOfWork.ArtistRepository
+                .Include(a => a.User)
+                .ThenInclude(u => u.Transactions)
+                .Include(a => a.Artworks)
+                .FirstOrDefaultAsync(a => a.Id == artistId));
+        }
+        else
+        {
+            throw new KeyNotFoundException();
         }
     }
 }

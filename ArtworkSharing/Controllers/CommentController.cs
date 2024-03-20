@@ -24,6 +24,7 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> GetCommentByArtworkId([FromRoute] Guid id)
     {
         if (id == Guid.Empty) return BadRequest(new { Message = "Not found artwork" });
+        var c = await _commentService.GetCommentByArtworkId(id);
         return Ok(await _commentService.GetCommentByArtworkId(id));
     }
 

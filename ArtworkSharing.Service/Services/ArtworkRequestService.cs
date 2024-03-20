@@ -16,7 +16,7 @@ public class ArtworkRequestService : IArtworkRequestService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IList<ArtworkRequestViewModel>> GetArtworkServices(int pageNumber, int pageSize)
+    public async Task<List<ArtworkRequestViewModel>> GetArtworkServices(int pageNumber, int pageSize)
     {
         try
         {
@@ -28,7 +28,7 @@ public class ArtworkRequestService : IArtworkRequestService
                 .Take(pageSize)
                 .ToListAsync();
 
-            return AutoMapperConfiguration.Mapper.Map<IList<ArtworkRequestViewModel>>(list);
+            return AutoMapperConfiguration.Mapper.Map<List<ArtworkRequestViewModel>>(list);
         }
         catch (Exception ex)
         {

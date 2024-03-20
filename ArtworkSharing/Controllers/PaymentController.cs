@@ -13,14 +13,16 @@ namespace ArtworkSharing.Controllers;
 [ApiController]
 public class PaymentController : ControllerBase
 {
+    private readonly IPaypalOrderService _paypalOrderService;
     private readonly IPaymentEventService _paymentEventService;
     private readonly MessagePaymentEvent _messagePaymentEvent;
     private readonly ITransactionService _transactionService;
     private readonly IVNPayTransactionService _VNPayTransactionService;
     private readonly IMessageSupport _messageSupport;
 
-    public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService, MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService)
+    public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService, MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService, IPaypalOrderService paypalOrderService)
     {
+        _paypalOrderService = paypalOrderService;
         _paymentEventService = paymentEventService;
         _messagePaymentEvent = messagePaymentEvent;
         _transactionService = transactionService;
@@ -32,7 +34,7 @@ public class PaymentController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("{id}")]
+    [HttpGet("vnpay/{id}")]
     public async Task<IActionResult> GetUrlRedirectVNPAY(Guid id)
     {
         if (id == Guid.Empty) return BadRequest();
@@ -51,24 +53,16 @@ public class PaymentController : ControllerBase
     {
         var rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
-
-        await _messageSupport.RaiseEventPayment(new Core.Models.MessageRaw
-        {
-            ExchangeName = Exchange.PaymentRaise,
-            RoutingKey = RoutingKey.PaymentRaise,
-            QueueName = Queue.PaymentRaiseQueue,
-            Message = JsonExtension.SerializeCategoryTransactionViewModel(rs.TransactionViewModel)
-        });
         return Ok(rs.TransactionViewModel);
     }
 
-    //[HttpGet("test")]
-    //public async Task<IActionResult> TestTest()
-    //{
-    //    await _paymentEventService.AddPaymentEvent(new Core.Domain.Entities.PaymentEvent { Data = JsonConvert.SerializeObject(new VNPayTransactionTransfer { Id = Guid.NewGuid(), IsCompleted = true, TransactionId = Guid.NewGuid() }) });
-    //    _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
-    //    return Ok();
-    //}
+    [HttpGet("test")]
+    public async Task<IActionResult> TestTest()
+    {
+        await _paymentEventService.AddPaymentEvent(new Core.Domain.Entities.PaymentEvent { Data = JsonConvert.SerializeObject(new VNPayTransactionTransfer { Id = Guid.NewGuid(), IsCompleted = true, TransactionId = Guid.NewGuid() }) });
+        _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
+        return Ok();
+    }
     /// <summary>
     ///     Get VNPay transaction by transactionId
     /// </summary>
@@ -105,6 +99,50 @@ public class PaymentController : ControllerBase
         //if (string.IsNullOrEmpty(uId)) return Unauthorized();
         var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse("48485956-80A9-42AB-F8C2-08DC44567C01"));
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
+        return Ok(rs.TransactionViewModel);
+    }
+
+
+    /// <summary>
+    /// Get url paypal via transactionId
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("paypal/{id}")]
+    public async Task<IActionResult> GetPayPal([FromRoute] Guid id)
+    {
+        if (id == Guid.Empty) return BadRequest(new { Message = "Not found transaction" });
+
+        var transaction = await _transactionService.GetOne(id);
+
+        if (transaction == null) return BadRequest(new { Message = "Not found transaction" });
+
+        var rs = await _paypalOrderService.CreateOrder(transaction);
+
+        return Ok(rs.Message);
+    }
+
+    /// <summary>
+    /// Completed transaction by token return
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    [HttpGet("paypal/token/")]
+    public async Task<IActionResult> CompletedTransaction()
+    {
+        var query = Request.QueryString + "";
+        string token = (query.Split("&")[0]).Split("=")[1];
+
+        if (string.IsNullOrEmpty(token)) return BadRequest();
+
+        var paypal = await _paypalOrderService.GetPaypalOrder(token);
+
+        if (paypal == null) return BadRequest(new { Message = "Not found transaction" });
+
+        var rs = await _paypalOrderService.CompletedOrder(paypal);
+
+        if (rs == null) return StatusCode(StatusCodes.Status500InternalServerError);
+
         return Ok(rs.TransactionViewModel);
     }
 }

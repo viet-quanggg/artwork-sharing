@@ -1,8 +1,12 @@
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
+using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ArtworkSharing.Controllers;
 
@@ -11,26 +15,43 @@ namespace ArtworkSharing.Controllers;
 public class RefundRequestController : ControllerBase
 {
     private readonly IRefundRequestService _refundRequestService;
+    
+    private readonly ITransactionService _transactionService;
 
-    public RefundRequestController(IRefundRequestService refundRequestService)
+    private readonly IArtworkService _artworkService;
+
+    [HttpPost("createRefundRequestUser")]
+    public async Task<ActionResult> CreateRefundRequestUser(CreateRefundRequestModel crrm)
+    {
+        try
+        {
+            await _refundRequestService.CreateRefundRequest(crrm);
+            return Ok(crrm);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+    
+
+ 
+
+    public RefundRequestController(IRefundRequestService refundRequestService, ITransactionService transactionService, IArtworkService artworkService)
     {
         _refundRequestService = refundRequestService;
+        _artworkService = artworkService;
+        _transactionService = transactionService;   
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<RefundRequestViewModel>>> GetAllRefundRequests()
-    {
-        var refundRequests = await _refundRequestService.GetAll();
-        return Ok(refundRequests);
-    }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)
-    {
-        var refundRequest = await _refundRequestService.GetRefundRequest(id);
-        if (refundRequest == null) return NotFound();
-        return Ok(refundRequest);
-    }
+    //[HttpGet("{id}")]
+    //public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)
+    //{
+    //    var refundRequest = await _refundRequestService.GetRefundRequest(id);
+    //    if (refundRequest == null) return NotFound();
+    //    return Ok(refundRequest);
+    //}
 
 
     //[HttpGet]
@@ -39,12 +60,15 @@ public class RefundRequestController : ControllerBase
     //    var refundRequests = await _refundRequestService.GetAll();
     //    return Ok(refundRequests);
     //}
+
+    // 5990f7bd-5ee5-4c52-9cce-2c57d90c34ec id aritst
     [HttpGet("count")]
     public async Task<ActionResult<int>> GetRefundRequestCount()
     {
         try
         {
-            int count = await _refundRequestService.Count();
+            Expression<Func<RefundRequest, bool>> filter = r => ( (r.Status.Equals("Pending")));
+            int count = await _refundRequestService.Count(filter);
             return Ok(count);
         }
         catch (Exception)
@@ -52,11 +76,45 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
+
+
+    [HttpGet("countAritst")]
+    public async Task<ActionResult<int>> GetRefundRequestCountArist(Guid AristId)
+    {
+        try
+        {
+            Expression<Func<RefundRequest, bool>> filter = r => (r.Transaction.Artwork.ArtistId == AristId) && (r.Status.Equals("AcceptByAdmin"));
+            int count = await _refundRequestService.Count(filter);
+            return Ok(count);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500); // Lỗi máy chủ nội bộ
+        }
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<List<RefundRequestViewModel>>> GetDetailPackage(Guid id)
     {
         try
         {
+            // Sử dụng phương thức Join để kết nối các bảng
+            Expression<Func<Transaction, bool>> filtert = null;
+
+
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderByt = q => q.OrderByDescending(p => p.CreatedDate);
+
+            string includePropertiest = "Package,Artwork,ArtworkService,Audience";
+
+            var transactions = _transactionService.Get(filtert, orderByt, includePropertiest, null, null);
+
+            // Lấy TransactionId từ danh sách các Transaction
+            List<Guid> listId = new List<Guid> { };
+            foreach (var transac in transactions)
+            {
+                listId.Add(transac.Id);
+            }
             Expression<Func<RefundRequest, bool>> filter = refundRequest => refundRequest.Id == id;
 
 
@@ -76,14 +134,32 @@ public class RefundRequestController : ControllerBase
         }
     }
 
-    [HttpGet(Name = "GetRefundRequestWithPaging")]
-    public async Task<ActionResult<List<RefundRequestViewModel>>> GetPackageWithPaging(
+    [HttpGet("GetRefundRequestWithPaging")]
+    public async Task<ActionResult<List<RefundRequest>>> GetPackageWithPaging(
  [FromQuery] int? pageIndex = null,
  [FromQuery] int? pageSize = null)
     {
         try
         {
-            Expression<Func<RefundRequest, bool>> filter = null;
+            // Sử dụng phương thức Join để kết nối các bảng
+            Expression<Func<Transaction, bool>> filtert =null;
+
+
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderByt = q => q.OrderByDescending(p => p.CreatedDate);
+
+            string includePropertiest = "Package,Artwork,ArtworkService,Audience";
+
+            var transactions = _transactionService.Get(filtert, orderByt, includePropertiest, null, null);
+
+            // Lấy TransactionId từ danh sách các Transaction
+            List<Guid> listId = new List<Guid> { };
+            foreach (var transac in transactions)
+            {
+                listId.Add(transac.Id);
+            }
+
+            Expression<Func<RefundRequest, bool>> filter =  r => ( (r.Status.Equals("Pending")));
 
             // Khởi tạo hàm sắp xếp giảm dần theo thời gian
             Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = q => q.OrderByDescending(p => p.RefundRequestDate);
@@ -100,6 +176,49 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
+
+    [HttpGet("GetRefundRequestWithPagingArist")]
+    public async Task<ActionResult<List<RefundRequest>>> GetPackageWithPagingArist( Guid AristId,
+[FromQuery] int? pageIndex = null,
+[FromQuery] int? pageSize = null)
+    {
+        try
+        {
+            // Sử dụng phương thức Join để kết nối các bảng
+            Expression<Func<Transaction, bool>> filtert = t => t.Artwork.ArtistId == AristId;
+        
+
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderByt = q => q.OrderByDescending(p => p.CreatedDate);
+
+            string includePropertiest = "Package,Artwork,ArtworkService,Audience";
+
+            var transactions = _transactionService.Get(filtert, orderByt, includePropertiest, null, null);
+
+            // Lấy TransactionId từ danh sách các Transaction
+            List<Guid> listId = new List<Guid> {  };
+            foreach(var transac in transactions)
+            {
+                listId.Add(transac.Id);
+            }
+
+            Expression<Func<RefundRequest, bool>> filter = r => (listId.Contains(r.TransactionId)) && ( r.Status.Equals("AcceptByAdmin")); 
+            // Khởi tạo hàm sắp xếp giảm dần theo thời gian
+            Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = q => q.OrderByDescending(p => p.RefundRequestDate);
+
+            string includeProperties = "Transaction";
+
+            var packages = _refundRequestService.Get(filter, orderBy, includeProperties, pageIndex, pageSize);
+            // Chuyển đổi sang view model nếu cần
+            // var packageViewModels = packages.Select(p => new PackageViewModel { ... }).ToList();
+            return Ok(packages);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500); // Lỗi máy chủ nội bộ
+        }
+    }
+
 
 
     //[HttpGet("{id}")]
@@ -182,5 +301,62 @@ public class RefundRequestController : ControllerBase
         {
             return NotFound();
         }
+    }
+
+
+    [HttpGet("/RefundRequestByUser/{userId}")]
+    public async Task<IActionResult> RefundRequestForUser(Guid userId)
+    {
+        try
+        {
+            if (userId != null)
+            {
+                return Ok(await _refundRequestService.GetRefundRequestForUser(userId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+    
+    // [Authorize("")]
+    [HttpGet("/RefundRequestDetailByUser/{refundId}")]
+    public async Task<IActionResult> RefundRequestDetailForUser(Guid refundId)
+    {
+        try
+        {
+            if (refundId != null)
+            {
+                return Ok(await _refundRequestService.GetRefundRequestDetail(refundId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
+
+    [HttpPut("/CancelRequestByUser/{refundId}")]
+    public async Task<IActionResult> CancelRequestByUser(Guid refundId)
+    {
+        try
+        {
+            if (refundId != null)
+            {
+                return Ok(await _refundRequestService.CancelRefundRequestByUser(refundId));
+            }
+
+            return BadRequest();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+        
     }
 }
