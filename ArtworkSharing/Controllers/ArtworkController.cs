@@ -26,9 +26,8 @@ public class ArtworkController : ControllerBase
     /// <param name="browseArtwork"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> GetArtworks(Guid? ArtistId, string? Name, string? Description, bool IsPopular, bool IsAscRecent, int PageIndex, Guid? categoryId)
+    public async Task<IActionResult> GetArtworks(Guid? ArtistId, string? Name, string? Description, bool IsPopular, bool IsAscRecent, int PageSize, int PageIndex)
     {
-        var PageSize = 10;
         BrowseArtworkModel browseArtwork = new BrowseArtworkModel
         {
             ArtistId = ArtistId,
@@ -37,13 +36,12 @@ public class ArtworkController : ControllerBase
             IsPopular = IsPopular,
             Name = Name,
             PageIndex = PageIndex >= 0 ? PageIndex : 0,
-            PageSize = PageSize > 0 ? PageSize : 10,
-            CategoryId = categoryId
+            PageSize = PageSize > 0 ? PageSize : 10
         };
         return Ok(AutoMapperConfiguration.Mapper.Map<List<ArtworkViewModel>>(await _artworkService.GetArtworks(browseArtwork)));
     }
 
-
+    
     /// <summary>
     /// Get artwork by id
     /// </summary>

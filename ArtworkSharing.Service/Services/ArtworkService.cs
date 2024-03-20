@@ -160,8 +160,7 @@ public class ArtworkService : IArtworkService
                 throw new KeyNotFoundException();
             }
 
-            if (updateArtwork.Status == true)
-            {
+            if(updateArtwork.Status == true){
                 updateArtwork.Status = false;
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransaction();
@@ -174,7 +173,7 @@ public class ArtworkService : IArtworkService
                 await _unitOfWork.CommitTransaction();
                 return true;
             }
-
+           
         }
         catch (Exception ex)
         {
@@ -211,26 +210,27 @@ public class ArtworkService : IArtworkService
 
     public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? browserArtworkModel = null!)
     {
-        IQueryable<Artwork> artworks =  _unitOfWork.ArtworkRepository
-            .Include(x => x.Likes).AsNoTracking()
-            .OrderByDescending(x => x.CreatedDate);
+        var artworks = await _unitOfWork.ArtworkRepository
+            .Include(x => x.Likes)
+            .Include(x => x.Comments)
+            .Include(x=>x.Artist)
+            .OrderByDescending(x => x.CreatedDate).ToListAsync();
+
         if (browserArtworkModel != null)
         {
-            if (browserArtworkModel.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(browserArtworkModel.Name!.ToLower()));
+            if (browserArtworkModel.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(browserArtworkModel.Name!.ToLower())).ToList();
 
             if (browserArtworkModel.Description + "" != "")
-                artworks = artworks.Where(x => x.Description!.ToLower().Contains(browserArtworkModel.Description!.ToLower()));
+                artworks = artworks.Where(x => x.Description!.ToLower().Contains(browserArtworkModel.Description!.ToLower())).ToList();
 
-            if (browserArtworkModel.ArtistId != null && browserArtworkModel.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == browserArtworkModel.ArtistId);
+            if (browserArtworkModel.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count).ToList();
 
-            if (browserArtworkModel.CategoryId != null) artworks = artworks.Where(x => x.Categories != null && x.Categories!.Any(x => x.Id == browserArtworkModel.CategoryId));
+            if (browserArtworkModel.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate).ToList();
 
-            if (browserArtworkModel.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count);
+            if (browserArtworkModel.ArtistId != null && browserArtworkModel.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == browserArtworkModel.ArtistId).ToList();
 
-            if (browserArtworkModel.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate);
-
-            artworks = artworks.Skip((browserArtworkModel.PageIndex) * browserArtworkModel.PageSize).Take(browserArtworkModel.PageSize);
+            artworks = artworks.Skip((browserArtworkModel.PageIndex - 1) * browserArtworkModel.PageSize).Take(browserArtworkModel.PageSize).ToList();
         }
-        return await artworks.Include(x=>x.Comments).AsNoTracking().Include(x => x.Artist).ThenInclude(x => x.User).AsNoTracking().ToListAsync();
+        return artworks.ToList();
     }
 }
