@@ -1,7 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.ViewModels.Categories;
 using ArtworkSharing.DAL.Extensions;
+using ArtworkSharing.Service.AutoMappings;
+using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -65,10 +68,8 @@ public class CategoryService : ICategoryService
         return await _unitOfWork.CategoryRepository.GetAllAsync();
     }
 
-    public Task<IList<Category>> GetCategories()
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<List<CategoryViewModel>> GetCategories()
+        => AutoMapperConfiguration.Mapper.Map<List<CategoryViewModel>>(await _unitOfWork.CategoryRepository.GetAll().AsQueryable().ToListAsync());
 
     public async Task<Category> GetCategory(Guid CategoryId)
     {
