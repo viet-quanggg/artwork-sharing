@@ -4,11 +4,16 @@ $(function () {
     compareYearAndMonthlyValues();
     var val = "year";
     getData(val);
-    $('#transactionlist').on('change', '#Softchart', function(e) {
+    getTransactionbyDay();
+    $('#transactionlist').on('change', '#Softchart', function (e) {
       e.preventDefault();
-      var value = $(this).val();
-      getData(value);
-  });
+      getTransactionbyDay();
+    });
+    $('#transactionbyday').on('change', '#Softchart1', function (e) {
+      e.preventDefault();
+      var val = $(this).val();
+
+    });
   } catch (error) {
     console.error('Error:', error);
   }
@@ -127,8 +132,8 @@ async function compareYearAndMonthlyValues() {
 
     let averagePercentageChange = ((averageCurrentYear - averagePreviousYear) / averagePreviousYear) * 100;
     console.log(averagePreviousYear);
-   
-    if (averagePreviousYear <= 0){
+
+    if (averagePreviousYear <= 0) {
       averagePercentageChange = 100;
     }
     const formattedAveragePercentageChange = new Intl.NumberFormat('en-US', {
@@ -138,21 +143,21 @@ async function compareYearAndMonthlyValues() {
 
     var total = currentYearTotal - previousYearTotal;
     var total1 = averageCurrentYear - averagePreviousYear;
-    if(total > 0 ){
+    if (total > 0) {
       $("#Iconyear").addClass("me-1 rounded-circle round-20 d-flex align-items-center justify-content-center bg-light-success");
       $("#Iconyear1").addClass("ti-arrow-up-left text-success");
-    }else if(total < 0 ){
+    } else if (total < 0) {
       $("#Iconyear").addClass("me-2 rounded-circle round-20 d-flex align-items-center justify-content-center bg-light-danger");
       $("#Iconyear1").addClass("ti-arrow-down-right text-danger");
     }
-    if (total1 < 0){
+    if (total1 < 0) {
       $("#Iconmonth").addClass("me-2 rounded-circle round-20 d-flex align-items-center justify-content-center bg-light-danger");
       $("#Iconmonth1").addClass("ti-arrow-down-right text-danger");
-    }else if(total1>0){
+    } else if (total1 > 0) {
       $("#Iconmonth").addClass("me-1 rounded-circle round-20 d-flex align-items-center justify-content-center bg-light-success");
       $("#Iconmonth1").addClass("ti-arrow-up-left text-success");
     }
-   
+
     $("#totalyear").text(total + " $");
     $("#percentyear").text(formattedYearPercentageChange);
     $("#lastyear").text(currentYear - 1);
@@ -166,7 +171,7 @@ async function compareYearAndMonthlyValues() {
   }
 }
 
-async function displaytransactioninday(){
+async function displaytransactioninday() {
   try {
     const response = await $.ajax({
       url: 'https://localhost:7270/Transaction/Chart?timeRange=day',
@@ -180,14 +185,43 @@ async function displaytransactioninday(){
     throw error;
   }
 }
-async function getnameArtist(id){
+async function getnameArtist(id) {
   const response = await $.ajax({
     url: `https://localhost:7270/GetNameArtist/${All.artistId}?page=1`,
     type: 'GET',
   });
 }
 
+async function getTransactionbyDay() {
+  try {
+    const response = await $.ajax({
+      url: 'https://localhost:7270/Transaction/Chart?timeRange=day',
+      type: 'GET',
+    });
 
 
+    response.forEach(item => {
+      console.log (item.artworkId);
+      GetArtwork(item);
+    });
+
+  } catch (error) {
+    console.error('Error fetching transaction data:', error);
+    $('#transactionChart').text('Error loading chart data.');
+  }
+}
+
+async function GetArtwork(Item) {
+  try {
+    const response = await $.ajax({
+      url: 'https://localhost:7270/ArtworkbyId?id='+ Item.artworkId,
+      type: 'GET',
+    });
+    console.log(response);
+  } catch (error) {
+    console.error('Error fetching transaction data:', error);
+  }
+
+}
 
 

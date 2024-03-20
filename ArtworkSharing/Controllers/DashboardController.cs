@@ -231,4 +231,20 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+    [HttpGet("/ArtworkbyId", Name = "GetArtworkbyId")]
+    public async Task<ActionResult> GetArtworkbyId(Guid id)
+    {
+        try
+        {
+            
+            var transactions = await _ArtworkService.GetOne(id);
+
+            return Ok(transactions);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error getting Artwork: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
+    }
 }
