@@ -1,10 +1,12 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -160,7 +162,8 @@ public class ArtworkService : IArtworkService
                 throw new KeyNotFoundException();
             }
 
-            if(updateArtwork.Status == true){
+            if (updateArtwork.Status == true)
+            {
                 updateArtwork.Status = false;
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransaction();
@@ -173,7 +176,7 @@ public class ArtworkService : IArtworkService
                 await _unitOfWork.CommitTransaction();
                 return true;
             }
-           
+
         }
         catch (Exception ex)
         {
@@ -226,5 +229,12 @@ public class ArtworkService : IArtworkService
             artworks = artworks.Skip((bam.PageIndex - 1) * bam.PageSize).Take(bam.PageSize).ToList();
         }
         return artworks.ToList();
+    }
+
+    public async Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy)
+    {
+        Expression<Func<Artwork, bool>> filterExp = null;
+        Func<IQueryable<Artwork>, IOrderedQueryable<Artwork>> orderByExp = null;
+        return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x=>x.ArtistId.Equals(artistId), orderByExp, x=>x.Likes, x=>x.MediaContents);
     }
 }

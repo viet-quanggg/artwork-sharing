@@ -106,7 +106,7 @@ app.Run();
 
 void EnsureMigrate(WebApplication webApp)
 {
-    using var scope = webApp.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<ArtworkSharingContext>();
-    context.Database.Migrate();
+   // using var scope = webApp.Services.CreateScope();
+   // var context = scope.ServiceProvider.GetRequiredService<ArtworkSharingContext>();
+   // context.Database.Migrate();
 }
