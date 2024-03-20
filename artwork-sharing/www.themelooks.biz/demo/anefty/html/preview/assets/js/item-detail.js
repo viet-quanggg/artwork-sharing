@@ -109,6 +109,7 @@ async function SendCmt(id) {
         await GetComments(id);
     }
 }
+
 async function GetUser() {
     var url = "https://localhost:7270/api/usercontroller/getuser?userId=" + sessionStorage.getItem("uid");
     var request = new Request(url);
