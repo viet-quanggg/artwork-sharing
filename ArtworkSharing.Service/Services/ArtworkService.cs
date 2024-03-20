@@ -1,10 +1,12 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -232,5 +234,12 @@ public class ArtworkService : IArtworkService
             artworks = artworks.Skip((browserArtworkModel.PageIndex) * browserArtworkModel.PageSize).Take(browserArtworkModel.PageSize);
         }
         return await artworks.Include(x=>x.Comments).AsNoTracking().Include(x => x.Artist).ThenInclude(x => x.User).AsNoTracking().ToListAsync();
+    }
+
+    public async Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy)
+    {
+        Expression<Func<Artwork, bool>> filterExp = null;
+        Func<IQueryable<Artwork>, IOrderedQueryable<Artwork>> orderByExp = null;
+        return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x=>x.ArtistId.Equals(artistId), orderByExp, x=>x.Likes, x=>x.MediaContents);
     }
 }
