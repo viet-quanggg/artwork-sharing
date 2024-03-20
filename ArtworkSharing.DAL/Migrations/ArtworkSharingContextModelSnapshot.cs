@@ -321,6 +321,112 @@ namespace ArtworkSharing.DAL.Migrations
                     b.ToTable("PaymentEvents");
                 });
 
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaypalAmount", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CurrencyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ItemTotalCurrencyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("ItemTotalValue")
+                        .HasColumnType("float");
+
+                    b.Property<Guid>("PaypalOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaypalOrderId");
+
+                    b.ToTable("PaypalAmounts");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaypalItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CurrencyCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PaypalOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Value")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaypalOrderId");
+
+                    b.ToTable("PaypalItems");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaypalOrder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Intent")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MerchantId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PayeeEmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionId");
+
+                    b.ToTable("PaypalOrders");
+                });
+
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Rating", b =>
                 {
                     b.Property<Guid>("Id")
@@ -404,25 +510,25 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("f87c6834-e88a-488e-9c82-3ad3ae4297a0"),
+                            Id = new Guid("71800a7e-10ad-48cf-8347-4123d31133d3"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("77d22bf1-0d8b-4707-8c19-3520af5deb43"),
+                            Id = new Guid("7f5d0978-e182-464f-b954-a55946bfe41c"),
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         },
                         new
                         {
-                            Id = new Guid("bd8d2ad8-386c-46b4-869d-fee2d5c66f22"),
+                            Id = new Guid("d32555bf-2c43-443a-acc6-2921a816f25b"),
                             Name = "Artist",
                             NormalizedName = "ARTIST"
                         },
                         new
                         {
-                            Id = new Guid("cddca8be-e19a-4e62-aeee-4c1e2cc1ff6b"),
+                            Id = new Guid("c0ab44dd-daf0-400f-9df2-1fdb02699e43"),
                             Name = "Audience",
                             NormalizedName = "AUDIENCE"
                         });
@@ -904,6 +1010,39 @@ namespace ArtworkSharing.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Artwork");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaypalAmount", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.PaypalOrder", "PaypalOrder")
+                        .WithMany()
+                        .HasForeignKey("PaypalOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaypalOrder");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaypalItem", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.PaypalOrder", "PaypalOrder")
+                        .WithMany()
+                        .HasForeignKey("PaypalOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaypalOrder");
+                });
+
+            modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.PaypalOrder", b =>
+                {
+                    b.HasOne("ArtworkSharing.Core.Domain.Entities.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
                 });
 
             modelBuilder.Entity("ArtworkSharing.Core.Domain.Entities.Rating", b =>
