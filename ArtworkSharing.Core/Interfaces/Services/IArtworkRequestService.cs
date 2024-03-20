@@ -7,6 +7,7 @@ public interface IArtworkRequestService
 {
     Task<List<ArtworkRequestViewModel>> GetArtworkServices(int pageNumber, int pageSize);
     Task<ArtworkRequestViewModel> GetArtworkService(Guid guid);
+    Task<List<ArtworkRequestViewModelUser>> GetArtworkRequestsByUser(Guid userId);
     Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam);
     Task<bool> DeleteArtworkRequest(Guid id);
     Task<Core.Domain.Entities.ArtworkService> CreateArtworkRequest(CreateArtworkRequestModel carm);

@@ -45,6 +45,16 @@ public class ArtworkRequestService : IArtworkRequestService
             await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.Id == guid));
     }
 
+    public async Task<List<ArtworkRequestViewModelUser>> GetArtworkRequestsByUser(Guid userId)
+    {
+        return AutoMapperConfiguration.Mapper.Map<List<ArtworkRequestViewModelUser>>(await _unitOfWork
+            .ArtworkServiceRepository
+            .Include(r => r.Artist)
+            .ThenInclude(a => a.User)
+            .Where(r => r.AudienceId == userId)
+            .ToListAsync());
+    }
+
     public async Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam)
     {
         var artworkService = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(_ => _.Id == id);

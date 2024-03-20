@@ -31,6 +31,13 @@ public class ArtworkRequestController : Controller
         }
     }
 
+    [HttpGet("/GetArtworkRequestsByUser/{userId}")]
+    public async Task<IActionResult> GetArtworkRequestsByUser(Guid userId)
+    {
+        if (userId == null) return BadRequest();
+        return Ok(await _requestService.GetArtworkRequestsByUser(userId));
+    }
+
     [HttpGet("getartworkRequest")]
     public async Task<IActionResult> GetArtworkRequest(Guid artworkRequestId)
     {
