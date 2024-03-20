@@ -48,7 +48,10 @@ builder.Services.AddHttpClient();
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
 var app = builder.Build();
-app.UseCors(_ => _.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+app.UseCors(builder => builder
+    .AllowAnyOrigin()  
+    .AllowAnyMethod()   
+    .AllowAnyHeader());
 EnsureMigrate(app);
 
 

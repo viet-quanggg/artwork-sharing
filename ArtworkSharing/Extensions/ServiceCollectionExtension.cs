@@ -142,15 +142,16 @@ public static class ServiceCollectionExtension
                         return Task.CompletedTask;
                     }
                 };
-            });
+            })
+            ;
+        services.AddAuthentication().AddGoogle(options =>
+        {
+            options.ClientId = config.GetSection("Google:ClientId").Value;
+            options.ClientSecret = config.GetSection("Google:ClientSecret").Value;
+            // You can set other options as needed.
+        });
         
-        services.AddAuthentication()
-            .AddGoogle(options =>
-            {
-                options.ClientId = "174880392812-f1j7r9aeo67ertkh2k46o5g0gl5o2l4n.apps.googleusercontent.com";
-                options.ClientSecret = "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";
-                // You can set other options as needed.
-            });
+        
         //services.AddAuthorization(opt =>
         //{
         //    opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));

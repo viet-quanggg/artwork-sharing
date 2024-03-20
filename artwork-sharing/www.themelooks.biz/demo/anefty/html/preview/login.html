@@ -213,6 +213,8 @@
 
     googleLoginButton.addEventListener('click', function () {
         fetch('https://localhost:7270/api/auth/externallogin?provider=Google', {
+            mode: 'cors',
+  credentials: 'include',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -220,7 +222,7 @@
         }).then(function (response) {
             if (response.ok) {
                 // Redirect to Google initiated from the backend
-                window.location.href = 'https://localhost:7270/api/auth/externallogin?provider=Google';
+                window.location.href = 'home-v5.html';
             } else {
                 throw new Error('Failed to initiate login with Google');
             }
