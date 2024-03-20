@@ -6,7 +6,6 @@ namespace ArtworkSharing.Core.Domain.Entities
     {
         public double GrossAmount { get; set; }
         public double PaypalFee { get; set; }
-        public double PlatformFee { get; set; }
         public double NetAmount { get; set; }
         public double TotalRefund { get; set; }
         public string CurrencyCode { get; set; }

@@ -53,7 +53,6 @@ public static class ServiceCollectionExtension
         services.AddScoped<UnitOfWork>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IFollowService, FollowService>();
-        services.AddScoped<IRefundRequestService, RefundRequestService>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IPackageService, PackageService>();
         services.AddScoped<ITokenService, TokenService>();
@@ -71,6 +70,8 @@ public static class ServiceCollectionExtension
         services.AddScoped<IPaymentRefundEventService, PaymentRefundEventService>();
         services.AddScoped<IPaypalPaymentEventService, PaypalPaymentEventService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+        services.AddScoped<IPaypalRefundEventService, PaypalRefundEventService>();
+
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();

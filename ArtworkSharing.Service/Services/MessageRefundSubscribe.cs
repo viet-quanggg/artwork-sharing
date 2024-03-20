@@ -1,5 +1,6 @@
-﻿using ArtworkSharing.Core.Helpers.MsgQueues;
-using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Domain.Enums;
+using ArtworkSharing.Core.Helpers.MsgQueues;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,11 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Service.Services
 {
@@ -33,18 +29,21 @@ namespace ArtworkSharing.Service.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            foreach (var item in _messageChanels)
+            MessageChanel messageChanel = new MessageChanel
             {
-                if (string.IsNullOrEmpty(item.RoutingKey) || string.IsNullOrEmpty(item.QueueName) || string.IsNullOrEmpty(item.ExchangeName))
+                ExchangeName = Exchange.RefundPaidRaise,
+                QueueName = Queue.RefundPaidRaiseQueue,
+                RoutingKey = RoutingKey.PaidRaise
+            };
+            _channel = _getChannel.InititalBus(messageChanel);
+            var consumer = new EventingBasicConsumer(_channel);
+            consumer.Received += (s, e) =>
+            {
+                var body = System.Text.Encoding.UTF8.GetString(e.Body.ToArray());
+                body = body.Replace("\\", "");
+                body = body.Trim('"');
+                if (!string.IsNullOrEmpty(body))
                 {
-                    continue;
-                }
-                _channel = _getChannel.InititalBus(item);
-                var consumer = new EventingBasicConsumer(_channel);
-                consumer.Received += (s, e) =>
-                {
-                    var body = System.Text.Encoding.UTF8.GetString(e.Body.ToArray());
-
                     var data = JsonConvert.DeserializeObject<TransactionViewModel>(body);
                     if (data != null)
                     {
@@ -53,17 +52,15 @@ namespace ArtworkSharing.Service.Services
                         {
                             using (var scope = _serviceScope.CreateScope())
                             {
-                                var refundRequestService = scope.ServiceProvider.GetRequiredService<RefundRequestService>();
-                                //.....
-                                // savechanges
+                                var refundRequestService = scope.ServiceProvider.GetRequiredService<IRefundRequestService>();
+                                // updating
                             }
                         }
                         _channel.BasicAck(e.DeliveryTag, false);
                     }
-                };
-                _channel.BasicConsume(item.QueueName, false, consumer);
-            }
-            // Delete later
+                }
+            };
+            _channel.BasicConsume(messageChanel.QueueName, false, consumer);
             await Task.CompletedTask;
         }
     }

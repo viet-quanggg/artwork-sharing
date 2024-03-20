@@ -4,7 +4,7 @@ namespace ArtworkSharing.Core.ViewModels.Transactions;
 
 public class TransactionViewModel
 {
-    public Guid? PackageId { get; set; }
+    public Guid? PackageId { get; set; }=Guid.Empty;
     public Guid? ArtworkId { get; set; }
     public Guid? ArtworkServiceId { get; set; }
     public Guid AudienceId { get; set; }

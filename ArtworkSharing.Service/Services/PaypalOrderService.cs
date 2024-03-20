@@ -74,18 +74,6 @@ namespace ArtworkSharing.Service.Services
             {
                 var paypalOrder = await _uow.PaypalOrderRepository.Where(x => x.Id == item.Id).FirstOrDefaultAsync();
 
-                RefundAmount refund = new RefundAmount
-                {
-                    currency_code = "USD",
-                    value = ConvertToDollar(paypalOrder!.Transaction.TotalBill)
-                };
-
-                PaypalRefundModel paypalRefundModel = new PaypalRefundModel
-                {
-                    amount = refund,
-                    note_to_payer = "DefectiveProduct" // Khoa want refund no reason -> set defaul
-                };
-
                 using var client = new HttpClient();
                 client.BaseAddress = new Uri("https://api-m.sandbox.paypal.com");
                 client.DefaultRequestHeaders.Clear();
@@ -95,10 +83,10 @@ namespace ArtworkSharing.Service.Services
                 var authenticationString = $"{_paypalKey.ClientId}:{_paypalKey.ClientSecret}";
                 var base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
 
-                var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"/payments/captures/{paypalOrder.CaptureId}/refund");
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"/v2/payments/captures/{paypalOrder.CaptureId}/refund");
                 requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64EncodedAuthenticationString);
                 requestMessage.Headers.Add("Prefer", "return=representation");
-                requestMessage.Content = new StringContent(JsonConvert.SerializeObject(paypalRefundModel));
+                requestMessage.Content = new StringContent("{}");
                 requestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                 var requestMsg = await client.SendAsync(requestMessage);
@@ -108,25 +96,14 @@ namespace ArtworkSharing.Service.Services
 
                 JObject jObj = JObject.Parse(responseBody);
 
-                var platformFee = "";
-
-                // Because project business is 1 transaction 1 quantity 1 item
-
-                foreach (var item1 in jObj["seller_payable_breakdown"]!["platform_fees"]!)
-                {
-                    platformFee = item1["amount"]!["value"] + "";
-                    break;
-                }
-
                 PaypalRefund paypalRefund = new PaypalRefund
                 {
                     CurrencyCode = "USD",
                     ExchangeCurrency = _exchangeCurrency,
-                    GrossAmount = double.Parse(jObj["seller_payable_breakdown"]!["gross_amount"] + ""),
-                    NetAmount = double.Parse(jObj["seller_payable_breakdown"]!["net_amount"] + ""),
+                    GrossAmount = double.Parse(jObj["seller_payable_breakdown"]!["gross_amount"]!["value"] + ""),
+                    NetAmount = double.Parse(jObj["seller_payable_breakdown"]!["net_amount"]!["value"] + ""),
                     PaypalFee = double.Parse(jObj["seller_payable_breakdown"]!["paypal_fee"]!["value"] + ""),
                     TotalRefund = double.Parse(jObj["seller_payable_breakdown"]!["total_refunded_amount"]!["value"] + ""),
-                    PlatformFee = double.Parse(platformFee),
                     CreatedOn = DateTime.Now,
                     ModifiedOn = DateTime.Now,
                     Id = paypalOrder.Id
@@ -214,7 +191,7 @@ namespace ArtworkSharing.Service.Services
 
         public double ConvertToDollar(double amount)
         {
-            double result = Math.Round(amount / _exchangeCurrency + amount % _exchangeCurrency, 2);
+            double result = Math.Round(amount / _exchangeCurrency, 2);
             return result;
         }
 

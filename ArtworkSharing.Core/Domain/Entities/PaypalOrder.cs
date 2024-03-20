@@ -5,7 +5,7 @@ namespace ArtworkSharing.Core.Domain.Entities
     public class PaypalOrder : EntityBase<Guid>
     {
         public string Token { get; set; }
-        public string CaptureId { get; set; }
+        public string? CaptureId { get; set; }
         public string Intent { get; set; }
         ICollection<PaypalItem> PaypalItems { get; set; }
         ICollection<PaypalAmount> PaypalAmounts { get; set; }

@@ -13,6 +13,7 @@ namespace ArtworkSharing.Controllers;
 [ApiController]
 public class PaymentController : ControllerBase
 {
+    private readonly IPaypalRefundEventService _paypalRefundEventService;
     private readonly IPaymentMethodService _paymentMethodService;
     private readonly MessageRefundEvent _messageRefundEvent;
     private readonly IPaymentRefundEventService _paymentRefundEventService;
@@ -25,8 +26,9 @@ public class PaymentController : ControllerBase
 
     public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService,
         MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService, IPaypalOrderService paypalOrderService,
-        IPaymentRefundEventService paymentRefundEventService, MessageRefundEvent messageRefundEvent, IPaymentMethodService paymentMethodService)
+        IPaymentRefundEventService paymentRefundEventService, MessageRefundEvent messageRefundEvent, IPaymentMethodService paymentMethodService, IPaypalRefundEventService paypalRefundEventService)
     {
+        _paypalRefundEventService = paypalRefundEventService;
         _paymentMethodService = paymentMethodService;
         _messageRefundEvent = messageRefundEvent;
         _paymentRefundEventService = paymentRefundEventService;
@@ -62,12 +64,12 @@ public class PaymentController : ControllerBase
         var rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
 
-        //await _paymentEventService.AddPaymentEvent(
-        // new Core.Domain.Entities.PaymentEvent
-        // {
-        //     Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
-        // });
-        //_messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
+        await _paymentEventService.AddPaymentEvent(
+         new Core.Domain.Entities.PaymentEvent
+         {
+             Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
+         });
+        _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
 
         return Ok(rs.TransactionViewModel);
     }
@@ -126,6 +128,7 @@ public class PaymentController : ControllerBase
             Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
         });
         _messageRefundEvent.CancelToken();
+
         return Ok(rs.TransactionViewModel);
     }
 
@@ -188,11 +191,38 @@ public class PaymentController : ControllerBase
     [HttpGet("paymentMethod/{id}")]
     public async Task<IActionResult> GetPaymentMethod([FromRoute] Guid id) => Ok(await _paymentMethodService.GetPaymentMethod(id));
 
-
     /// <summary>
     /// Get all payment method
     /// </summary>
     /// <returns></returns>
     [HttpGet("paymentMethod")]
     public async Task<IActionResult> GetPaymentMethods() => Ok(await _paymentMethodService.GetPaymentMethods());
+
+
+    /// <summary>
+    /// Refund transaction by transactionid
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("paypalRefund")]
+    public async Task<IActionResult> RefundPaypal(Guid id)
+    {
+        if (id == Guid.Empty) return BadRequest(new { Message = "Not found transaction" });
+
+        var transaction = await _transactionService.GetOne(id);
+
+        if (transaction == null) return BadRequest(new { Message = "Not found transaction" });
+
+        var rs = await _paypalOrderService.RefundPaypal(transaction);
+
+        if (rs.TransactionViewModel == null) return BadRequest();
+
+        //await _paypalRefundEventService.AddPaypalRefundEvent(new PaypalRefundEvent
+        //{
+        //    Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
+        //});
+        //_messageRefundEvent.CancelToken();
+
+        return Ok();
+    }
 }
