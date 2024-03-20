@@ -5,6 +5,7 @@ using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -91,7 +92,7 @@ public class TransactionService : ITransactionService
 
     public async Task<Transaction> GetOne(Guid id)
     {
-        return await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);
+        return await _uow.TransactionRepository.Include(x=>x.Audience).Include(x=>x.Artwork).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<TransactionViewModel> GetTransaction(Guid id)
@@ -116,4 +117,32 @@ public class TransactionService : ITransactionService
         await _uow.SaveChangesAsync();
         return await GetTransaction(id);
     }
+
+    IEnumerable<Transaction> ITransactionService.Get(Expression<Func<Transaction, bool>> filter, Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderBy, string includeProperties, int? pageIndex, int? pageSize)
+    {
+        try
+        {
+
+
+            var PackageRepository = _uow.TransactionRepository.Get(filter, orderBy, includeProperties, pageIndex, pageSize);
+
+            return PackageRepository;
+        }
+        catch (Exception e)
+        {
+
+            return null;
+        }
+    }
+
+    public async Task<int> Count(Expression<Func<Transaction, bool>> filter = null)
+    {
+        IQueryable<Transaction> query = (IQueryable<Transaction>)_uow.TransactionRepository.GetAll();
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+        return await query.CountAsync();
+    }
+
 }

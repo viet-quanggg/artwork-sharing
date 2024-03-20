@@ -2,6 +2,9 @@
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 
+using ArtworkSharing.Core.ViewModels.Transactions;
+using System.Linq.Expressions;
+
 namespace ArtworkSharing.Core.Interfaces.Services;
 
 public interface IRefundRequestService
@@ -30,6 +33,10 @@ public interface IRefundRequestService
     );
 
     Task<int> Count(Expression<Func<RefundRequest, bool>> filter = null);
+
+    public Task CheckOutRefundRequest(TransactionViewModel transaction);
+
+    public Task<RefundRequestViewModel> UpdateRefundRequestStatus(Guid id, string Status);
 
 }
 

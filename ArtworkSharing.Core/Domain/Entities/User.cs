@@ -17,4 +17,9 @@ public class User : IdentityUser<Guid>
     public ICollection<Transaction>? Transactions { get; set; }
     public ICollection<ArtworkService>? ArtworkServices { get; set; }
     public ICollection<UserRole> UserRoles { get; set; }
+
+    public static implicit operator User(Artist v)
+    {
+        throw new NotImplementedException();
+    }
 }

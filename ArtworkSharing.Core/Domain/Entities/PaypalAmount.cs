@@ -12,3 +12,4 @@ namespace ArtworkSharing.Core.Domain.Entities
         public PaypalOrder PaypalOrder { get; set; }
     }
 }
+

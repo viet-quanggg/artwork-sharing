@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Core.ViewModels.Artists;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
@@ -88,6 +89,17 @@ public class ArtistService : IArtistService
             await _unitOfWork.RollbackTransaction();
             throw;
         }
+    }
+
+    public async Task<Artist> GetnameArtist(Guid artistId)
+    {
+        var repo = _unitOfWork.ArtistRepository;
+        return await repo.Include(u => u.User).FirstOrDefaultAsync(u => u.Id == artistId);
+    }
+    public async Task<IList<Artist>> GetAllField()
+    {
+        var repo = _unitOfWork.ArtistRepository;
+        return await repo.Include(u => u.User).ToListAsync();
     }
     
     public async Task<ArtistProfileViewModel> GetArtistProfile(Guid artistId)
