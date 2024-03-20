@@ -6,14 +6,15 @@ namespace ArtworkSharing.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ManageArtwork1Controller : ControllerBase
+    public class ManageArtWorkController : ControllerBase
     {
-
+        
         private readonly IArtistService _ArtistService;
         private readonly IArtworkService _ArtworkService;
         private readonly ILogger<ManageOrderArtistController> _logger;
 
-        public ManageArtwork1Controller(IArtistService artistService, IArtworkService artworkService, ILogger<ManageOrderArtistController> logger)
+        public ManageArtWorkController(IArtistService artistService, IArtworkService artworkService, ILogger<ManageOrderArtistController> logger)
+
         {
             _ArtistService = artistService;
             _ArtworkService = artworkService;
@@ -21,7 +22,7 @@ namespace ArtworkSharing.Controllers
         }
 
         [HttpGet("{entityId}", Name = "GetArtworkofArtist")]
-        public async Task<ActionResult<ManageOrderArtistController>> GetCombinedEntityById(Guid entityId, int page)
+        public async Task<IActionResult> GetCombinedEntityById(Guid entityId, int page)
         {
             try
             {
@@ -33,7 +34,8 @@ namespace ArtworkSharing.Controllers
                 IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile("Page.json", true, true)
                 .Build();
-                var pageSize = int.Parse(configuration.GetSection("Value").Value);
+                var pageSize = int.Parse(configuration.GetSection("Page")["Value"]);
+
                 var artworks = artists.Artworks
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -49,7 +51,6 @@ namespace ArtworkSharing.Controllers
         [HttpPut(Name = "EditArtwork")]
         public async Task<IActionResult> Update([FromBody] Artwork artworkInput)
         {
-
             try
             {
                 var existArtwork = await _ArtworkService.GetOne(artworkInput.Id);
@@ -91,6 +92,7 @@ namespace ArtworkSharing.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
         [HttpPost("AddlistArtworks/{artistId}", Name = "AddlistArtworks")]
         public async Task<IActionResult> AddlistArtworks(Guid artistId, [FromBody] List<Artwork> artworks)
         {
@@ -117,6 +119,7 @@ namespace ArtworkSharing.Controllers
             }
         }
         [HttpPost("{artistId}", Name = "AddArtwork")]
+
         public async Task<IActionResult> AddArtwork(Guid artistId, [FromBody] Artwork artwork)
         {
             try
