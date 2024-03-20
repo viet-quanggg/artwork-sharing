@@ -28,11 +28,11 @@ public interface IUnitOfWork : IDisposable
     IPaypalOrderRepository PaypalOrderRepository { get; }
     IPaypalAmountRepository PaypalAmountRepository { get; }
     IPaypalItemRepository PaypalItemRepository { get; }
-    IPaymentRefundEventRepository PaymentRefundEventRepository { get;  }
+    IPaymentRefundEventRepository PaymentRefundEventRepository { get; }
     IPaypalPaymentEventRepository PaypalPaymentEventRepository { get; }
     IPaypalRefundEventRepository PaypalRefundEventRepository { get; }
-
-
+    IPaymentMethodRepository PaymentMethodRepository { get; }
+    IPaypalRefundRepository PaypalRefundRepository { get; }
     /// <summary>
     ///     Saves changes to database, previously opening a transaction
     ///     only when none exists. The transaction is opened with isolation

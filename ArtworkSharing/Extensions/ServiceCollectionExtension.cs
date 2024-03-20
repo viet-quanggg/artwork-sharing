@@ -67,23 +67,27 @@ public static class ServiceCollectionExtension
         services.AddScoped<IPaymentEventService, PaymentEventService>();
         services.AddScoped<IVNPayTransactionTransferService, VNPayTransactionTransferService>();
         services.AddScoped<IPaypalOrderService, PaypalOrderService>();
-
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IPaymentRefundEventService, PaymentRefundEventService>();
+        services.AddScoped<IPaypalPaymentEventService, PaypalPaymentEventService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
 
-
-
         MessageChanel messageChanel = new();
         services.AddSingleton<MessageChanel>(messageChanel.PaidRaise());
         services.AddSingleton<MessageChanel>(messageChanel.PaypalPaidRaise());
+        services.AddSingleton<MessageChanel>(messageChanel.RefundPaidRaise());
+        services.AddSingleton<MessageChanel>(messageChanel.RefundPaypalPaidRaise());
         services.AddSingleton<IMessageSupport, MessageSupport>();
         services.AddSingleton<MessagePaymentEvent>();
-        services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>());
+        services.AddSingleton<MessageRefundEvent>();
+        services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>()!);
+        services.AddHostedService<MessageRefundEvent>(_ => _.GetService<MessageRefundEvent>()!);
         services.AddHostedService<MessageSubscribe>();
-
-
+        services.AddHostedService<MessageRefundSubscribe>();
         return services;
     }
 
@@ -142,12 +146,12 @@ public static class ServiceCollectionExtension
                     OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Cookies["accessToken"];
-                     
+
                         return Task.CompletedTask;
                     }
                 };
             });
-        
+
         services.AddAuthentication()
             .AddGoogle(options =>
             {

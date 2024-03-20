@@ -10,6 +10,6 @@ public interface ICommentService
     Task<CommentViewModel> GetComment(Guid commentId);
     Task<List<CommentViewModel>> GetCommentByArtworkId(Guid id);
     Task<CommentViewModel> Update(UpdateCommentModel comment);
-    Task<List<CommentViewModel>> Add(CreateCommentModel comment);
+    Task<List<CommentViewModel>> Add(Guid artworkId, Guid userId, string content);
     Task<bool> Delete(Guid commentId);
 }

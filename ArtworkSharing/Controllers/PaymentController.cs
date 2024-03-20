@@ -13,6 +13,9 @@ namespace ArtworkSharing.Controllers;
 [ApiController]
 public class PaymentController : ControllerBase
 {
+    private readonly IPaymentMethodService _paymentMethodService;
+    private readonly MessageRefundEvent _messageRefundEvent;
+    private readonly IPaymentRefundEventService _paymentRefundEventService;
     private readonly IPaypalOrderService _paypalOrderService;
     private readonly IPaymentEventService _paymentEventService;
     private readonly MessagePaymentEvent _messagePaymentEvent;
@@ -20,8 +23,13 @@ public class PaymentController : ControllerBase
     private readonly IVNPayTransactionService _VNPayTransactionService;
     private readonly IMessageSupport _messageSupport;
 
-    public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService, MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService, IPaypalOrderService paypalOrderService)
+    public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService,
+        MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService, IPaypalOrderService paypalOrderService,
+        IPaymentRefundEventService paymentRefundEventService, MessageRefundEvent messageRefundEvent, IPaymentMethodService paymentMethodService)
     {
+        _paymentMethodService = paymentMethodService;
+        _messageRefundEvent = messageRefundEvent;
+        _paymentRefundEventService = paymentRefundEventService;
         _paypalOrderService = paypalOrderService;
         _paymentEventService = paymentEventService;
         _messagePaymentEvent = messagePaymentEvent;
@@ -59,8 +67,8 @@ public class PaymentController : ControllerBase
         // {
         //     Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
         // });
-
         //_messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
+
         return Ok(rs.TransactionViewModel);
     }
 
@@ -75,6 +83,7 @@ public class PaymentController : ControllerBase
         _messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
         return Ok();
     }
+
     /// <summary>
     ///     Get VNPay transaction by transactionId
     /// </summary>
@@ -110,9 +119,13 @@ public class PaymentController : ControllerBase
         //var uId = HttpContext.Items["UserId"] + "";
         //if (string.IsNullOrEmpty(uId)) return Unauthorized();
         var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse("48485956-80A9-42AB-F8C2-08DC44567C01"));
+
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
-
-
+        await _paymentRefundEventService.CreatePaymentRefundEvent(new PaymentRefundEvent
+        {
+            Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
+        });
+        _messageRefundEvent.CancelToken();
         return Ok(rs.TransactionViewModel);
     }
 
@@ -156,13 +169,30 @@ public class PaymentController : ControllerBase
         var rs = await _paypalOrderService.CompletedOrder(paypal);
 
         if (rs == null) return StatusCode(StatusCodes.Status500InternalServerError);
+
         //await _paymentEventService.AddPaymentEvent(
         // new Core.Domain.Entities.PaymentEvent
         // {
         //     Data = JsonConvert.SerializeObject(rs.TransactionViewModel)
         // });
-
         //_messagePaymentEvent.StartPublishingOutstandingIntegrationEvents();
+
         return Ok(rs.TransactionViewModel);
     }
+
+    /// <summary>
+    /// Get payment method by id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpGet("paymentMethod/{id}")]
+    public async Task<IActionResult> GetPaymentMethod([FromRoute] Guid id) => Ok(await _paymentMethodService.GetPaymentMethod(id));
+
+
+    /// <summary>
+    /// Get all payment method
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("paymentMethod")]
+    public async Task<IActionResult> GetPaymentMethods() => Ok(await _paymentMethodService.GetPaymentMethods());
 }
