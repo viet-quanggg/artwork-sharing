@@ -10,5 +10,7 @@ public interface IArtistService
     Task Update(Artist artist);
     Task Add(Artist artist);
     Task Delete(Guid artist);
+    Task<Artist> GetnameArtist(Guid artistId);
+    Task<IList<Artist>> GetAllField();
     Task<ArtistProfileViewModel> GetArtistProfile(Guid artistId);
 }

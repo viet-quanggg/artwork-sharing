@@ -48,6 +48,18 @@ builder.Services.AddServices();
 builder.Services.AddConfigException();
 builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = false; });
 builder.Services.AddHttpClient();
+
+// Configure CORS to allow any origin
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 //builder.Services.AddCors(options =>
 //{
 //    options.AddPolicy(name: ArtworkSharing,
@@ -89,7 +101,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
+app.UseCors("AllowAll");
 app.Run();
 
 void EnsureMigrate(WebApplication webApp)
