@@ -74,6 +74,7 @@ public class AuthController : ControllerBase
             var result = await _userManager.CreateAsync(user, userToRegisterDTO.Password);
 
             if (!result.Succeeded)
+                
                 return BadRequest(result.Errors);
 
             var roleResult = await _userManager.AddToRoleAsync(user, RoleOfSystem.Audience.ToString());
@@ -82,7 +83,7 @@ public class AuthController : ControllerBase
             {
                 // Rollback added user if role assignment fails
                 await _userManager.DeleteAsync(user);
-                return BadRequest(result.Errors);
+                return BadRequest("Error occur in server");
             }
 
             // Send confirmation email
@@ -124,7 +125,7 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return BadRequest("Invalid user");
         var result = await _userManager.ConfirmEmailAsync(user, token);
-        if (result.Succeeded) return Ok("Email confirmed");
+        if (result.Succeeded) return Redirect("http://127.0.0.1:5500/demo/anefty/html/preview/email-confirm.html");
         return BadRequest("Invalid code");
     }
 
@@ -228,8 +229,19 @@ public class AuthController : ControllerBase
 
     private void AddErrors(IdentityResult result)
     {
-        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+        foreach (var error in result.Errors)
+        {
+            if (error.Description != null)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, error.Code);
+            }
+        }
     }
+
 
     private string GetEmailBodyForResetPassword(string callbackUrl)
     {

@@ -64,6 +64,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 var app = builder.Build();
+app.UseCors(builder => builder
+    .AllowAnyOrigin()  
+    .AllowAnyMethod()   
+    .AllowAnyHeader());
 EnsureMigrate(app);
 
 
@@ -75,6 +79,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 
 app.UseCors(_ => _.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
