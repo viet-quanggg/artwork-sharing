@@ -17,13 +17,17 @@ public class LikeService : ILikeService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<List<LikeViewModel>> Add(LikeModel like)
+    public async Task<List<LikeViewModel>> Add(Guid artworkId, Guid userId)
     {
         try
         {
             await _unitOfWork.BeginTransaction();
 
-            var li = AutoMapperConfiguration.Mapper.Map<Like>(like);
+            Like li = new Like
+            {
+                ArtworkId = artworkId,
+                UserId = userId
+            };
 
             li.LikedDate = DateTime.Now;
 
@@ -90,20 +94,20 @@ public class LikeService : ILikeService
 
         return await GetLikeByArtworkId(artworkId);
     }
-    public async Task<CheckLikeModel> CheckLike(LikeModel lm)
+    public async Task<CheckLikeModel> CheckLike(Guid artworkId, Guid userId)
     {
         var like = await _unitOfWork.LikeRepository.FirstOrDefaultAsync(x =>
-           x.UserId == lm.UserId && x.ArtworkId == lm.ArtworkId);
-        return new CheckLikeModel { LikeViewModels = await GetLikeByArtworkId(lm.ArtworkId), Result = like != null };
+           x.UserId == userId && x.ArtworkId == artworkId);
+        return new CheckLikeModel { LikeViewModels = await GetLikeByArtworkId(artworkId), Result = like != null };
     }
 
-    public async Task<List<LikeViewModel>> Update(LikeModel lm)
+    public async Task<List<LikeViewModel>> Update(Guid artworkId, Guid userId)
     {
         var like = await _unitOfWork.LikeRepository.FirstOrDefaultAsync(x =>
-            x.UserId == lm.UserId && x.ArtworkId == lm.ArtworkId);
+            x.UserId == userId && x.ArtworkId == artworkId);
 
         if (like == null)
-            return await Add(lm);
+            return await Add(artworkId, userId);
         return await UnLike(like.Id);
     }
 }

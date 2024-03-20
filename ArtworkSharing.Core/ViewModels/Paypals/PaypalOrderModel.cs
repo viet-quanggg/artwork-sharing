@@ -9,7 +9,7 @@
 
     public class PurchaseUnit
     {
-        public Item items { get; set; }
+        public List<Item> items { get; set; }
         public Amount amount { get; set; }
     }
 
