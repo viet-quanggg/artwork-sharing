@@ -7,7 +7,6 @@ public class ArtworkService : EntityBase<Guid>
 {
     public Guid AudienceId { get; set; }
     public Guid ArtistId { get; set; }
-    public Guid TransactionId { get; set; }
     public string? Description { get; set; }
     public DateTime RequestedDate { get; set; }
     public float RequestedPrice { get; set; }

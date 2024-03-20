@@ -46,13 +46,11 @@ public class ArtworkRequestController : Controller
     }
 
     [HttpPost("createartworkrequest")]
-    public async Task<IActionResult> CreateArtworkRequest([FromBody] CreateArtworkRequestModel cam)
+    public async Task<IActionResult> CreateArtworkRequest(CreateArtworkRequestModel cam)
     {
         try
         {
-            var createRequest = AutoMapperConfiguration.Mapper.Map<ArtworkService>(cam);
-            _requestService.CreateArtworkRequest(createRequest);
-            return Ok(createRequest);
+            return Ok(await _requestService.CreateArtworkRequest(cam));
         }
         catch (Exception ex)
         {
