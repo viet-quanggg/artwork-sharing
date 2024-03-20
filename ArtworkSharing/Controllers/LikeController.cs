@@ -36,8 +36,15 @@ public class LikeController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> LikeArtwork(LikeModel likeModel)
     {
-        if (likeModel.UserId == Guid.Empty || likeModel.ArtworkId == Guid.Empty) return BadRequest();
-        var rs = await _likeService.Update(likeModel);
+        if (HttpContext.Items.TryGetValue("UserId", out var u) is false)
+        {
+            return BadRequest();
+        }
+
+        if (u == null) return BadRequest();
+
+        if (Guid.Parse(u + "") == Guid.Empty || likeModel.ArtworkId == Guid.Empty) return BadRequest();
+        var rs = await _likeService.Update(likeModel.ArtworkId, Guid.Parse(u + ""));
         return rs != null
             ? Ok(rs)
             : StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Action failed" });
@@ -53,7 +60,7 @@ public class LikeController : ControllerBase
     public async Task<IActionResult> CheckLike(Guid artworkId, Guid userId)
     {
         if (userId == Guid.Empty || artworkId == Guid.Empty) return BadRequest();
-        var rs = await _likeService.CheckLike(new LikeModel { ArtworkId = artworkId, UserId = userId });
+        var rs = await _likeService.CheckLike(artworkId, userId);
 
         return Ok(rs);
     }

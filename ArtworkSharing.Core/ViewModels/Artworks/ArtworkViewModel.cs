@@ -22,7 +22,7 @@ public class ArtworkViewModel
     //public UserViewModel Artist { get; set; } = null!;
 
     public ArtistViewModel Artist { get; set; } = null!;
-    public List<MediaContentViewModel> MediaContents { get; set; } = null!;
+    public MediaContentViewModel MediaContents { get; set; } = null!;
     public List<LikeViewModel>? Likes { get; set; }
     public List<CommentViewModel>? Comments { get; set; }
     public List<CategoryViewModel>? Categories { get; set; }

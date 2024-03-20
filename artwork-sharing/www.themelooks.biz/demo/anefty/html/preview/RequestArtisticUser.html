@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="assets/plugins/nice-select/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="assets/css/TransactionListUser.css">
+    
 </head>
 
 <body>
@@ -122,6 +124,58 @@
         <div class="author-cover" data-bg-img="assets/img/bg/author-cover.png"></div>
     </div>
     <section class="pt-120 pb-120">
+
+        <!--    ERROR-->
+        <div class="toast error" style="position: fixed; z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Error</p>
+                    <p></p>
+                </div>
+                <div class="loading1"></div>
+            </div>
+        </div>
+        <!--    ERROR-->
+
+        <!--    SUCCESS-->
+        <div class="toast success" style="position: fixed;z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Success</p>
+                    <p>Sent successfully.</p>
+                </div>
+                <div class="loadingSucces"></div>
+            </div>
+        </div>
+        <!--    SUCCESS-->
+
+        <!--    WARNING-->
+        <div class="toast warning" style="position: fixed;z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Warning</p>
+                    <p>Please fill all fields.</p>
+                </div>
+                <div class="loadingWarning"></div>
+            </div>
+        </div>
+        <!--WARNING-->
+        
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
@@ -132,60 +186,47 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <form action="#" class="upload-form text-white">
-<!--                        <div class="card mb-60">-->
-<!--                            <div class="card-body">-->
-<!--                                <div class="dropzone-wrap">-->
-<!--                                    <h3>Image, Video, Audio or 3d Model.</h3>-->
-<!--                                    <p>File types supported: JPG, PNG, GIF, SVG, MP4, WEBM, MP3, MAV, OGG, GLB, GLTF.-->
-<!--                                        Max size: 100 MB</p>-->
-<!--                                    <div class="dropzone"><input type="file"> <span class="upload-btn"><img-->
-<!--                                                src="assets/img/icons/plus.svg" class="svg" alt=""></span></div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                    <form id="createRequest" class="upload-form text-white">
                         <div class="card">
                             <div class="card-body">
                                 <div class="upload-info">
-                                    <h3>Upload Information</h3>
-                                    <div class="form-group"><label for="name">Display Name</label> <input type="text"
-                                            class="form-control" id="name" placeholder="Item Name "></div>
-                                    <div class="form-group"><label for="external-url">External Link</label> <input
-                                            type="text" class="form-control" id="external-url"
-                                            placeholder="Example @www.anefty.com/"></div>
+                                    <h3>Request Information</h3>
                                     <div class="form-group">
                                         <div class="row justify-content-between"><label for="description"
                                                 class="col-md-5">Description</label> <span
                                                 class="info col-md-7 d-flex justify-content-md-end mb-3 mb-lg-0">The
                                                 Description will be include on the items details page</span></div>
-                                        <textarea id="description" class="form-control"
+                                        <textarea id="description" class="form-control" required
                                             placeholder="Provide a detailed description of your item"></textarea>
                                     </div>
                                     <div class="form-group">
-                                        <div class="row justify-content-between"><label for="collection"
-                                                class="col-md-5">Collection</label> <span
-                                                class="info col-md-7 d-flex justify-content-md-end mb-3 mb-lg-0">The
-                                                Description will be include on the items details page</span></div>
-                                        <select id="collection" class="form-control">
-                                            <option value="select_collection">Select collection</option>
-                                            <option value="art_collection">Art collection</option>
+                                        <div class="row justify-content-between"><label 
+                                                                                        class="col-md-5">Request Price</label> <span
+                                                class="info col-md-7 d-flex justify-content-md-end mb-3 mb-lg-0">The money that you pay for the artist</span></div>
+                                        <input required type="number" class="form-control" id="request-price" placeholder="Ex: $300" >
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row justify-content-between"><label 
+                                                                                        class="col-md-5">Percent of Deposit</label> 
+                                            <span
+                                                class="info col-md-7 d-flex justify-content-md-end mb-3 mb-lg-0">
+Choose the percentage of the total money that you want to deposit.</span></div>
+                                        <select id="percent-deposit" class="form-control">
+                                            <option value="10">10%</option>
+                                            <option value="15">15%</option>
+                                            <option value="30">30%</option>
+                                            <option value="50">50%</option>
                                         </select>
                                     </div>
-                                    <div class="form-group pt-45 mt-5"><label for="supply">Supply</label> <input
-                                            type="text" class="form-control" id="supply" placeholder="1" value="1">
+                                    <div class="form-group pt-45 mt-5">
+                                        <label for="requestDate">Deadline</label>
+                                        <input required type="date" class="form-control" id="requestDate" min="<?= date('Y-m-d') ?>" pattern="\d{2}/\d{2}/\d{4}">
                                     </div>
-                                    <div class="form-group"><label for="blockchain">Blockchain</label> <select
-                                            id="blockchain" class="form-control">
-                                            <option value="Ethereum">Ethereum</option>
-                                            <option value="polygon">polygon</option>
-                                        </select></div>
-                                    <div class="form-group pt-45 mt-5"><label>Freeze Metadata</label>
-                                        <div class="form-control d-flex align-items-center">To freeze your metadata, you
-                                            must create your item first.</div>
-                                    </div>
-                                    <div class="form-group d-flex justify-content-end pt-2 mb-0"><button class="btn"
+                                    <div class="form-group d-flex justify-content-end pt-2 mb-0">
+                                        <button class="btn" id="sendRequest"
                                             type="submit"><img src="assets/img/icons/btn-save.svg" alt="" class="svg">
-                                            Create Now</button></div>
+                                            Send Request</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -194,6 +235,9 @@
             </div>
         </div>
     </section>
+    
+    
+    
     <footer class="footer">
         <div class="footer-main">
             <div class="container">
@@ -285,6 +329,7 @@
     <script src="assets/plugins/counterup/jquery.counterup.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/custom.js"></script>
+    <script src="assets/js/UserJS/RequestArtisticService.js"></script>
 </body>
 <!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/upload.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:21 GMT -->
 

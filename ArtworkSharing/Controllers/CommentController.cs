@@ -36,9 +36,16 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateComment(CreateCommentModel createCommentModel)
     {
+        if (HttpContext.Items.TryGetValue("UserId", out var u) is false)
+        {
+            return BadRequest();
+        }
+
+        if (u == null) return BadRequest();
+
         if (createCommentModel == null) return BadRequest();
 
-        var rs = await _commentService.Add(createCommentModel);
+        var rs = await _commentService.Add(createCommentModel.ArtworkId, Guid.Parse(u + ""), createCommentModel.Content);
         return rs != null!
             ? StatusCode(StatusCodes.Status201Created, rs)
             : StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Create failed" });

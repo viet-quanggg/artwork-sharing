@@ -9,5 +9,6 @@ namespace ArtworkSharing.Core.Interfaces.Services
         Task<PaypalResonse> CreateOrder(Transaction transaction);
         Task<PaypalOrder> GetPaypalOrder(string token);
         Task<PaypalINPModel> CompletedOrder(PaypalOrder paypalOrder);
+        Task<PaypalINPModel> RefundPaypal(Transaction tran);
     }
 }
