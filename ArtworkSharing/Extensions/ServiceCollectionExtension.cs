@@ -146,8 +146,7 @@ public static class ServiceCollectionExtension
             ;
         services.AddAuthentication().AddGoogle(options =>
         {
-            options.ClientId = config.GetSection("Google:ClientId").Value;
-            options.ClientSecret = config.GetSection("Google:ClientSecret").Value;
+            
             // You can set other options as needed.
         });
         
