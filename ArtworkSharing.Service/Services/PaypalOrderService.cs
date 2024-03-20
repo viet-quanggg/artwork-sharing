@@ -21,9 +21,11 @@ namespace ArtworkSharing.Service.Services
         private readonly IUnitOfWork _uow;
         private PaypalKey _paypalKey = new PaypalKey();
         private ApplicationContext _applicationContext = new ApplicationContext();
+        private double _exchangeCurrency;
         public PaypalOrderService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _configuration = configuration;
+            _exchangeCurrency = double.Parse(_configuration.GetSection("ExchangeCurrency").Value + "");
             _uow = unitOfWork;
             _configuration.GetSection("PaypalKey").Bind(_paypalKey);
             _configuration.GetSection("ApplicationContext").Bind(_applicationContext);
@@ -56,6 +58,65 @@ namespace ArtworkSharing.Service.Services
             return "continue";
         }
         public async Task<PaypalOrder> GetPaypalOrder(string token) => await _uow.PaypalOrderRepository.FirstOrDefaultAsync(x => x.Token == token);
+
+        public async Task<PaypalINPModel> RefundPaypal(Transaction tran)
+        {
+            var transactionTransfers =
+                await _uow.VNPayTransactionTransferRepository.Where(x => x.TransactionId == tran.Id && x.IsCompleted).ToListAsync();
+
+            if (transactionTransfers.Count == 0) return new PaypalINPModel
+            {
+                TransactionViewModel = null!,
+                Code = 01
+            };
+
+            foreach (var item in transactionTransfers)
+            {
+                var paypalOrder = await _uow.PaypalOrderRepository.Where(x => x.Id == item.Id).FirstOrDefaultAsync();
+
+                using var client = new HttpClient();
+                client.BaseAddress = new Uri("https://api-m.sandbox.paypal.com");
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.ConnectionClose = true;
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                var authenticationString = $"{_paypalKey.ClientId}:{_paypalKey.ClientSecret}";
+                var base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
+
+                var requestMessage = new HttpRequestMessage(HttpMethod.Post, $"/v2/payments/captures/{paypalOrder.CaptureId}/refund");
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64EncodedAuthenticationString);
+                requestMessage.Headers.Add("Prefer", "return=representation");
+                requestMessage.Content = new StringContent("{}");
+                requestMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                var requestMsg = await client.SendAsync(requestMessage);
+                string responseBody = await requestMsg.Content.ReadAsStringAsync();
+
+                requestMsg.EnsureSuccessStatusCode();
+
+                JObject jObj = JObject.Parse(responseBody);
+
+                PaypalRefund paypalRefund = new PaypalRefund
+                {
+                    CurrencyCode = "USD",
+                    ExchangeCurrency = _exchangeCurrency,
+                    GrossAmount = double.Parse(jObj["seller_payable_breakdown"]!["gross_amount"]!["value"] + ""),
+                    NetAmount = double.Parse(jObj["seller_payable_breakdown"]!["net_amount"]!["value"] + ""),
+                    PaypalFee = double.Parse(jObj["seller_payable_breakdown"]!["paypal_fee"]!["value"] + ""),
+                    TotalRefund = double.Parse(jObj["seller_payable_breakdown"]!["total_refunded_amount"]!["value"] + ""),
+                    CreatedOn = DateTime.Now,
+                    ModifiedOn = DateTime.Now,
+                    Id = paypalOrder.Id
+                };
+                await _uow.PaypalRefundRepository.AddAsync(paypalRefund);
+                await _uow.SaveChangesAsync();
+            }
+            return new PaypalINPModel
+            {
+                Code = 00,
+                TransactionViewModel = AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(tran)
+            };
+        }
 
         public async Task<PaypalINPModel> CompletedOrder(PaypalOrder paypalOrder)
         {
@@ -99,7 +160,19 @@ namespace ArtworkSharing.Service.Services
                 TransactionViewModel = null!,
                 Code = 01
             };
+            var captureId = "";
 
+            // Because project business is 1 transaction 1 quantity 1 item, don't worry i will maintain in the future
+            foreach (var item in jObj["purchase_units"]!)
+            {
+                foreach (var item1 in item["payments"]!["captures"]!)
+                {
+                    captureId = item1["id"] + "";
+                    break;
+                }
+            }
+
+            paypal.CaptureId = captureId;
             transactionTransfer.IsCompleted = true;
             paypal.Status = "Completed";
             paypal.ModifiedOn = DateTime.Now;
@@ -118,7 +191,7 @@ namespace ArtworkSharing.Service.Services
 
         public double ConvertToDollar(double amount)
         {
-            double result = Math.Round(amount / 24000 + amount % 24000, 2);
+            double result = Math.Round(amount / _exchangeCurrency, 2);
             return result;
         }
 
@@ -208,7 +281,7 @@ namespace ArtworkSharing.Service.Services
                     }
                 }
 
-                // Because project business is 1 transaction 1 quantity 1 item, I promise in the future i will maintain it
+                // Because project business is 1 transaction 1 quantity 1 item, don't worry i will maintain in the future
 
                 string merchantId = "", payeeEmail = "";
                 int i = 0;
@@ -228,12 +301,13 @@ namespace ArtworkSharing.Service.Services
                     PayeeEmailAddress = payeeEmail,
                     Status = "Created",
                     Token = jObj["id"] + "",
-                    TransactionId = transaction.Id
+                    TransactionId = transaction.Id,
+                    ExchangeCurrency = _exchangeCurrency
                 };
 
                 PaypalItem paypalItem = new PaypalItem
                 {
-                    CurrencyCode = unitAmount.currency_code,
+                    CurrencyCode = "VND",
                     Description = transaction.Artwork!.Description!,
                     Id = Guid.NewGuid(),
                     Name = transaction.Artwork.Name,
@@ -244,9 +318,9 @@ namespace ArtworkSharing.Service.Services
 
                 PaypalAmount paypalAmount = new PaypalAmount
                 {
-                    CurrencyCode = unitAmount.currency_code,
+                    CurrencyCode = "VND",
                     Id = Guid.NewGuid(),
-                    ItemTotalCurrencyCode = amount.currency_code,
+                    ItemTotalCurrencyCode = "VND",
                     ItemTotalValue = ConvertToDollar(transaction.TotalBill),
                     PaypalOrderId = paypal.Id,
                     Value = ConvertToDollar(transaction.TotalBill)

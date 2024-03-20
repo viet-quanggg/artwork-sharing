@@ -9,5 +9,5 @@ public interface IArtworkRequestService
     Task<ArtworkRequestViewModel> GetArtworkService(Guid guid);
     Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam);
     Task<bool> DeleteArtworkRequest(Guid id);
-    Task CreateArtworkRequest(ArtworkService artworkService);
+    Task<Core.Domain.Entities.ArtworkService> CreateArtworkRequest(CreateArtworkRequestModel carm);
 }
