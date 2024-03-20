@@ -1,6 +1,7 @@
 
 $(document).ready(function() {
     // Initialize DataTable
+    
     $('#transactionTable').DataTable();
 
     // Function to fetch data from API and populate the table
