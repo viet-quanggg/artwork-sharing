@@ -52,6 +52,20 @@ namespace ArtworkSharing.Service.Services
                             });
                             await _paymentEventService.RemovePaymentEvent(e);
                         }
+
+                        var _paypalPaymentEventService = _scope.ServiceProvider.GetRequiredService<IPaypalPaymentEventService>();
+                        var paypalEvents = await _paypalPaymentEventService.GetPaypalPaymentEvents();
+                        foreach (var item in paypalEvents)
+                        {
+                            await _messageSupport.RaiseEventPayment(new Core.Models.MessageRaw
+                            {
+                                ExchangeName = Exchange.PaypalPaidRaise,
+                                QueueName = Queue.PaypalPaidRaiseQueue,
+                                RoutingKey = RoutingKey.PaypalPaidRaise,
+                                Message = item.Data
+                            });
+                            await _paypalPaymentEventService.RemovePaypalPaymentEvent(item);
+                        }
                     }
 
                     using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_wakeupCancelationTokenSource.Token, stoppingToken);

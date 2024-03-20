@@ -63,17 +63,17 @@ public class MapperHandler : Profile
         CreateMap<Artwork, UpdateArtworkRequestModel>().ReverseMap();
         CreateMap<Artwork, ArtworkViewModelAdmin>().ReverseMap();
 
-        
+
         CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
         CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
         CreateMap<RefundRequest, RefundRequestViewModelUser>().ReverseMap();
-        
-        
+
+
         CreateMap<MediaContent, MediaContentViewModel>().ReverseMap();
         CreateMap<Package, PackageViewModel>().ReverseMap();
         CreateMap<Rating, RatingViewModel>().ReverseMap();
 
-        CreateMap<Artwork, ArtworkViewModel>().ReverseMap();
+        CreateMap<Artwork, ArtworkViewModel>().ForMember(x => x.MediaContents, x => x.MapFrom(x => x.MediaContents.FirstOrDefault()));
         CreateMap<Category, CategoryViewModel>().ReverseMap();
         CreateMap<Artist, ArtistViewModel>().ReverseMap();
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();
