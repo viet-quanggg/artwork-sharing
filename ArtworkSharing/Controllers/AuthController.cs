@@ -257,7 +257,7 @@ public class AuthController : ControllerBase
     }
 
     private void SaveTokenToHttpContext(string token)
-    {        
-        Response.Cookies.Append("accessToken", token);
+    {
+        HttpContext.Response.Cookies.Append("token", token);
     }
 }

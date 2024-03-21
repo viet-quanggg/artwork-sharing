@@ -41,7 +41,8 @@
                                 <form class="search-form d-none d-sm-block ms-4" action="#">
                                     <div class="form-group"><button type="submit"><img
                                                 src="assets/img/icons/search-gradient.svg" class="svg" alt=""></button>
-                                        <input type="text" class="form-control mb-0" placeholder="Search item…"></div>
+                                        <input type="text" class="form-control mb-0" placeholder="Search item…">
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -141,27 +142,30 @@
                                     <div class="col-md-6">
                                         <div class="form-group"><label for="email" class="mb-2">Email Address</label>
                                             <input type="email" id="email" class="form-control"
-                                                placeholder="anefty@gmail.com"></div>
+                                                placeholder="anefty@gmail.com">
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">                                        
-                                                <div class="form-group">
-                                                    <label for="gender" class="mb-2">Gender</label>
-                                                    <select class="form-control" id="gender" name="gender">
-                                                        <option value="male">Male</option>
-                                                        <option value="female">Female</option>
-                                                        <option value="other">Other</option>
-                                                    </select>
-                                                </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="gender" class="mb-2">Gender</label>
+                                            <select class="form-control" id="gender" name="gender">
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group"><label for="phone_num" class="mb-2">Phone Number</label>
                                             <input type="tel" id="phone_num" class="form-control"
-                                                placeholder="+01 776-542154"></div>
+                                                placeholder="+01 776-542154">
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group"><label for="password" class="mb-2">Password</label>
                                             <input type="password" id="password" class="form-control"
-                                                placeholder="*** **** *** ****"></div>
+                                                placeholder="*** **** *** ****">
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group"><label for="re-password" class="mb-2">Re-enter
@@ -169,7 +173,7 @@
                                                 class="form-control" placeholder="*** **** *** ****"></div>
                                     </div>
                                     <!-- Error message display -->
-                <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
+                                    <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
                                     <div class="col-12 pt-2"><button type="submit" class="btn"><img
                                                 src="assets/img/icons/btn-login.svg" alt="" class="svg"> register
                                             now</button></div>
@@ -189,46 +193,62 @@
             const phoneNumber = document.getElementById('phone_num').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('re-password').value;
-    
+
             const data = {
                 Email: email,
                 Name: displayName,
                 Password: password,
                 ConfirmPassword: confirmPassword,
-                Gender: gender, 
+                Gender: gender,
                 Phone: phoneNumber
             };
-    
-            try {
-        const response = await fetch('/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
 
-        if (!response.ok) {
-            const errorMessage = await response.text();
-            displayErrorMessage(errorMessage);
-            return;
+            fetch('https://localhost:7270/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errors => {
+                            const errorMessageElement = document.getElementById('error-message');  
+                            errorMessageElement.textContent = "";
+                            const passwordErrors = errors.errors.Password;
+                            const cfPasswordErrors = errors.errors.ConfirmPassword;
+                            const emailErrors = errors.errors.Email;
+                            if (passwordErrors && passwordErrors.length > 0) {
+                                const firstPasswordError = passwordErrors[0];
+                                displayErrorMessage(firstPasswordError);
+                            }  if (emailErrors && emailErrors.length > 0) {
+                                const firstemailError = emailErrors[0];
+                                displayErrorMessage(firstemailError);
+                            }  if (cfPasswordErrors && cfPasswordErrors.length > 0) {
+                                const cfPasswordError = cfPasswordErrors[0];
+                                displayErrorMessage(cfPasswordError);
+                            }
+                           
+                            console.log(errors);
+                        });
+                    }
+                    window.location.href = "register-success.html";
+                    console.log('Registration successful');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayErrorMessage('An error occurred while processing your request. Please try again later.');
+                });
         }
 
-        const responseData = await response.json();
-        window.location.href = responseData.redirectUrl;
-    } catch (error) {
-        console.error('Error:', error);
-        displayErrorMessage('An error occurred while processing your request. Please try again later.');
-    }
-        }
-    
+
         // Function to display error message
         function displayErrorMessage(message) {
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = message;
+            const errorMessageElement = document.getElementById('error-message');           
+            errorMessageElement.textContent += message;
             errorMessageElement.style.display = 'block';
         }
-    
+
         // Add an event listener to the register form
         document.getElementById('register-form').addEventListener('submit', function (event) {
             event.preventDefault(); // Prevent the default form submission

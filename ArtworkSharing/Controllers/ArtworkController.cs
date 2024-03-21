@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Helpers;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Service.AutoMappings;
 using AutoMapper;
@@ -57,5 +58,49 @@ public class ArtworkController : ControllerBase
         var rs = await _artworkService.GetOne(id);
 
         return Ok(AutoMapperConfiguration.Mapper.Map<ArtworkViewModel>(rs));
+    }
+
+    [HttpGet("/artist/{id}")]
+    public async Task<IActionResult> GetArtworkByArtist([FromRoute] Guid id, 
+        [FromQuery] int pageIndex = 1, [FromQuery] string filter = null, [FromQuery] string orderBy = null)
+    {
+        if (id == Guid.Empty) return BadRequest();
+        int pageSize = 10;
+
+        var paginatedResult = await _artworkService.GetArtworkByArtist(artistId: id, pageIndex: pageIndex, pageSize: pageSize, filter: filter, orderBy: orderBy);
+        var paginatedViewModel = new PaginatedResult
+        {
+            PageIndex = paginatedResult.PageIndex,
+            PageSize = paginatedResult.PageSize,
+            LastPage = paginatedResult.LastPage,
+            IsLastPage = paginatedResult.IsLastPage,
+            Total = paginatedResult.Total,
+            Data = AutoMapperConfiguration.Mapper.Map<List<ArtworkViewModel>>(paginatedResult.Data)
+        };
+
+        return Ok(paginatedViewModel);
+
+    }
+
+    [HttpPost("/user/artist/postartwork")]
+    public async Task<IActionResult> CreateNewArtWork([FromBody] CreateArtworkModel artworkModel)
+    {        
+        if (ModelState.IsValid)
+        {
+            var artwork = AutoMapperConfiguration.Mapper.Map<Artwork>(artworkModel);
+            try
+            {
+                await _artworkService.Add(artwork);
+                return Ok("Artwork created successfully");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
+        }
+        else
+        {           
+            return BadRequest(ModelState);
+        }
     }
 }
