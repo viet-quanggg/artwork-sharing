@@ -11,29 +11,27 @@ namespace ArtworkSharing.Service.Services
     public class WatermarkService : IWatermarkService
     {
         private readonly IHttpClientFactory _clientFactory;
-        private readonly IFireBaseService _fireBaseService;
 
-        public WatermarkService(IHttpClientFactory clientFactory, IFireBaseService fireBaseService)
+        public WatermarkService(IHttpClientFactory clientFactory)
         {
             _clientFactory = clientFactory;
-            _fireBaseService = fireBaseService;
         }
 
-        public async Task<string> AddWatermarkAsync(string UrlImage)
+        public async Task<byte[]> AddWatermarkAsync(WatermarkRequestModel model)
         {
             try
             {
                 // Prepare the request body
                 var request = new
                 {
-                    mainImageUrl = UrlImage,
-                    markImageUrl = "https://upload.wikimedia.org/wikipedia/commons/6/63/NU_Watermark_Logo.png",
-                    markRatio = 0.5,
-                    opacity = 0,
-                    position = 0,
-                    positionX = 0,
-                    positionY = 0,
-                    margin = 0
+                    mainImageUrl = model.MainImageUrl,
+                    markImageUrl = "",
+                    markRatio = model.MarkRatio,
+                    opacity = model.Opacity,
+                    position = model.Position,
+                    positionX = model.PositionX,
+                    positionY = model.PositionY,
+                    margin = model.Margin
                 };
 
                 // Send POST request to QuickChart Watermark API
@@ -42,12 +40,9 @@ namespace ArtworkSharing.Service.Services
 
                 // Check if request was successful
                 response.EnsureSuccessStatusCode();
-                var imageBytes = await response.Content.ReadAsByteArrayAsync();
 
-                // Call the FireBaseService to upload the watermarked image and get the image link
-                var imageUrl = await _fireBaseService.UploadImageWatermarkIntoFireBase(imageBytes, "jpeg");
                 // Read response content as byte array
-                return imageUrl;
+                return await response.Content.ReadAsByteArrayAsync();
             }
             catch (Exception)
             {

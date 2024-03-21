@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Comments;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ArtworkSharing.Controllers;
 
@@ -24,7 +25,6 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> GetCommentByArtworkId([FromRoute] Guid id)
     {
         if (id == Guid.Empty) return BadRequest(new { Message = "Not found artwork" });
-        var c = await _commentService.GetCommentByArtworkId(id);
         return Ok(await _commentService.GetCommentByArtworkId(id));
     }
 
@@ -36,10 +36,7 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateComment(CreateCommentModel createCommentModel)
     {
-        if (HttpContext.Items.TryGetValue("UserId", out var u) is false)
-        {
-            return BadRequest();
-        }
+        var u = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
 
         if (u == null) return BadRequest();
 

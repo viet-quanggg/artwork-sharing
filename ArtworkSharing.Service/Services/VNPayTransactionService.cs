@@ -97,9 +97,6 @@ public class VNPayTransactionService : IVNPayTransactionService
                 }
             };
 
-
-
-
         var transactionTransfer = await _uow.VNPayTransactionTransferRepository.FirstOrDefaultAsync(x => x.Id == Guid.Parse(pParams["vnp_TxnRef"] + "") && !x.IsCompleted);
         if (transactionTransfer == null!)
         {

@@ -53,6 +53,7 @@ namespace ArtworkSharing.Service.Services
                             using (var scope = _serviceScope.CreateScope())
                             {
                                 var refundRequestService = scope.ServiceProvider.GetRequiredService<IRefundRequestService>();
+
                                 // updating
                             }
                         }

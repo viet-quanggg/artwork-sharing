@@ -3,8 +3,9 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.User;
 using ArtworkSharing.Core.ViewModels.Users;
 using ArtworkSharing.Service.AutoMappings;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Firebase.Auth;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ArtworkSharing.Controllers;
 
@@ -20,11 +21,11 @@ public class UserController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult> GetAllUsers()
+    public async Task<ActionResult> GetAllUsers(int pageNumber, int pageSize)
     {
         try
         {
-            var userList = await _userService.GetUsers();
+            var userList = await _userService.GetUsers(pageNumber, pageSize);
             return Ok(userList);
         }
         catch (Exception ex)
@@ -52,7 +53,7 @@ public class UserController : Controller
     {
         try
         {
-            var user = AutoMapperConfiguration.Mapper.Map<User>(cum);
+            var user = AutoMapperConfiguration.Mapper.Map<Core.Domain.Entities.User>(cum);
             _userService.CreateNewUser(user);
             return Ok(user);
         }
@@ -87,13 +88,6 @@ public class UserController : Controller
         return Ok(await _userService.UpdateUser(userId, uuma));
     }
 
-    [HttpPut("/ChangeUserStatus/{userId}")]
-    public async Task<IActionResult> ChangeUserStatus(Guid userId)
-    {
-        if (userId == Guid.Empty) return BadRequest(new { Message = "User not found!" });
-        return Ok(await _userService.ChangeUserStatus(userId));
-    }
-
 
 
     /// <summary>
@@ -102,11 +96,30 @@ public class UserController : Controller
     /// <param name="id"></param>
     /// <param name="updateUserModel"></param>
     /// <returns></returns>
-    [HttpPut("update/{id}")]
-    public async Task<ActionResult> UpdateUser([FromRoute] Guid id, UpdateUserModel updateUserModel)
+    [HttpPut("update")]
+    public async Task<ActionResult> UpdateUser(UpdateUserModel updateUserModel)
     {
-        if (id == Guid.Empty || updateUserModel == null) return BadRequest(new { Message = "User not found!" });
-        return Ok(await _userService.UpdateUser(id, updateUserModel));
+        var id = User.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.NameId);
+
+        if (id == null) return BadRequest();
+
+        if (Guid.Parse(id + "") == Guid.Empty || updateUserModel == null) return BadRequest(new { Message = "User not found!" });
+
+        return Ok(await _userService.UpdateUser(Guid.Parse(id + ""), updateUserModel));
+    }
+
+
+    /// <summary>
+    /// Get user
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> GetUserAuth()
+    {
+        var u = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
+
+        if (u == null) return BadRequest();
+        return Ok(await _userService.GetUserAdmin(Guid.Parse(u + "")));
     }
 
 }

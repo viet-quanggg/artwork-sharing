@@ -48,18 +48,6 @@ builder.Services.AddServices();
 builder.Services.AddConfigException();
 builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = false; });
 builder.Services.AddHttpClient();
-
-// Configure CORS to allow any origin
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
-
 //builder.Services.AddCors(options =>
 //{
 //    options.AddPolicy(name: ArtworkSharing,
@@ -71,15 +59,7 @@ builder.Services.AddCors(options =>
 //});
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
 var app = builder.Build();
-app.UseCors(builder => builder
-    .AllowAnyOrigin()  
-    .AllowAnyMethod()   
-    .AllowAnyHeader());
 EnsureMigrate(app);
 
 
@@ -92,8 +72,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-
 app.UseCors(_ => _.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 
 app.UseException();
@@ -101,7 +79,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors("AllowAll");
+
 app.Run();
 
 void EnsureMigrate(WebApplication webApp)

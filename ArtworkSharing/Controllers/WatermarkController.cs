@@ -1,6 +1,4 @@
-﻿using ArtworkSharing.Core.Interfaces.Services;
-using ArtworkSharing.Service.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
 
@@ -9,12 +7,10 @@ namespace ArtworkSharing.Controllers;
 public class WatermarkController : ControllerBase
 {
     private readonly IHttpClientFactory _clientFactory;
-    private readonly IFireBaseService _fireBaseService;
 
-    public WatermarkController(IHttpClientFactory clientFactory, IFireBaseService fireBaseService)
+    public WatermarkController(IHttpClientFactory clientFactory)
     {
         _clientFactory = clientFactory;
-        _fireBaseService = fireBaseService;
     }
 
     [HttpPost]
@@ -45,11 +41,8 @@ public class WatermarkController : ControllerBase
             // Read response content as byte array
             var imageBytes = await response.Content.ReadAsByteArrayAsync();
 
-            // Call the FireBaseService to upload the watermarked image and get the image link
-            var imageUrl = await _fireBaseService.UploadImageWatermarkIntoFireBase(imageBytes, "jpeg");
-
-            // Return the image link
-            return Ok(new { imageUrl });
+            // Return the watermarked image
+            return File(imageBytes, "image/jpeg"); // Assuming the image format is JPEG
         }
         catch (Exception)
         {

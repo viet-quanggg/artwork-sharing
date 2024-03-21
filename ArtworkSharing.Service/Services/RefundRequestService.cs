@@ -1,14 +1,11 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
-using ArtworkSharing.Core.ViewModels.Package;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
-using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using ArtworkSharing.Core.Domain.Enums;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -41,7 +38,7 @@ public class RefundRequestService : IRefundRequestService
             await _uow.BeginTransaction();
             var refund = AutoMapperConfiguration.Mapper.Map<RefundRequest>(crrm);
             refund.RefundRequestDate = DateTime.Now;
-            refund.Status = RefundRequestStatus.Pending.ToString();
+            refund.Status = "Pending";
             var repo = _uow.RefundRequestRepository;
             await repo.AddAsync(refund);
 
@@ -84,7 +81,7 @@ public class RefundRequestService : IRefundRequestService
             {
                 if (existedRefund.Status.Equals("Pending"))
                 {
-                    existedRefund.Status = RefundRequestStatus.CanceledByUser.ToString();
+                    existedRefund.Status = "Canceled By User";
                     _uow.RefundRequestRepository.UpdateRefundRequest(existedRefund);
                     await _uow.SaveChangesAsync();
                     await _uow.CommitTransaction();
@@ -153,23 +150,5 @@ public class RefundRequestService : IRefundRequestService
             return await query.CountAsync();
         }
 
-
-    public async Task<RefundRequestViewModel> UpdateRefundRequestStatus(Guid id, string Status)
-    {
-        var refundRequest = await _uow.RefundRequestRepository.FirstOrDefaultAsync(_ => _.Id == id);
-        if (refundRequest == null) return null!;
-
-        refundRequest.Status = Status;
-
-        _uow.RefundRequestRepository.UpdateRefundRequest(refundRequest);
-        await _uow.SaveChangesAsync();
-        return await GetRefundRequest(id);
-
-
+       
     }
-
-    public Task CheckOutRefundRequest(TransactionViewModel transaction)
-    {
-        throw new NotImplementedException();
-    }
-}

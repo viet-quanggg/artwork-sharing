@@ -6,6 +6,7 @@ using ArtworkSharing.Extensions;
 using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ArtworkSharing.Controllers;
 
@@ -62,6 +63,7 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> ProcessIpnVNPAY()
     {
         var rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
+
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
 
         await _paymentEventService.AddPaymentEvent(
@@ -118,9 +120,11 @@ public class PaymentController : ControllerBase
     [HttpPost("{id}")]
     public async Task<IActionResult> RefundTraction([FromRoute] Guid id)
     {
-        //var uId = HttpContext.Items["UserId"] + "";
-        //if (string.IsNullOrEmpty(uId)) return Unauthorized();
-        var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse("48485956-80A9-42AB-F8C2-08DC44567C01"));
+        var u = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
+
+        if (u == null) return BadRequest();
+
+        var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse(u + ""));
 
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
         await _paymentRefundEventService.CreatePaymentRefundEvent(new PaymentRefundEvent

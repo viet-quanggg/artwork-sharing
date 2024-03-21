@@ -28,7 +28,7 @@ public class ImageUploadController : ControllerBase
         {
             if (file == null || file.Length == 0) return BadRequest("No image uploaded");
 
-            var link = await _fireBaseService.UploadImageSingle(file);
+            var link = await _fireBaseService.UploadImageSingleNotList(file);
 
             return Ok(link);
         }

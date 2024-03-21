@@ -3,7 +3,6 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Package;
-using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
@@ -14,18 +13,9 @@ public class PackageService : IPackageService
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IUserRoleService _userRoleService;
-
-    private readonly IArtistService _artistService;
-
-    private readonly IArtistPackageService _artistPackageService;
-
-    private readonly IPackageService _packageService;
-
     public PackageService(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
-      
     }
 
     public async Task<IList<PackageViewModel>> GetAll()
@@ -120,47 +110,6 @@ public class PackageService : IPackageService
         catch (Exception e)
         {
             return null;
-        }
-    }
-
-    public async Task CheckOutPackage(TransactionViewModel transaction)
-    {
-      
-        try
-        {
-            PackageViewModel package = await _packageService.GetOne(transaction.PackageId.Value);
-
-            UserRole userRole = new UserRole
-            {
-                UserId = transaction.AudienceId,
-                RoleId = new Guid(), // guid for idRole
-            };
-            await _userRoleService.UpdateRole(userRole);
-
-            //Create AritrstPackage
-            ArtistPackage artistPackage = new ArtistPackage
-            {
-                Id = new Guid(),
-                ArtistId = transaction.AudienceId,
-                PackageId = transaction.PackageId ?? new Guid(),
-                TransactionId = transaction.Id,
-                PurchasedDate = DateTime.UtcNow.AddDays(package.Duration),
-
-
-            };
-            // Create Banking for Aritst
-            Artist artist = new Artist
-            {
-                Id = transaction.AudienceId,
-                UserId = transaction.AudienceId,
-                // BankAccount = BankingAccount
-            };
-            await _artistService.Add(artist);
-            _artistPackageService.Add(artistPackage);
-        }
-        catch (Exception e)
-        {
-            
         }
     }
 }

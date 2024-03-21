@@ -4,6 +4,7 @@ using ArtworkSharing.DAL.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ArtworkSharing.DAL.Migrations
 {
     [DbContext(typeof(ArtworkSharingContext))]
-    partial class ArtworkSharingContextModelSnapshot : ModelSnapshot
+    [Migration("20240320133953_refundPaypal")]
+    partial class refundPaypal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -430,6 +433,7 @@ namespace ArtworkSharing.DAL.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CaptureId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedOn")
@@ -514,6 +518,9 @@ namespace ArtworkSharing.DAL.Migrations
                         .HasColumnType("float");
 
                     b.Property<double>("PaypalFee")
+                        .HasColumnType("float");
+
+                    b.Property<double>("PlatformFee")
                         .HasColumnType("float");
 
                     b.Property<double>("TotalRefund")
@@ -624,25 +631,25 @@ namespace ArtworkSharing.DAL.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cbe32d2a-516c-4841-930c-7c579f710683"),
+                            Id = new Guid("690ad74b-50ef-4ed2-bda3-f89650d873fe"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("d710dd46-5cb3-44ef-9918-45f06a947d2b"),
+                            Id = new Guid("96907eca-2dd1-4d66-b33e-721948481c4c"),
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         },
                         new
                         {
-                            Id = new Guid("ecf0be8b-c8ed-4caa-8cbd-673678876a21"),
+                            Id = new Guid("e8eb4b4e-1bac-4470-aee8-008d3534b0da"),
                             Name = "Artist",
                             NormalizedName = "ARTIST"
                         },
                         new
                         {
-                            Id = new Guid("2d592ad5-c1e3-414b-8179-61db656731db"),
+                            Id = new Guid("68110d0f-9f5c-4fda-b702-a0e3a4011a89"),
                             Name = "Audience",
                             NormalizedName = "AUDIENCE"
                         });

@@ -9,6 +9,6 @@ namespace ArtworkSharing.Core.Interfaces.Services
 {
     public interface IWatermarkService
     {
-        Task<string> AddWatermarkAsync(string model);
+        Task<byte[]> AddWatermarkAsync(WatermarkRequestModel model);
     }
 }

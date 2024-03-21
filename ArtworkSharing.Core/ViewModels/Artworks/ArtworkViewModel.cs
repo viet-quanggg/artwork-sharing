@@ -26,9 +26,4 @@ public class ArtworkViewModel
     public List<LikeViewModel>? Likes { get; set; }
     public List<CommentViewModel>? Comments { get; set; }
     public List<CategoryViewModel>? Categories { get; set; }
-
-    public static implicit operator ArtworkViewModel(Artwork v)
-    {
-        throw new NotImplementedException();
-    }
 }

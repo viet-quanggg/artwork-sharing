@@ -44,7 +44,6 @@ public class MapperHandler : Profile
         CreateMap<Transaction, TransactionViewModel>().ReverseMap();
         CreateMap<Transaction, UpdateTransactionModel>().ReverseMap();
         CreateMap<Transaction, TransactionsViewModelUser>().ReverseMap();
-        CreateMap<Transaction, OrderViewModel>().ReverseMap();
 
         CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
         CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
@@ -80,15 +79,12 @@ public class MapperHandler : Profile
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();
 
         CreateMap<User, UserViewModel>().ReverseMap();
-        CreateMap<User, UserViewModel>().ReverseMap();
-        CreateMap<User, Core.ViewModels.Users.UserViewModel>();
+        CreateMap<User, Core.ViewModels.Users.UserViewModel>().ReverseMap();
         CreateMap<User, UpdateUserModel>().ReverseMap();
         CreateMap<User, CreateUserModel>().ReverseMap();
         CreateMap<User, UserToLoginDto>().ReverseMap();
         CreateMap<User, UserToRegisterDto>().ReverseMap();
         CreateMap<User, UserDto>().ReverseMap();
-
-        CreateMap<Artist, ArtistProfileViewModel>().ReverseMap();
 
         CreateMap<Like, LikeModel>().ReverseMap();
         CreateMap<Like, LikeViewModel>().ReverseMap();
@@ -99,6 +95,5 @@ public class MapperHandler : Profile
 
         CreateMap<VNPayTransaction, VNPayTransactionViewModel>().ReverseMap();
         CreateMap<ITransactionService, TransactionService>().ReverseMap();
-
     }
 }
