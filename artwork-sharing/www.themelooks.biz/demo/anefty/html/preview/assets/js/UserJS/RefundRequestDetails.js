@@ -34,9 +34,9 @@ $(document).ready(function() {
         document.getElementById("refund-description").textContent = "Description: " + response.description;
         document.getElementById("refund-reason").innerHTML = "Reason: " + '<br>' + response.reason;
         document.getElementById("refund-status").textContent = "Status: " + response.status;
-        if(response.status == "Pending"){
+        if(response.status === "Pending"){
             document.getElementById("cancel-button").style.display = "block";
-        }else if(response.status == "CanceledByUser"){
+        }else if(response.status === "Cancel By User"){
             document.getElementById("cancel-button").style.display = "none";
             
         }

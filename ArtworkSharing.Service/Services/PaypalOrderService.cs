@@ -118,8 +118,20 @@ namespace ArtworkSharing.Service.Services
             };
         }
 
+        private async Task<bool> GetInvoice(string token)
+        {
+            await Task.CompletedTask;
+            return true;
+        }
+
         public async Task<PaypalINPModel> CompletedOrder(PaypalOrder paypalOrder)
         {
+            if (await GetInvoice(paypalOrder.Token)) return new PaypalINPModel
+            {
+                TransactionViewModel = null!,
+                Code = 01
+            };
+
             var paypal = await _uow.PaypalOrderRepository.FirstOrDefaultAsync(x => x.Id == paypalOrder.Id);
 
             if (paypal == null) return new PaypalINPModel

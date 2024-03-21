@@ -130,27 +130,20 @@
                                 <p>Don't have an account yet? <a href="register.html" class="c1">Register Now!</a></p>
                             </div>
                             <form id="login-form" method="post">
-                                <div class="form-group">
-                                    <label for="email" class="mb-2">Email Address</label>
-                                    <input type="email" id="email" class="form-control" placeholder="anefty@gmail.com">
+                                <div class="form-group"><label for="email" class="mb-2">Email Address</label> <input
+                                        type="email" id="email" class="form-control" placeholder="anefty@gmail.com">
                                 </div>
-                                <div class="form-group">
-                                    <label for="password" class="mb-2">Password</label>
-                                    <input type="password" id="password" class="form-control" placeholder="*** **** *** ****">
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <a href="forgot-password.html" class="text-muted">Forgot Password?</a>
-                                    </div>
-                                    <button type="submit" class="btn"><img src="assets/img/icons/btn-login.svg" alt="" class="svg"> Login Now</button>
-                                </div>
+                                <div class="form-group"><label for="password" class="mb-2">Password</label> <input
+                                        type="password" id="password" class="form-control" placeholder="*** **** *** ****"></div>
+                                
                                 <div id="error-message"></div>
+                                <div class="d-flex pt-2">
+                                    <button type="submit" class="btn"><img src="assets/img/icons/btn-login.svg" alt="" class="svg"> login now</button>
+                                </div>
                             </form>
                             <!-- Add Google Sign-In Button -->
                             <div class="text-center mt-3">
-                                <button class="btn btn-google" id="login-google">
-                                    <i class="fab fa-google mr-2"></i> Login with Google
-                                </button>
+                                <div id="google-signin-button"></div>
                             </div>
                         </div>
                     </div>
@@ -193,8 +186,9 @@
                     displayErrorMessage(errorMessage);
                     return; // Exit the function to prevent further execution
                 }
-                window.location.href = "home-v5.html";
-               
+    
+                const responseData = await response.json();
+                console.log(responseData); // You can handle the response data here, like redirecting the user or displaying a success message
             } catch (error) {
                 console.error('Error:', error);
                 // Handle error, such as displaying an error message to the user
@@ -207,33 +201,6 @@
             event.preventDefault(); // Prevent the default form submission
             loginUser(); // Call the loginUser function to handle the login process
         });
-        // JavaScript
-        document.addEventListener('DOMContentLoaded', function () {
-    const googleLoginButton = document.getElementById('login-google');
-
-    googleLoginButton.addEventListener('click', function () {
-        fetch('https://localhost:7270/api/auth/externallogin?provider=Google', {
-            mode: 'cors',
-  credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(function (response) {
-            if (response.ok) {
-                // Redirect to Google initiated from the backend
-                window.location.href = 'home-v5.html';
-            } else {
-                throw new Error('Failed to initiate login with Google');
-            }
-        }).catch(function (error) {
-            console.error('Error initiating login with Google:', error);
-            alert('Failed to initiate login with Google. Please try again later.');
-        });
-    });
-});
-
-
     </script>
     
     

@@ -11,7 +11,7 @@ function renderRefundRequests(refundRequests) {
     const formattedDate = formatDate(request.refundRequestDate);
     const requestHtml = `
       <tr>
-        <td>${request.transaction.audience.name}</td>
+        <td>${request.transactionId}</td>
         <td>${formattedDate}</td>
         <td>${request.description}</td>
         <td>${request.reason}</td>
