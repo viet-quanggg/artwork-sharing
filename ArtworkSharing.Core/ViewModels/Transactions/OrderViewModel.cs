@@ -2,11 +2,6 @@
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Core.ViewModels.Package;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ArtworkSharing.Core.ViewModels.Transactions
 {
