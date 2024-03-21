@@ -97,7 +97,7 @@ public class DashboardController : ControllerBase
                     return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
             }
             }
-            var transactions = await _TransactionService.GetAll();
+            var transactions = await _TransactionService.GetAudience();
             var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
 
             return Ok(filteredTransactions);
@@ -112,51 +112,33 @@ public class DashboardController : ControllerBase
     }
 
     [HttpGet("/Artwork",Name = "GetallArtworkforDashboard")]
-    public async Task<ActionResult> GetArtWork(int page)
+    public async Task<ActionResult> GetArtWork()
     {
         try
         {
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
-            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
-            JObject jsonObject = JObject.Parse(jsonString);
-            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
-
-
+           
             var transactions = await _ArtworkService.GetAll();
-            var pagetransaction = transactions.Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(pagetransaction);
+            return Ok(transactions);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting transactions: {ex.Message}");
+            _logger.LogError($"Error getting Artwork: {ex.Message}");
             return StatusCode(500, "Internal server error");
         }
     }
 
     [HttpGet("/Artist",Name = "GetArtistforDashboard")]
-    public async Task<IActionResult> GetArtistforDashboard(int page)
+    public async Task<IActionResult> GetArtistforDashboard()
     {
         try
         {
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
-            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
-            JObject jsonObject = JObject.Parse(jsonString);
-            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
-
-
             var worker = await _ArtistService.GetAll();
-            var Pageforworker = worker.Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-            ;
-            return Ok(Pageforworker);
+
+            return Ok(worker);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting transactions: {ex.Message}");
+            _logger.LogError($"Error getting Artist: {ex.Message}");
             return StatusCode(500, "Internal server error");
         }
     }
@@ -236,9 +218,7 @@ public class DashboardController : ControllerBase
     {
         try
         {
-            
             var transactions = await _ArtworkService.GetOne(id);
-
             return Ok(transactions);
         }
         catch (Exception ex)

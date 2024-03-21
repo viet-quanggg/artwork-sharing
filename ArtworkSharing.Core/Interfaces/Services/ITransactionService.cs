@@ -31,4 +31,6 @@ int? pageSize = null
 
     Task<int> Count(Expression<Func<Transaction, bool>> filter = null);
 
+    Task<List<TransactionsViewModelUser>> GetAudience();
+
 }

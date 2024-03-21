@@ -144,5 +144,8 @@ public class TransactionService : ITransactionService
         }
         return await query.CountAsync();
     }
-
+    public async Task<List<TransactionsViewModelUser>> GetAudience() =>
+      AutoMapperConfiguration.Mapper.Map<List<TransactionsViewModelUser>>(await _uow.TransactionRepository
+          .Include(t => t.Audience).AsQueryable()
+            .ToListAsync());
 }
