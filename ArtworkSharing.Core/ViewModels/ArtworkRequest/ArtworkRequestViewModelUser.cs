@@ -13,6 +13,7 @@ public class ArtworkRequestViewModelUser
     public DateTime RequestedDeadlineDate { get; set; }
     public ArtworkServiceStatus Status { get; set; }
     
+    public Domain.Entities.User? Audience { get; set; }
     public Artist? Artist { get; set; }
     public Transaction? Transaction { get; set; }
     public Artwork? Artwork { get; set; }
