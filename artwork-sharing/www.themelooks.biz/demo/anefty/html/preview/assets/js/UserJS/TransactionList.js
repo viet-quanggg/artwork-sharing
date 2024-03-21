@@ -7,7 +7,7 @@ $(document).ready(function() {
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/api/Transaction/userTransactions/2837fc87-4754-45a4-893e-102d051dbcf2',
+            url: 'https://localhost:7270/api/Transaction/userTransactions/56a3e149-2c89-4d85-5ac9-08dc4956f46d',
             type: 'GET',
             success: function(response) {
                 console.log(response);
