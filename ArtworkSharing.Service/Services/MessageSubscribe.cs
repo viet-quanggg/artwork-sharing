@@ -29,19 +29,7 @@ namespace ArtworkSharing.Service.Services
             _messageChannels = messageChanels;
             _serviceScope = serviceScope;
         }
-        /// <summary>
-        /// Temp
-        /// </summary>
-        /// <returns></returns>
-        private async Task Update()
-        {
-            using (var _scope = _serviceScope.CreateScope())
-            {
-                var _packageService = _scope.ServiceProvider.GetRequiredService<IPackageService>();
-                // updating
-            }
-            await Task.CompletedTask;
-        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             MessageChanel messageChanel = new MessageChanel
@@ -65,18 +53,20 @@ namespace ArtworkSharing.Service.Services
                     if (data != null)
                     {
                         var type = data.Type;
-                        switch (data.Type)
+                        if (type == TransactionType.Artwork)
                         {
-                            case TransactionType.Artwork: await Update(); break;
-                            case TransactionType.ArtworkService: break;
-                            case TransactionType.Package: break;
+                            using (var _scope = _serviceScope.CreateScope())
+                            {
+                                 var _packageService = _scope.ServiceProvider.GetRequiredService<IPackageService>();
+                                // updating
+                            }
                         }
                         _channel.BasicAck(ea.DeliveryTag, false);
                     }
                 }
             };
             _channel.BasicConsume(messageChanel.QueueName, false, consumer);
-            await Task.CompletedTask; // Temp
+            await Task.CompletedTask;
         }
     }
 }
