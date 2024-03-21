@@ -28,9 +28,12 @@ $(document).ready(function() {
                     if(item.status == 1){
                         var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
                             '<a class="text-capitalize"  id="payDepositButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Pay Deposit</button>'+'</a>';
-                    }else if(item.status == 0 || item.status == 2 || item.status == 3 || item.status == 4){
+                    }else if(item.status == 0 || item.status == 2 || item.status == 4){
                         var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
                             '<a class="text-capitalize"  id="cancelButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Cancel Request</button>'+'</a>';
+                    }else if(item.status == 3){
+                        var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
+                            '<a class="text-capitalize"  id="requestAgainButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Request again</button>'+'</a>';
                     }
 
                     $('#artisticTable').DataTable().row.add([
@@ -56,6 +59,49 @@ $(document).ready(function() {
     fetchData();
     // setInterval(fetchData, 5000);
 
+    $(document).on('click', '#cancelButton', function (event) {
+        event.preventDefault();
+        var requestId = $(this).data('id');
+        $('#confirmModal').modal('show');
+
+        $('#closeButton').click(function () {
+            $('#myModal').modal('hide'); // Corrected from dismiss to hide
+        });
+
+        $('.close').click(function () {
+            $('#myModal').modal('hide'); // Corrected from dismiss to hide
+        })
+
+        $(document).on('click', '#confirmCancelButton', function () {
+            event.preventDefault(); // Prevent the default form submission behavior
+            cancelArtworkRequest(requestId); // Call the createRefundRequest function
+            // $('#myModal').modal('hide'); // Hide the modal
+        });
+
+    });
+    
+    function cancelArtworkRequest(requestId) {
+        $.ajax({
+            url: 'https://localhost:7270/CancelArtworkRequestByUser/' + requestId,
+            type: 'PUT',
+            success: function(response) {
+                if(response === true){
+                    $('#confirmModal').modal('hide'); // Corrected from dismiss to hide
+                    showSuccess("Your artwork request has been canceled!");
+                    setTimeout(function() {
+                        location.reload();
+                    }, 3000);
+                }
+
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                showError("Something is wrong. Please try again!");
+            }
+        });
+        
+    }
+    
 
 });
 
@@ -68,6 +114,9 @@ function getStatusText(statusInt) {
         case 4: return "Completed";
         default: return "Unknown";
     }
+    
+    
+    
 }
 
 
