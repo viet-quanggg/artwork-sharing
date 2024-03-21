@@ -53,7 +53,8 @@ public class MapperHandler : Profile
         CreateMap<ArtworkService, CreateArtworkRequestModel>().ReverseMap();
         CreateMap<ArtworkService, UpdateArtworkRequestModel>().ReverseMap();
         CreateMap<ArtworkService, ArtworkRequestViewModel>().ReverseMap();
-
+        CreateMap<ArtworkService, ArtworkRequestViewModelUser>().ReverseMap();
+        
         CreateMap<User, CreateUserViewModel>().ReverseMap();
         CreateMap<User, UserToLoginDto>().ReverseMap();
         CreateMap<User, UserToRegisterDto>().ReverseMap();
