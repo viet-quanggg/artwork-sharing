@@ -75,7 +75,7 @@ public class MapperHandler : Profile
         CreateMap<Package, PackageViewModel>().ReverseMap();
         CreateMap<Rating, RatingViewModel>().ReverseMap();
 
-        CreateMap<Artwork, ArtworkViewModel>().ForMember(x => x.MediaContents, x => x.MapFrom(x => x.MediaContents.FirstOrDefault()));
+        CreateMap<Artwork, ArtworkViewModel>().ForMember(x => x.MediaContents, x => x.MapFrom(x => x.MediaContents));
         CreateMap<Category, CategoryViewModel>().ReverseMap();
         CreateMap<Artist, ArtistViewModel>().ReverseMap();
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();

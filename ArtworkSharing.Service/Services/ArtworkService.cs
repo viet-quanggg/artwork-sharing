@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.Models;
@@ -238,8 +239,29 @@ public class ArtworkService : IArtworkService
 
     public async Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy)
     {
-        Expression<Func<Artwork, bool>> filterExp = null;
+        Expression<Func<Artwork, bool>> filterExp;
         Func<IQueryable<Artwork>, IOrderedQueryable<Artwork>> orderByExp = null;
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            switch (orderBy)
+            {
+                case nameof(SortingArtwork.MostFavourite):
+                    orderByExp = x => x.OrderBy(x => x.Likes != null ? x.Likes.Count : 0);
+                    break;
+                case nameof(SortingArtwork.RecentArtworks):
+                    orderByExp = x => x.OrderByDescending(x=>x.CreatedDate);
+                    break;
+                case nameof(SortingArtwork.PriceDescending):
+                    orderByExp = x => x.OrderByDescending(x => x.Price);
+                    break;
+                case nameof(SortingArtwork.PriceAscending):
+                    orderByExp = x => x.OrderBy(x => x.Price);
+                    break;
+                default:                   
+                    break;
+            }
+        }
+                
         return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x=>x.ArtistId.Equals(artistId), orderByExp, x=>x.Likes, x=>x.MediaContents);
     }
 }
