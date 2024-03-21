@@ -12,5 +12,15 @@ public class ArtworkServiceRepository : Repository<ArtworkService>, IArtworkServ
     {
         _dbContext = dbContext;
     }
+
+    public void UpdateArtworkRequest(ArtworkService artworkService)
+    {
+        var entry = _dbContext.Entry(artworkService);
+        if (entry.State == EntityState.Detached)
+        {
+            _dbContext.Attach(artworkService);
+        }
+        _dbContext.Entry(artworkService).State = EntityState.Modified;    }
     
+
 }

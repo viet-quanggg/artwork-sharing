@@ -38,6 +38,13 @@ public class ArtworkRequestController : Controller
         return Ok(await _requestService.GetArtworkRequestsByUser(userId));
     }
 
+    [HttpPut("/CancelArtworkRequestByUser/{artworkRequestId}")]
+    public async Task<IActionResult> CancelArtworkRequestByUser(Guid artworkRequestId)
+    {
+        if (artworkRequestId == null) return BadRequest();
+        return Ok(await _requestService.CancelArtworkRequestByUser(artworkRequestId));
+    }
+
     [HttpGet("getartworkRequest")]
     public async Task<IActionResult> GetArtworkRequest(Guid artworkRequestId)
     {

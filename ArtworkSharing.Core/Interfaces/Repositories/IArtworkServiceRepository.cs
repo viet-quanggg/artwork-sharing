@@ -5,5 +5,6 @@ namespace ArtworkSharing.Core.Interfaces.Repositories;
 
 public interface IArtworkServiceRepository : IRepository<ArtworkService>
 {
+    void UpdateArtworkRequest(ArtworkService artworkService);
 
 }

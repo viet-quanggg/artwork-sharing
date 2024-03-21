@@ -106,4 +106,37 @@ public class ArtworkRequestService : IArtworkRequestService
 
         return null;
     }
+
+    public async Task<bool> CancelArtworkRequestByUser(Guid requestId)
+    {
+        if (requestId != null)
+        {
+            await _unitOfWork.BeginTransaction();
+            var repo = _unitOfWork.ArtworkServiceRepository;
+            try
+            {
+                var artworkRequest = await repo.FirstOrDefaultAsync(ar => ar.Id == requestId);
+                if (artworkRequest != null)
+                {
+                    artworkRequest.Status = ArtworkServiceStatus.Rejected;
+
+                    repo.UpdateArtworkRequest(artworkRequest);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitTransaction();
+                    return true;
+                }
+                else
+                {
+                    // return new KeyNotFoundException();
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        return false;
+    }
 }
