@@ -128,9 +128,7 @@ public static class ServiceCollectionExtension
         }).AddCookie(x =>
         {
             x.Cookie.Name = "accessToken";
-        }
-            )
-            .AddJwtBearer(options =>
+        }).AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
