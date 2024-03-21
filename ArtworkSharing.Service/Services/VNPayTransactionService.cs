@@ -84,6 +84,19 @@ public class VNPayTransactionService : IVNPayTransactionService
 
     public async Task<VNPayResponseModel> HandleQuery(string query)
     {
+        if (pParams["vnp_ResponseCode"] + "" != "00")
+        {
+            return new VNPayResponseModel
+            {
+                TransactionViewModel = null!,
+                IpnResponseViewModel = new IpnResponseViewModel
+                {
+                    Message = ResponseMessage.TransactionNotFound,
+                    RspCode = "01"
+                }
+            };
+        }
+
         var queryString = GetFromQuery(query);
         var response = Utils.HmacSHA512(Vnpay.HashSetcret, queryString);
         if (!response.Equals(pParams["vnp_SecureHash"] + "", StringComparison.InvariantCultureIgnoreCase))
@@ -97,10 +110,8 @@ public class VNPayTransactionService : IVNPayTransactionService
                 }
             };
 
-
-
-
         var transactionTransfer = await _uow.VNPayTransactionTransferRepository.FirstOrDefaultAsync(x => x.Id == Guid.Parse(pParams["vnp_TxnRef"] + "") && !x.IsCompleted);
+
         if (transactionTransfer == null!)
         {
             return new VNPayResponseModel
@@ -113,6 +124,7 @@ public class VNPayTransactionService : IVNPayTransactionService
                 }
             };
         }
+
         transactionTransfer.IsCompleted = true;
         _uow.VNPayTransactionTransferRepository.UpdateVNPayTransactionTransfer(transactionTransfer);
         await _uow.SaveChangesAsync();
@@ -352,7 +364,7 @@ public class VNPayTransactionService : IVNPayTransactionService
         }
 
         str.Remove(str.Length - 1, 1);
-        return str.ToString().Replace("%2B", "+");
+        return str.ToString().Replace("%2B", "+"); // fck .net. .net 4.5 + is +, higher version + is %2B 
     }
 
     private string GetIPAddress()

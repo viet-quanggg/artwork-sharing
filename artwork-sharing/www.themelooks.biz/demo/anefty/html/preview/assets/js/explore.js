@@ -5,10 +5,14 @@ window.onload = async function () {
 async function LoadArtwork() {
     var ic = sessionStorage.getItem('ic') + "";
     var icint
-    if (ic == "NaN") {
+
+    if (ic == undefined || ic == null) {
         icint = 0;
     } else {
         icint = parseInt(ic)
+    }
+    if (icint + "" == "NaN") {
+        icint = 0;
     }
     var url = "https://localhost:7270/api/Artwork?IsPopular=true&IsAscRecent=true&PageIndex=" + icint;
     var request = new Request(url);
@@ -59,10 +63,13 @@ async function LoadArtwork() {
 async function SearchItem() {
     var ic = sessionStorage.getItem('ic') + "";
     var icint
-    if (ic == "NaN") {
+    if (ic == undefined || ic == null) {
         icint = 0;
     } else {
         icint = parseInt(ic)
+    }
+    if (icint + "" == "NaN") {
+        icint = 0;
     }
     var popular = document.getElementById('pop').checked
     var recent = document.getElementById('rec').checked
@@ -126,11 +133,16 @@ async function SearchItem() {
 async function GetMore() {
     var ic = sessionStorage.getItem('ic');
     var icint
-    if (ic == "") {
+    if (ic == undefined || ic == null) {
         icint = 0;
     } else {
         icint = parseInt(ic)
     }
-    icint = icint * 2;
+    if (icint + "" == "NaN") {
+        icint = 0;
+    }
+    icint = icint + 1;
+    console.log(icint)
     sessionStorage.setItem('ic', icint);
+    await LoadArtwork();
 }
