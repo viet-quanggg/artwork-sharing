@@ -1,6 +1,7 @@
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
+using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.AspNetCore.Mvc;
 
@@ -85,6 +86,14 @@ public class ArtworkRequestController : Controller
     {
         if (artworkRequestId == null) return BadRequest();
         return Ok(await _requestService.CancelArtworkRequestByUser(artworkRequestId));
+        
+    }
+    
+    [HttpPut("/ChangeStatusAfterDeposit/")]
+    public async Task<IActionResult> ChangeStatusAfterDeposit(TransactionViewModel tvm)
+    {
+        if (tvm == null) return BadRequest();
+        return Ok(await _requestService.ChangeStatusAfterDeposit(tvm));
         
     }
     

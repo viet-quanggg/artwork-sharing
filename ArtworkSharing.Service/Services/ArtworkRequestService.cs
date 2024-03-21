@@ -2,6 +2,7 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
+using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
@@ -84,6 +85,7 @@ public class ArtworkRequestService : IArtworkRequestService
             .Include(r => r.Artist)
             .ThenInclude(a => a.User)
             .Where(r => r.AudienceId == userId)
+            .OrderByDescending(r => r.RequestedDate)
             .ToListAsync());
     }
     
@@ -119,7 +121,33 @@ public class ArtworkRequestService : IArtworkRequestService
         }
         return false;
     }
-    
+
+    public async Task<bool> ChangeStatusAfterDeposit(TransactionViewModel tvm)
+    {
+        if (tvm != null)
+        {
+            await _unitOfWork.BeginTransaction();
+
+            var artworkRequestRepo = _unitOfWork.ArtworkServiceRepository;
+
+            var artworkRequest = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.Id == tvm.ArtworkServiceId);
+            if (artworkRequest != null)
+            {
+                artworkRequest.Status = ArtworkServiceStatus.InProgress;
+                artworkRequestRepo.UpdateArtworkRequest(artworkRequest);
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+
+            return false;
+
+        }
+
+        return false;
+    }
+
     //User Services
 
 
@@ -131,6 +159,7 @@ public class ArtworkRequestService : IArtworkRequestService
             .ArtworkServiceRepository
             .Include(r => r.Audience)
             .Where(r => r.ArtistId == artistId)
+            .OrderByDescending(r => r.RequestedDate)
             .ToListAsync());
     }
 

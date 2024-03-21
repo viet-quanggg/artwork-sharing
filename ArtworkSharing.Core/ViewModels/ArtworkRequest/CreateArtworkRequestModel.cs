@@ -12,7 +12,7 @@ public class CreateArtworkRequestModel
     [Required(ErrorMessage = "Description can not be empty !")]
     public string? Description { get; set; }
     [Required]
-    [Range(1, 10000,ErrorMessage = "Requested Price must be between 1 and 10,000.")]
+    [Range(10000, 5000000,ErrorMessage = "Requested Price must be between 10,000 and 5,000,000.")]
     public float RequestedPrice { get; set; }
     [Required(ErrorMessage = "You must input the deposit amount !")]
     public float RequestedDeposit { get; set; }
