@@ -46,5 +46,13 @@ public class TransactionController : ControllerBase
         return Ok(await _transactionService.GetTransactionsForUser(userId));
     }
 
+    [HttpPost("/CreateTransactionForArtworkServiceDeposit")]
+    public async Task<IActionResult> CreateTransactionForArtworkServiceDeposit(Guid artworkServiceId, Guid audienceId, Guid paymentMethodId)
+    {
+        if (artworkServiceId == null || audienceId == null) return BadRequest();
+        return Ok(await _transactionService.CreateTransactionForArtworkRequestDeposit(artworkServiceId, audienceId, paymentMethodId));
+    }
+    
+
     
 }

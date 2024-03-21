@@ -17,8 +17,8 @@ $(document).ready(function() {
         if(requestDescription.trim() === ""){
             showWarning("Description can not be empty!");
             
-        }else if(requestPrice.trim() === "" || requestPrice <= 0 || requestPrice > 10000){
-            showWarning("Request Price must be higher than 0 and smaller than 10000");
+        }else if(requestPrice.trim() === "" || requestPrice <= 10000 || requestPrice >= 5000000){
+            showWarning("Request Price must be higher than 10000 and smaller than 5000000");
             
         }else if(requestDeadline.trim() === "" || new Date(requestDeadline) < new Date())
         {

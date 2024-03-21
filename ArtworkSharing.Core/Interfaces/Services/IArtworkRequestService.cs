@@ -1,5 +1,6 @@
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
+using ArtworkSharing.Core.ViewModels.Transactions;
 
 namespace ArtworkSharing.Core.Interfaces.Services;
 
@@ -11,6 +12,7 @@ public interface IArtworkRequestService
     //User Functions
     Task<List<ArtworkRequestViewModelUser>> GetArtworkRequestsByUser(Guid userId);
     Task<bool> CancelArtworkRequestByUser(Guid requestId);
+    Task<bool> ChangeStatusAfterDeposit(TransactionViewModel tvm);
     //User Functions
 
     //Artist Functions
