@@ -88,7 +88,9 @@ public static class ServiceCollectionExtension
         services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>()!);
         services.AddHostedService<MessageRefundEvent>(_ => _.GetService<MessageRefundEvent>()!);
         services.AddHostedService<MessageSubscribe>();
+        services.AddHostedService<MessagePaypalSubscribe>();
         services.AddHostedService<MessageRefundSubscribe>();
+        services.AddHostedService<MessagePaypalSubscribe>();
         return services;
     }
 
@@ -151,15 +153,16 @@ public static class ServiceCollectionExtension
                         return Task.CompletedTask;
                     }
                 };
-            });
 
-        services.AddAuthentication()
-            .AddGoogle(options =>
-            {
-                options.ClientId = "[Your Google Client ID]";
-                options.ClientSecret = "[Your Google Client Secret]";
-                // You can set other options as needed.
-            });
+            })
+            ;
+        services.AddAuthentication().AddGoogle(options =>
+        {
+
+            // You can set other options as needed.
+        });
+
+
         //services.AddAuthorization(opt =>
         //{
         //    opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));

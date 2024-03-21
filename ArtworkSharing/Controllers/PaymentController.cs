@@ -6,7 +6,6 @@ using ArtworkSharing.Extensions;
 using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ArtworkSharing.Controllers;
 
@@ -27,7 +26,8 @@ public class PaymentController : ControllerBase
 
     public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService,
         MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService, IPaypalOrderService paypalOrderService,
-        IPaymentRefundEventService paymentRefundEventService, MessageRefundEvent messageRefundEvent, IPaymentMethodService paymentMethodService, IPaypalRefundEventService paypalRefundEventService)
+        IPaymentRefundEventService paymentRefundEventService, MessageRefundEvent messageRefundEvent, IPaymentMethodService paymentMethodService,
+        IPaypalRefundEventService paypalRefundEventService)
     {
         _paypalRefundEventService = paypalRefundEventService;
         _paymentMethodService = paymentMethodService;
@@ -63,7 +63,6 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> ProcessIpnVNPAY()
     {
         var rs = await _VNPayTransactionService.HandleQuery(Request.QueryString + "");
-
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
 
         await _paymentEventService.AddPaymentEvent(
@@ -94,7 +93,7 @@ public class PaymentController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("VNPAYTransaction/{id}")]
-    public async Task<IActionResult> GetVNPAYTransaction(Guid id)
+    public async Task<IActionResult> GetVNPAYTransaction([FromRoute] Guid id)
     {
         if (id == Guid.Empty) return BadRequest();
 
@@ -120,11 +119,9 @@ public class PaymentController : ControllerBase
     [HttpPost("{id}")]
     public async Task<IActionResult> RefundTraction([FromRoute] Guid id)
     {
-        var u = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
-
-        if (u == null) return BadRequest();
-
-        var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse(u + ""));
+        //var uId = HttpContext.Items["UserId"] + "";
+        //if (string.IsNullOrEmpty(uId)) return Unauthorized();
+        var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse("48485956-80A9-42AB-F8C2-08DC44567C01"));
 
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
         await _paymentRefundEventService.CreatePaymentRefundEvent(new PaymentRefundEvent
@@ -177,6 +174,8 @@ public class PaymentController : ControllerBase
 
         if (rs == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
+        if (rs.TransactionViewModel == null) return BadRequest(new { Message = "Not found transaction" });
+
         //await _paymentEventService.AddPaymentEvent(
         // new Core.Domain.Entities.PaymentEvent
         // {
@@ -195,6 +194,7 @@ public class PaymentController : ControllerBase
     [HttpGet("paymentMethod/{id}")]
     public async Task<IActionResult> GetPaymentMethod([FromRoute] Guid id) => Ok(await _paymentMethodService.GetPaymentMethod(id));
 
+
     /// <summary>
     /// Get all payment method
     /// </summary>
@@ -208,8 +208,8 @@ public class PaymentController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpGet("paypalRefund")]
-    public async Task<IActionResult> RefundPaypal(Guid id)
+    [HttpPost("paypalRefund")]
+    public async Task<IActionResult> RefundPaypal([FromRoute] Guid id)
     {
         if (id == Guid.Empty) return BadRequest(new { Message = "Not found transaction" });
 

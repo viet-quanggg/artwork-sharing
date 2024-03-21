@@ -44,6 +44,7 @@ public class UnitOfWork : IUnitOfWork
         PaypalRefundEventRepository = new PaypalRefundEventRepository(DbContext);
         PaymentMethodRepository = new PaymentMethodRepository(DbContext);
         PaypalRefundRepository = new PaypalRefundRepository(DbContext);
+
     }
 
     public DbContext DbContext { get; }
@@ -98,6 +99,7 @@ public class UnitOfWork : IUnitOfWork
     public IPaymentMethodRepository PaymentMethodRepository { get; }
 
     public IPaypalRefundRepository PaypalRefundRepository { get; }
+
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
