@@ -127,7 +127,7 @@ public static class ServiceCollectionExtension
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddCookie(x =>
         {
-            x.Cookie.Name = "accessToken";
+            x.Cookie.Name = "token";
         }).AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = true;
@@ -144,7 +144,7 @@ public static class ServiceCollectionExtension
                 {
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Cookies["accessToken"];
+                        context.Token = context.Request.Cookies["token"];
 
                         return Task.CompletedTask;
                     }
