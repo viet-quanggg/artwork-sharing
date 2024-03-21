@@ -13,7 +13,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ArtworkService = ArtworkSharing.Service.Services.ArtworkService;
 
@@ -129,9 +128,7 @@ public static class ServiceCollectionExtension
         }).AddCookie(x =>
         {
             x.Cookie.Name = "accessToken";
-        }
-            )
-            .AddJwtBearer(options =>
+        }).AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = true;
                 options.SaveToken = true;
@@ -169,4 +166,6 @@ public static class ServiceCollectionExtension
         //});
         return services;
     }
+
+    
 }

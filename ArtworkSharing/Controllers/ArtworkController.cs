@@ -81,4 +81,26 @@ public class ArtworkController : ControllerBase
         return Ok(paginatedViewModel);
 
     }
+
+    [HttpPost("/user/artist/postartwork")]
+    public async Task<IActionResult> CreateNewArtWork([FromBody] CreateArtworkModel artworkModel)
+    {        
+        if (ModelState.IsValid)
+        {
+            var artwork = AutoMapperConfiguration.Mapper.Map<Artwork>(artworkModel);
+            try
+            {
+                await _artworkService.Add(artwork);
+                return Ok("Artwork created successfully");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }            
+        }
+        else
+        {           
+            return BadRequest(ModelState);
+        }
+    }
 }
