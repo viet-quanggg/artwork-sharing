@@ -10,12 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 var ArtworkSharing = "ArtworkSharing";
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin",
+        builder =>
+        {
+            builder.WithOrigins("http://127.0.0.1:5500") // Replace with your frontend origin
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowCredentials(); // Allow credentials to be sent with requests
+        });
+});
 
+builder.Services.AddSession();
+
+builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-builder.Services.AddSession();
-builder.Services.AddIdentityServices(builder.Configuration);
-
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -70,14 +81,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddAuthorization();
 var app = builder.Build();
+app.UseCors("AllowOrigin");
 app.UseSession();
-app.UseCors(builder => builder
-    .AllowAnyOrigin()  
-    .AllowAnyMethod()   
-    .AllowAnyHeader());
+//app.UseCors(builder => builder
+//    .AllowAnyOrigin()  
+//    .AllowAnyMethod()   
+//    .AllowAnyHeader().AllowCredentials());
 EnsureMigrate(app);
 
-
+//app.UseCors("AllowOrigin");
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
 
