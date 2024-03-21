@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Helpers.MsgQueues;
 using ArtworkSharing.Core.ViewModels.Transactions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -13,9 +14,9 @@ namespace ArtworkSharing.Service.Services
         private readonly MessageConnection _msgConnection;
         private IModel _chanel;
 
-        public MessagePaypalSubscribe(MessageConnection messageConnection)
+        public MessagePaypalSubscribe(IConfiguration configuration)
         {
-            _msgConnection = messageConnection;
+            _msgConnection = new MessageConnection(configuration);
         }
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {

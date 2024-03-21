@@ -88,7 +88,6 @@ public static class ServiceCollectionExtension
         services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>()!);
         services.AddHostedService<MessageRefundEvent>(_ => _.GetService<MessageRefundEvent>()!);
         services.AddHostedService<MessageSubscribe>();
-        services.AddHostedService<MessagePaypalSubscribe>();
         services.AddHostedService<MessageRefundSubscribe>();
         services.AddHostedService<MessagePaypalSubscribe>();
         return services;
