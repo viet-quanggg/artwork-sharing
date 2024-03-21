@@ -1,8 +1,11 @@
-﻿using ArtworkSharing.Core.Interfaces.Services;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
+using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using System.Linq.Expressions;
 using System.Transactions;
 
 namespace ArtworkSharing.Controllers;
@@ -189,23 +192,14 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-    [HttpGet("/SearchArtwork/{Name}", Name = "GetSearchArtwork")]
-    public async Task<IActionResult> GetSearchArtwork(String Name, int page)
+    [HttpGet("/SearchArtwork", Name = "GetSearchArtwork")]
+    public async Task<IActionResult> GetSearchArtwork(Guid id)
     {
         try
         {
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
-            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
-            JObject jsonObject = JObject.Parse(jsonString);
-            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
 
-            var worker = await _ArtworkService.GetAll();
-            var Pageforworker = worker.Where(i => i.Name.ToLower().Contains(Name.ToLower()))
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(Pageforworker);
+            var transactions = await _ArtworkService.GetMediaContentforArtwork(id);
+            return Ok(transactions);
         }
         catch (Exception ex)
         {
