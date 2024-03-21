@@ -185,6 +185,18 @@ public class VNPayTransactionService : IVNPayTransactionService
         var transactionTransfers = await _uow.VNPayTransactionTransferRepository.Where(x => x.TransactionId == id && x.IsCompleted).ToListAsync();
         var tran = await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == id);
 
+        if (transactionTransfers == null || transactionTransfers.Count == 0)
+        {
+            return new VNPayResponseModel
+            {
+                TransactionViewModel = null!,
+                IpnResponseViewModel = new IpnResponseViewModel
+                {
+                    Message = ResponseMessage.TransactionNotFound,
+                    RspCode = "01"
+                }
+            };
+        }
         if (tran == null)
             return new VNPayResponseModel
             {
@@ -194,10 +206,11 @@ public class VNPayTransactionService : IVNPayTransactionService
                     Message = ResponseMessage.TransactionNotFound,
                     RspCode = "01"
                 }
-            }; foreach (var item in transactionTransfers)
+            };
+        foreach (var item in transactionTransfers)
         {
             var transVNPay = await _uow.VNPayTransactionRepository.Include(x => x.Transaction)
-           .FirstOrDefaultAsync(x => x.Id == item.Id);
+          .FirstOrDefaultAsync(x => x.Id == item.Id);
 
             if (transVNPay == null)
                 return new VNPayResponseModel
@@ -237,6 +250,7 @@ public class VNPayTransactionService : IVNPayTransactionService
             vNPayRefund.vnp_SecureHash = Utils.HmacSHA512(Vnpay.HashSetcret, data);
 
             var jsonData = JsonConvert.SerializeObject(vNPayRefund);
+
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(Vnpay.RfApi)!;
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
@@ -301,7 +315,6 @@ public class VNPayTransactionService : IVNPayTransactionService
                     }
                 };
             }
-
         }
         return new VNPayResponseModel
         {

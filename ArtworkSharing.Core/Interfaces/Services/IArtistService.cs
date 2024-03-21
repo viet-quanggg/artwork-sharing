@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.ViewModels.Artists;
 
 namespace ArtworkSharing.Core.Interfaces.Services;
 
@@ -9,4 +10,7 @@ public interface IArtistService
     Task Update(Artist artist);
     Task Add(Artist artist);
     Task Delete(Guid artist);
+    Task<Artist> GetnameArtist(Guid artistId);
+    Task<IList<Artist>> GetAllField();
+    Task<ArtistProfileViewModel> GetArtistProfile(Guid artistId);
 }

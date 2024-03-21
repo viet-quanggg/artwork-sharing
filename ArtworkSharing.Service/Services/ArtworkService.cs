@@ -1,10 +1,13 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
+using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -109,6 +112,7 @@ public class ArtworkService : IArtworkService
             var list = await repos
                 .Include(a => a.Transactions)
                 .Include(a => a.Artist)
+                .ThenInclude(a => a.User)
                 .Include(a => a.Categories)
                 .Include(a => a.MediaContents)
                 .Skip(itemsToSkip)
@@ -159,10 +163,21 @@ public class ArtworkService : IArtworkService
                 throw new KeyNotFoundException();
             }
 
-            updateArtwork.Status = false;
-            await _unitOfWork.SaveChangesAsync();
-            await _unitOfWork.CommitTransaction();
-            return true;
+            if (updateArtwork.Status == true)
+            {
+                updateArtwork.Status = false;
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+            else
+            {
+                updateArtwork.Status = true;
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+
         }
         catch (Exception ex)
         {
@@ -197,23 +212,56 @@ public class ArtworkService : IArtworkService
         return true;
     }
 
-    public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!)
+    public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? browserArtworkModel = null!)
     {
-        var artworks = await _unitOfWork.ArtworkRepository
-            .Include(x => x.Likes)
-            .Include(x => x.Comments)
-            .OrderByDescending(x => x.CreatedDate).ToListAsync();
-
-        if (bam != null)
+        IQueryable<Artwork> artworks =  _unitOfWork.ArtworkRepository
+            .Include(x => x.Likes).AsNoTracking()
+            .OrderByDescending(x => x.CreatedDate);
+        if (browserArtworkModel != null)
         {
-            if (bam.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(bam.Name!.ToLower())).ToList();
-            if (bam.Description + "" != "")
-                artworks = artworks.Where(x => x.Description!.ToLower().Contains(bam.Description!.ToLower())).ToList();
-            if (bam.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count).ToList();
-            if (bam.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate).ToList();
-            if (bam.ArtistId != null && bam.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == bam.ArtistId).ToList();
-            artworks = artworks.Skip((bam.PageIndex - 1) * bam.PageSize).Take(bam.PageSize).ToList();
+            if (browserArtworkModel.Name + "" != "") artworks = artworks.Where(x => x.Name.ToLower().Contains(browserArtworkModel.Name!.ToLower()));
+
+            if (browserArtworkModel.Description + "" != "")
+                artworks = artworks.Where(x => x.Description!.ToLower().Contains(browserArtworkModel.Description!.ToLower()));
+
+            if (browserArtworkModel.ArtistId != null && browserArtworkModel.ArtistId != Guid.Empty) artworks = artworks.Where(x => x.ArtistId == browserArtworkModel.ArtistId);
+
+            if (browserArtworkModel.CategoryId != null) artworks = artworks.Where(x => x.Categories != null && x.Categories!.Any(x => x.Id == browserArtworkModel.CategoryId));
+
+            if (browserArtworkModel.IsPopular) artworks = artworks.OrderByDescending(x => x.Likes!.Count);
+
+            if (browserArtworkModel.IsAscRecent) artworks = artworks.OrderBy(x => x.CreatedDate);
+
+            artworks = artworks.Skip((browserArtworkModel.PageIndex) * browserArtworkModel.PageSize).Take(browserArtworkModel.PageSize);
         }
-        return artworks.ToList();
+        return await artworks.Include(x=>x.Comments).AsNoTracking().Include(x => x.Artist).ThenInclude(x => x.User).AsNoTracking().ToListAsync();
+    }
+
+    public async Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy)
+    {
+        Expression<Func<Artwork, bool>> filterExp;
+        Func<IQueryable<Artwork>, IOrderedQueryable<Artwork>> orderByExp = null;
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            switch (orderBy)
+            {
+                case nameof(SortingArtwork.MostFavourite):
+                    orderByExp = x => x.OrderBy(x => x.Likes != null ? x.Likes.Count : 0);
+                    break;
+                case nameof(SortingArtwork.RecentArtworks):
+                    orderByExp = x => x.OrderByDescending(x=>x.CreatedDate);
+                    break;
+                case nameof(SortingArtwork.PriceDescending):
+                    orderByExp = x => x.OrderByDescending(x => x.Price);
+                    break;
+                case nameof(SortingArtwork.PriceAscending):
+                    orderByExp = x => x.OrderBy(x => x.Price);
+                    break;
+                default:                   
+                    break;
+            }
+        }
+                
+        return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x=>x.ArtistId.Equals(artistId), orderByExp, x=>x.Likes, x=>x.MediaContents);
     }
 }

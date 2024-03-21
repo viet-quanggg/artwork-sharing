@@ -1,3 +1,5 @@
+using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
 using ArtworkSharing.DAL;
@@ -16,7 +18,7 @@ public class ArtworkRequestService : IArtworkRequestService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IList<ArtworkRequestViewModel>> GetArtworkServices(int pageNumber, int pageSize)
+    public async Task<List<ArtworkRequestViewModel>> GetArtworkServices(int pageNumber, int pageSize)
     {
         try
         {
@@ -28,7 +30,7 @@ public class ArtworkRequestService : IArtworkRequestService
                 .Take(pageSize)
                 .ToListAsync();
 
-            return AutoMapperConfiguration.Mapper.Map<IList<ArtworkRequestViewModel>>(list);
+            return AutoMapperConfiguration.Mapper.Map<List<ArtworkRequestViewModel>>(list);
         }
         catch (Exception ex)
         {
@@ -64,12 +66,34 @@ public class ArtworkRequestService : IArtworkRequestService
         return rs > 0;
     }
 
-    public async Task CreateArtworkRequest(Core.Domain.Entities.ArtworkService artworkService)
+    public async Task<Core.Domain.Entities.ArtworkService> CreateArtworkRequest(CreateArtworkRequestModel carm)
     {
-        await _unitOfWork.BeginTransaction();
+        if (carm != null)
+        {
+            await _unitOfWork.BeginTransaction();
+            try
+            {
+                var ArtworkServicerepo = _unitOfWork.ArtworkServiceRepository;
 
-        await _unitOfWork.ArtworkServiceRepository.AddAsync(artworkService);
+                var artworkRequest = AutoMapperConfiguration.Mapper.Map<Core.Domain.Entities.ArtworkService>(carm);
 
-        await _unitOfWork.CommitTransaction();
+                artworkRequest.RequestedDate = DateTime.Now;
+                artworkRequest.Status = ArtworkServiceStatus.Pending;
+                var depositAmount = carm.RequestedPrice * (carm.RequestedDeposit / 100);
+
+                artworkRequest.RequestedDeposit = depositAmount;
+
+                await ArtworkServicerepo.AddAsync(artworkRequest);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return artworkRequest;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        return null;
     }
 }

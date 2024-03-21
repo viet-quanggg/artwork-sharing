@@ -5,7 +5,7 @@ namespace ArtworkSharing.Core.Interfaces.Services;
 
 public interface ILikeService
 {
-    Task<List<LikeViewModel>> Add(LikeModel like);
+    Task<List<LikeViewModel>> Add(Guid artworkId, Guid userId);
 
 
     Task Delete(Guid likeId);
@@ -23,7 +23,7 @@ public interface ILikeService
     Task<List<LikeViewModel>> UnLike(Guid id);
 
 
-    Task<List<LikeViewModel>> Update(LikeModel like);
+    Task<List<LikeViewModel>> Update(Guid artworkId, Guid userId);
 
-    Task<CheckLikeModel> CheckLike(LikeModel lm);
+    Task<CheckLikeModel> CheckLike(Guid artworkId, Guid userId);
 }

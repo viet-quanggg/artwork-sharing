@@ -26,7 +26,7 @@ namespace ArtworkSharing.Core.Helpers.MsgQueues
             ConnectionFactory factory = new ConnectionFactory();
             factory.HostName = _configuration["RabbitMQHost"];
             factory.Port = Convert.ToInt32(_configuration["RabbitMQPort"]);
-
+            factory.RequestedHeartbeat = TimeSpan.FromSeconds(60);
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
 

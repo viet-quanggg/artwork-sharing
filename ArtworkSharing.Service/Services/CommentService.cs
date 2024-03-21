@@ -17,14 +17,20 @@ public class CommentService : ICommentService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<List<CommentViewModel>> Add(CreateCommentModel comment)
+    public async Task<List<CommentViewModel>> Add(Guid artworkId, Guid userId, string content)
     {
-        var cmt = AutoMapperConfiguration.Mapper.Map<Comment>(comment);
+        Comment cmt = new Comment
+        {
+            ArtworkId = artworkId,
+            CommentedUserId = userId,
+            Content = content,
+            Id = Guid.NewGuid()
+        };
         cmt.CommentedDate = DateTime.Now;
         var commentRepository = _unitOfWork.CommentRepository;
         await commentRepository.AddAsync(cmt);
         await _unitOfWork.SaveChangesAsync();
-        return await GetCommentByArtworkId(comment.ArtworkId);
+        return await GetCommentByArtworkId(cmt.ArtworkId);
     }
 
     public async Task<bool> Delete(Guid commentId)
@@ -48,7 +54,7 @@ public class CommentService : ICommentService
 
     public async Task<List<CommentViewModel>> GetCommentByArtworkId(Guid id)
     {
-        return AutoMapperConfiguration.Mapper.Map<List<CommentViewModel>>(await _unitOfWork.CommentRepository
+        return AutoMapperConfiguration.Mapper.Map<List<CommentViewModel>>(await _unitOfWork.CommentRepository.Include(x => x.CommentedUser)
             .Where(x => x.ArtworkId == id).ToListAsync());
     }
 

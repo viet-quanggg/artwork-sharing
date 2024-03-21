@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 using ArtworkSharing.Controllers;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Exceptions;
@@ -7,10 +8,12 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var ArtworkSharing = "ArtworkSharing";
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddIdentityServices(builder.Configuration);
 
@@ -45,8 +48,33 @@ builder.Services.AddServices();
 builder.Services.AddConfigException();
 builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = false; });
 builder.Services.AddHttpClient();
+
+// Configure CORS to allow any origin
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy(name: ArtworkSharing,
+//                      policy =>
+//                      {
+//                          policy.WithOrigins("http://127.0.0.1:5500/",
+//                                              "https://127.0.0.1:5500/").AllowAnyMethod().AllowAnyHeader();
+//                      });
+//});
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 var app = builder.Build();
 app.UseCors(builder => builder
     .AllowAnyOrigin()  
@@ -65,17 +93,21 @@ if (app.Environment.IsDevelopment())
 }
 
 
+
+app.UseCors(_ => _.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
 app.UseException();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
+app.UseCors("AllowAll");
 app.Run();
 
 void EnsureMigrate(WebApplication webApp)
 {
-    using var scope = webApp.Services.CreateScope();
+
+   using var scope = webApp.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ArtworkSharingContext>();
-    context.Database.Migrate();
+   context.Database.Migrate();
 }

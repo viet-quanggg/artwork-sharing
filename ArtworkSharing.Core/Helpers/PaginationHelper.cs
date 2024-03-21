@@ -1,5 +1,7 @@
 ﻿using ArtworkSharing.Core.Models;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ArtworkSharing.Core.Helpers;
 
@@ -51,6 +53,58 @@ public class PaginationHelper
             .Take(pageSize);
         paginatedResult.Data = results;
         paginatedResult.Data = mapper is null ? results : mapper.Map<TDto>(results);
+        return paginatedResult;
+    }
+    public static PaginatedResult BuildPaginatedResultFullOptions<T>(
+     IQueryable<T> source,
+     int pageSize,
+     int pageIndex,
+     Expression<Func<T, bool>> filter = null,
+     Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+     params Expression<Func<T, object>>[] includeProperties)
+     where T : class
+    {
+        IQueryable<T> query = source;
+
+        if (filter != null)
+            query = query.Where(filter);
+
+        foreach (var includeProperty in includeProperties)
+            query = query.Include(includeProperty);
+
+        if (orderBy != null)
+            query = orderBy(query);
+
+        var total = query.Count();
+        if (total == 0)
+            return new PaginatedResult
+            {
+                PageIndex = 1,
+                PageSize = pageSize,
+                Data = new List<T>(),
+                LastPage = 1,
+                IsLastPage = true,
+                Total = total
+            };
+
+        pageSize = Math.Max(1, pageSize);
+        var lastPage = (long)Math.Ceiling((decimal)total / pageSize);
+        lastPage = Math.Max(1, lastPage);
+        pageIndex = Math.Min(pageIndex, (int)lastPage);
+        var isLastPage = pageIndex == lastPage;
+
+        query = query.Skip((pageIndex - 1) * pageSize).Take(pageSize);
+
+        var paginatedResult = new PaginatedResult
+        {
+            PageIndex = pageIndex,
+            PageSize = pageSize,
+            LastPage = lastPage,
+            IsLastPage = isLastPage,
+            Total = total,
+            Data = query.ToList()
+        };
+
         return paginatedResult;
     }
 

@@ -21,6 +21,32 @@ namespace ArtworkSharing.Core.Helpers.MsgQueues
             _mesageChanel.RoutingKey = ArtworkSharing.Core.Domain.Enums.RoutingKey.PaidRaise;
             return _mesageChanel;
         }
-    
+
+        public MessageChanel PaypalPaidRaise()
+        {
+            MessageChanel _mesageChanel = new MessageChanel();
+            _mesageChanel.QueueName = Queue.PaypalPaidRaiseQueue;
+            _mesageChanel.ExchangeName = Exchange.PaypalPaidRaise;
+            _mesageChanel.RoutingKey = ArtworkSharing.Core.Domain.Enums.RoutingKey.PaypalPaidRaise;
+            return _mesageChanel;
+        }
+
+        public MessageChanel RefundPaidRaise()
+        {
+            MessageChanel _mesageChanel = new MessageChanel();
+            _mesageChanel.QueueName = Queue.RefundPaidRaiseQueue;
+            _mesageChanel.ExchangeName = Exchange.RefundPaidRaise;
+            _mesageChanel.RoutingKey = ArtworkSharing.Core.Domain.Enums.RoutingKey.RefundPaidRaise;
+            return _mesageChanel;
+        }
+
+        public MessageChanel RefundPaypalPaidRaise()
+        {
+            MessageChanel _mesageChanel = new MessageChanel();
+            _mesageChanel.QueueName = Queue.RefundPaypalRaiseQueue;
+            _mesageChanel.ExchangeName = Exchange.RefundPaypaldRaise;
+            _mesageChanel.RoutingKey = ArtworkSharing.Core.Domain.Enums.RoutingKey.RefundPaypalRaise;
+            return _mesageChanel;
+        }
     }
 }

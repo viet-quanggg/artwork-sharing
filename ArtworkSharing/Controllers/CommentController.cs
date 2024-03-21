@@ -24,6 +24,7 @@ public class CommentController : ControllerBase
     public async Task<IActionResult> GetCommentByArtworkId([FromRoute] Guid id)
     {
         if (id == Guid.Empty) return BadRequest(new { Message = "Not found artwork" });
+        var c = await _commentService.GetCommentByArtworkId(id);
         return Ok(await _commentService.GetCommentByArtworkId(id));
     }
 
@@ -35,9 +36,16 @@ public class CommentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateComment(CreateCommentModel createCommentModel)
     {
+        if (HttpContext.Items.TryGetValue("UserId", out var u) is false)
+        {
+            return BadRequest();
+        }
+
+        if (u == null) return BadRequest();
+
         if (createCommentModel == null) return BadRequest();
 
-        var rs = await _commentService.Add(createCommentModel);
+        var rs = await _commentService.Add(createCommentModel.ArtworkId, Guid.Parse(u + ""), createCommentModel.Content);
         return rs != null!
             ? StatusCode(StatusCodes.Status201Created, rs)
             : StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Create failed" });

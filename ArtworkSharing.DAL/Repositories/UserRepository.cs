@@ -15,6 +15,11 @@ public class UserRepository : Repository<User>, IUserRepository
 
     public void UpdateUser(User user)
     {
-        _dbContext.Update(user);
+        var entry = _dbContext.Entry(user);
+        if (entry.State==EntityState.Detached)
+        {
+            _dbContext.Attach(entry);
+        }
+        _dbContext.Entry(user).State=EntityState.Modified;
     }
 }
