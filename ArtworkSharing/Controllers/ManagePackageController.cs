@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
@@ -124,6 +125,9 @@ public class ManagePackageController : Controller
     {
         try
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
+            var token = HttpContext.Request;
+            var k = Request.Cookies["token"];
             PackageViewModel package = await _packageService.GetOne(PackageId);
             if (package == null) return StatusCode(404);    
             //Create transaction
