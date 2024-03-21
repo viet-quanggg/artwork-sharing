@@ -17,6 +17,7 @@ using ArtworkSharing.Core.ViewModels.Users;
 using ArtworkSharing.Core.ViewModels.VNPAYS;
 using ArtworkSharing.Service.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using ArtworkService = ArtworkSharing.Core.Domain.Entities.ArtworkService;
 using UserViewModel = ArtworkSharing.Core.ViewModels.User.UserViewModel;
 
@@ -38,7 +39,7 @@ public class AutoMapperConfiguration
 }
 
 public class MapperHandler : Profile
-{
+{   
     public MapperHandler()
     {
         CreateMap<Transaction, TransactionViewModel>().ReverseMap();
@@ -76,6 +77,8 @@ public class MapperHandler : Profile
         CreateMap<Rating, RatingViewModel>().ReverseMap();
 
         CreateMap<Artwork, ArtworkViewModel>().ForMember(x => x.MediaContents, x => x.MapFrom(x => x.MediaContents));
+        CreateMap<CreateArtworkModel, Artwork>()
+            .ForMember(dest => dest.MediaContents, opt => opt.MapFrom(src => MapMediaContents(src.MediaContents)));
         CreateMap<Category, CategoryViewModel>().ReverseMap();
         CreateMap<Artist, ArtistViewModel>().ReverseMap();
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();
@@ -99,7 +102,24 @@ public class MapperHandler : Profile
         CreateMap<Comment, UpdateCommentModel>().ReverseMap();
 
         CreateMap<VNPayTransaction, VNPayTransactionViewModel>().ReverseMap();
-        CreateMap<ITransactionService, TransactionService>().ReverseMap();
+        CreateMap<ITransactionService, TransactionService>().ReverseMap();      
+    }
+    private async Task<List<MediaContent>> MapMediaContents(List<IFormFile> mediaContents)
+    {
+        var listToReturn = new List<MediaContent>();
+        var firebaseService = ServiceLocator.GetFirebaseService();
+        var watermarkService = ServiceLocator.GetWatermarkService();
+        var mediaList = await firebaseService.UploadMultiImagesAsync(mediaContents);
 
+        foreach (var media in mediaList)
+        {
+            var mediaReturn = new MediaContent
+            {                
+                Media = await watermarkService.AddWatermarkAsync(media),
+                MediaWithoutWatermark = media
+            };
+            listToReturn.Add(mediaReturn);
+        }
+        return listToReturn;
     }
 }
