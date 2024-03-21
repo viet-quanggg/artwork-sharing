@@ -257,13 +257,7 @@ public class AuthController : ControllerBase
     }
 
     private void SaveTokenToHttpContext(string token)
-    {        
-        Response.Cookies.Append("accessToken", token, new CookieOptions
-        {
-            Expires = DateTime.Now.AddDays(7),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None
-        });
+    {
+        HttpContext.Response.Cookies.Append("token", token);
     }
 }
