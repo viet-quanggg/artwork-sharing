@@ -26,8 +26,7 @@ public class PaymentController : ControllerBase
 
     public PaymentController(IVNPayTransactionService vNPayTransactionService, ITransactionService transactionService,
         MessagePaymentEvent messagePaymentEvent, IPaymentEventService paymentEventService, IPaypalOrderService paypalOrderService,
-        IPaymentRefundEventService paymentRefundEventService, MessageRefundEvent messageRefundEvent, IPaymentMethodService paymentMethodService,
-        IPaypalRefundEventService paypalRefundEventService)
+        IPaymentRefundEventService paymentRefundEventService, MessageRefundEvent messageRefundEvent, IPaymentMethodService paymentMethodService, IPaypalRefundEventService paypalRefundEventService)
     {
         _paypalRefundEventService = paypalRefundEventService;
         _paymentMethodService = paymentMethodService;
@@ -93,7 +92,7 @@ public class PaymentController : ControllerBase
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpGet("VNPAYTransaction/{id}")]
-    public async Task<IActionResult> GetVNPAYTransaction([FromRoute] Guid id)
+    public async Task<IActionResult> GetVNPAYTransaction(Guid id)
     {
         if (id == Guid.Empty) return BadRequest();
 
@@ -174,8 +173,6 @@ public class PaymentController : ControllerBase
 
         if (rs == null) return StatusCode(StatusCodes.Status500InternalServerError);
 
-        if (rs.TransactionViewModel == null) return BadRequest(new { Message = "Not found transaction" });
-
         //await _paymentEventService.AddPaymentEvent(
         // new Core.Domain.Entities.PaymentEvent
         // {
@@ -194,7 +191,6 @@ public class PaymentController : ControllerBase
     [HttpGet("paymentMethod/{id}")]
     public async Task<IActionResult> GetPaymentMethod([FromRoute] Guid id) => Ok(await _paymentMethodService.GetPaymentMethod(id));
 
-
     /// <summary>
     /// Get all payment method
     /// </summary>
@@ -208,8 +204,8 @@ public class PaymentController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpPost("paypalRefund")]
-    public async Task<IActionResult> RefundPaypal([FromRoute] Guid id)
+    [HttpGet("paypalRefund")]
+    public async Task<IActionResult> RefundPaypal(Guid id)
     {
         if (id == Guid.Empty) return BadRequest(new { Message = "Not found transaction" });
 

@@ -17,13 +17,16 @@ $(document).ready(function() {
                 // Populate table with API data
                 $.each(response, function(index, item) {
                     var statusText = item.status ? 'Completed' : 'Cancel';
+                    var dateTimeString = item.createdDate;
+                    var datetime = new Date(dateTimeString);
+                    var formattedDate = datetime.toLocaleDateString('en-Gb');
                     var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
                         '<a class="text-capitalize"  id="refundButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Refund</button>'+'</a>';
                     $('#transactionTable').DataTable().row.add([
-                        item.id,
+                        // item.id,
                         item.artwork.name,
                         item.totalBill + '$',
-                        item.createdDate,
+                        formattedDate,
                         statusText,
                         item.type,
                         links
