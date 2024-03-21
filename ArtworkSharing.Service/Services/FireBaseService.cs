@@ -2,6 +2,7 @@
 using Firebase.Auth;
 using Firebase.Storage;
 using Microsoft.AspNetCore.Http;
+using System.Reactive.Disposables;
 
 namespace ArtworkSharing.Service.Services;
 

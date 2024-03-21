@@ -260,6 +260,7 @@ public class ArtworkService : IArtworkService
                 default:                   
                     break;
             }
+            
         }
                 
         return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x=>x.ArtistId.Equals(artistId), orderByExp, x=>x.Likes, x=>x.MediaContents);

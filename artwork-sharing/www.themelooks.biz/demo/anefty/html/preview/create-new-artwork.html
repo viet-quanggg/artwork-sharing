@@ -144,15 +144,14 @@
             </div>
             <div class="row">
                 <div class="col-12">
-                    <form action="#" class="upload-form text-white">
+                    <form class="upload-form text-white" enctype="multipart/form-data">
                         <div class="card mb-60">
                             <div class="card-body">
                                 <div class="dropzone-wrap">
                                     <h3>Your artwork images</h3>
                                     <p>Upload max 5 images</p>
-
                                     <span>
-                                        <input id="fileInput" type="file" accept="image/*" multiple>
+                                        <input id="fileInput" type="file" accept="image/*" name="MediaContents" multiple>
                                     </span>
 
                                     <div id="imagePreview" class="image-grid"></div>
@@ -167,40 +166,30 @@
                                 <div class="upload-info">
                                     <h3>Upload Information</h3>
                                     <div class="form-group"><label for="name">Display Name</label> <input type="text"
-                                            class="form-control" id="name" placeholder="Item Name "></div>
-                                    <div class="form-group"><label for="external-url">External Link</label> <input
-                                            type="text" class="form-control" id="external-url"
-                                            placeholder="Example @www.anefty.com/"></div>
+                                            class="form-control" id="name" name="Name" placeholder="Artwork Name"></div>
+                                    
                                     <div class="form-group">
                                         <div class="row justify-content-between"><label for="description"
                                                 class="col-md-5">Description</label> <span
                                                 class="info col-md-7 d-flex justify-content-md-end mb-3 mb-lg-0">The
                                                 Description will be include on the items details page</span></div>
-                                        <textarea id="description" class="form-control"
+                                        <textarea id="description" class="form-control" name="Description"
                                             placeholder="Provide a detailed description of your item"></textarea>
                                     </div>
+
+                                    <div class="form-group pt-45 mt-5"><label for="price">Price</label>
+                                        <input type="number" class="form-control" id="price" name="Price" placeholder="Artwork Price">
+                                    </div>
+
                                     <div class="form-group">
-                                        <div class="row justify-content-between"><label for="collection"
-                                                class="col-md-5">Collection</label> <span
-                                                class="info col-md-7 d-flex justify-content-md-end mb-3 mb-lg-0">The
-                                                Description will be include on the items details page</span></div>
-                                        <select id="collection" class="form-control">
+                                        <div class="row justify-content-between"><label for="category"
+                                                class="col-md-5">Category</label></div>
+                                        <select id="category" class="form-control">
                                             <option value="select_collection">Select collection</option>
                                             <option value="art_collection">Art collection</option>
                                         </select>
-                                    </div>
-                                    <div class="form-group pt-45 mt-5"><label for="supply">Supply</label> <input
-                                            type="text" class="form-control" id="supply" placeholder="1" value="1">
-                                    </div>
-                                    <div class="form-group"><label for="blockchain">Blockchain</label> <select
-                                            id="blockchain" class="form-control">
-                                            <option value="Ethereum">Ethereum</option>
-                                            <option value="polygon">polygon</option>
-                                        </select></div>
-                                    <div class="form-group pt-45 mt-5"><label>Freeze Metadata</label>
-                                        <div class="form-control d-flex align-items-center">To freeze your metadata, you
-                                            must create your item first.</div>
-                                    </div>
+                                    </div>                                    
+                                  
                                     <div class="form-group d-flex justify-content-end pt-2 mb-0"><button class="btn"
                                             type="submit"><img src="assets/img/icons/btn-save.svg" alt="" class="svg">
                                             Create Now</button></div>
