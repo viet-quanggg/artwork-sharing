@@ -43,19 +43,31 @@ namespace ArtworkSharing.Service.Services
                         var events = await _paymentEventService.GetPaymentEvents();
                         foreach (var e in events)
                         {
-                            var body = Encoding.UTF8.GetBytes(e.Data);
-
                             await _messageSupport.RaiseEventPayment(new Core.Models.MessageRaw
                             {
                                 ExchangeName = Exchange.PaidRaise,
                                 Message = e.Data,
                                 QueueName = Queue.PaidRaiseQueue,
                                 RoutingKey = RoutingKey.PaidRaise
-
                             });
                             await _paymentEventService.RemovePaymentEvent(e);
                         }
+
+                        var _paypalPaymentEventService = _scope.ServiceProvider.GetRequiredService<IPaypalPaymentEventService>();
+                        var paypalEvents = await _paypalPaymentEventService.GetPaypalPaymentEvents();
+                        foreach (var item in paypalEvents)
+                        {
+                            await _messageSupport.RaiseEventPayment(new Core.Models.MessageRaw
+                            {
+                                ExchangeName = Exchange.PaypalPaidRaise,
+                                QueueName = Queue.PaypalPaidRaiseQueue,
+                                RoutingKey = RoutingKey.PaypalPaidRaise,
+                                Message = item.Data
+                            });
+                            await _paypalPaymentEventService.RemovePaypalPaymentEvent(item);
+                        }
                     }
+
                     using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(_wakeupCancelationTokenSource.Token, stoppingToken);
                     try
                     {

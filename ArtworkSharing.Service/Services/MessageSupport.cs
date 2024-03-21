@@ -53,7 +53,7 @@ namespace ArtworkSharing.Service.Services
         private void SendRequest(MessageRaw raw)
         {
             InitialBroker(raw);
-            var rawSerial = JsonConvert.SerializeObject(raw);
+            var rawSerial = JsonConvert.SerializeObject(raw.Message);
             var body = Encoding.UTF8.GetBytes(rawSerial);
             _channel.ConfirmSelect();
             _channel.BasicPublish(raw.ExchangeName, raw.RoutingKey, null!, body);

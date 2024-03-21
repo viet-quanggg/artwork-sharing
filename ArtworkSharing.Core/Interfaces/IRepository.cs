@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using ArtworkSharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Core.Interfaces;
@@ -67,4 +68,10 @@ public interface IRepository<T> where T : class
     /// <param name="saveChanges"></param>
     /// <returns></returns>
     Task DeleteRangeAsync(IEnumerable<T> entities, bool saveChanges = true);
+    PaginatedResult GetPaginatedResult(
+        int pageSize,
+        int pageIndex,
+        Expression<Func<T, bool>> filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+        params Expression<Func<T, object>>[] includeProperties);
 }

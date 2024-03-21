@@ -13,7 +13,7 @@ const apiUrl = `https://localhost:7270/RefundRequest/${id}`;
 
 // Function to render data on the HTML template
 function renderDataOnHTML(data) {
-  document.getElementById('product-title').textContent = data[0].transaction.audience.name;
+  document.getElementById('product-title').textContent = data[0].id;
   //document.getElementById('available').textContent = `Available ${data.id}`;
   //document.getElementById('love-count').textContent = data.id;
   //document.getElementById('paragraph').textContent = data.paragraph;

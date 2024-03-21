@@ -17,10 +17,7 @@ public class ArtworkViewModel
     public float Price { get; set; }
     public DateTime CreatedDate { get; set; }
     public bool Status { get; set; }
-
-    // why UserViewModel
-    //public UserViewModel Artist { get; set; } = null!;
-
+    
     public ArtistViewModel Artist { get; set; } = null!;
     public List<MediaContentViewModel> MediaContents { get; set; } = null!;
     public List<LikeViewModel>? Likes { get; set; }

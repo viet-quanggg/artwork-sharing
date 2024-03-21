@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ArtworkSharing.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDb : Migration
+    public partial class InitDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -100,6 +100,78 @@ namespace ArtworkSharing.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PaymentMethods",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentMethods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaymentRefundEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentRefundEvents", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaypalPaymentEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaypalPaymentEvents", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaypalRefundEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaypalRefundEvents", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PaypalRefunds",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GrossAmount = table.Column<double>(type: "float", nullable: false),
+                    PaypalFee = table.Column<double>(type: "float", nullable: false),
+                    NetAmount = table.Column<double>(type: "float", nullable: false),
+                    TotalRefund = table.Column<double>(type: "float", nullable: false),
+                    CurrencyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExchangeCurrency = table.Column<double>(type: "float", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaypalRefunds", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VNPayTransactionRefunds",
                 columns: table => new
                 {
@@ -158,7 +230,8 @@ namespace ArtworkSharing.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    BankAccount = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -311,7 +384,6 @@ namespace ArtworkSharing.DAL.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AudienceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ArtistId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RequestedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RequestedPrice = table.Column<float>(type: "real", nullable: false),
@@ -440,6 +512,7 @@ namespace ArtworkSharing.DAL.Migrations
                     ArtworkId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ArtworkServiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     AudienceId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PaymentMethodId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     TotalBill = table.Column<float>(type: "real", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -469,6 +542,12 @@ namespace ArtworkSharing.DAL.Migrations
                         column: x => x.PackageId,
                         principalTable: "Packages",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Transactions_PaymentMethods_PaymentMethodId",
+                        column: x => x.PaymentMethodId,
+                        principalTable: "PaymentMethods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -509,10 +588,12 @@ namespace ArtworkSharing.DAL.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CaptureId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Intent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PayeeEmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MerchantId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExchangeCurrency = table.Column<double>(type: "float", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TransactionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -645,10 +726,10 @@ namespace ArtworkSharing.DAL.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { new Guid("71800a7e-10ad-48cf-8347-4123d31133d3"), null, "Admin", "ADMIN" },
-                    { new Guid("7f5d0978-e182-464f-b954-a55946bfe41c"), null, "SuperAdmin", "SUPERADMIN" },
-                    { new Guid("c0ab44dd-daf0-400f-9df2-1fdb02699e43"), null, "Audience", "AUDIENCE" },
-                    { new Guid("d32555bf-2c43-443a-acc6-2921a816f25b"), null, "Artist", "ARTIST" }
+                    { new Guid("5e36c59b-f699-40de-a4d0-35567352dccd"), null, "Audience", "AUDIENCE" },
+                    { new Guid("87e4dc6b-95f3-4ed1-bf4b-a6b44910ed28"), null, "Artist", "ARTIST" },
+                    { new Guid("c4e5e30a-7a9a-45da-b017-2f2c34f08f55"), null, "SuperAdmin", "SUPERADMIN" },
+                    { new Guid("ddadaefc-c3c6-4a66-b0b1-61ac53961f5e"), null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -811,6 +892,11 @@ namespace ArtworkSharing.DAL.Migrations
                 column: "PackageId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Transactions_PaymentMethodId",
+                table: "Transactions",
+                column: "PaymentMethodId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_VNPayTransactions_TransactionId",
                 table: "VNPayTransactions",
                 column: "TransactionId");
@@ -856,10 +942,22 @@ namespace ArtworkSharing.DAL.Migrations
                 name: "PaymentEvents");
 
             migrationBuilder.DropTable(
+                name: "PaymentRefundEvents");
+
+            migrationBuilder.DropTable(
                 name: "PaypalAmounts");
 
             migrationBuilder.DropTable(
                 name: "PaypalItems");
+
+            migrationBuilder.DropTable(
+                name: "PaypalPaymentEvents");
+
+            migrationBuilder.DropTable(
+                name: "PaypalRefundEvents");
+
+            migrationBuilder.DropTable(
+                name: "PaypalRefunds");
 
             migrationBuilder.DropTable(
                 name: "Ratings");
@@ -896,6 +994,9 @@ namespace ArtworkSharing.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Packages");
+
+            migrationBuilder.DropTable(
+                name: "PaymentMethods");
 
             migrationBuilder.DropTable(
                 name: "Artists");

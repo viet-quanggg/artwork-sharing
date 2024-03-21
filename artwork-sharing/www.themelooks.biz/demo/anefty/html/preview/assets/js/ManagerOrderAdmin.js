@@ -20,16 +20,18 @@ function renderRefundRequests(refundRequests) {
   dataBody.innerHTML = '';
   refundRequests.forEach(request => {
     const formattedDate = formatDate(request.createdDate);
+    const formatType = getTypeString(request.type);
+    const formatStatus = getStatusString(request.status);
     const requestHtml = `
       <tr>
         <td>${request.audience.name}</td>
         <td>${formattedDate}</td>
         <td>${request.audience.bankAccount}</td>
         <td>${request.audience.gender}</td>
-        <td>${request.status}</td>
+        <td>${formatStatus}</td>
         <td>${request.totalBill}</td>
-        <td><button class="btn btn-primary btn-sm details-button" data-id="${request.id}">Details</button></td> <!-- Thêm nút Details -->
-      </tr>
+        <td>${formatType}</td>
+        </tr>
     `;
     dataBody.insertAdjacentHTML('beforeend', requestHtml);
   });
@@ -47,6 +49,30 @@ function renderRefundRequests(refundRequests) {
         window.location.href = `RefundRequestDetail.html?id=${id}`;
     });
 });
+}
+
+function getTypeString(statusNumber) {
+  switch (statusNumber) {
+      case 1:
+          return "Artwork";
+      case 2:
+          return "ArtworkService";
+      case 3:
+          return "Package";
+      default:
+          return "Unknown";
+  }
+}
+function getStatusString(statusNumber) {
+  switch (statusNumber) {
+      case 1:
+          return "Success";
+      case 2:
+          return "Fail";
+      
+      default:
+          return "Unknown";
+  }
 }
 // Hàm chuyển đổi định dạng thời gian
 function formatDate(dateString) {

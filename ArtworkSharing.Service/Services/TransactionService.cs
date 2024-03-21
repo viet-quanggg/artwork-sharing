@@ -78,6 +78,7 @@ public class TransactionService : ITransactionService
             .Include(t => t.Audience)
             .ThenInclude(a => a.UserRoles)
             .Include(t => t.Artwork)
+            .Include(t => t.PaymentMethod)
             .Where(t => t.AudienceId == userId)
             .AsQueryable()
             .ToListAsync());

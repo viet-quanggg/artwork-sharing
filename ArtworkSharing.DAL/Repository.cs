@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
+using ArtworkSharing.Core.Helpers;
 using ArtworkSharing.Core.Interfaces;
+using ArtworkSharing.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.DAL;
@@ -75,6 +77,17 @@ public class Repository<T> : IRepository<T> where T : class
         }
 
         return query.ToList();
+    }
+    
+    public PaginatedResult GetPaginatedResult(
+        int pageSize,
+        int pageIndex,
+        Expression<Func<T, bool>> filter = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+        params Expression<Func<T, object>>[] includeProperties)
+        {
+        IQueryable<T> query = Entities;
+        return PaginationHelper.BuildPaginatedResultFullOptions(query, pageSize, pageIndex, filter, orderBy, includeProperties);
     }
 
     public IEnumerable<T> GetAll()

@@ -1,4 +1,5 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 
 namespace ArtworkSharing.Core.Interfaces.Services;
@@ -19,4 +20,5 @@ public interface IArtworkService
     Task<ArtworkViewModelAdmin> UpdateAdmin(Guid artworkId, ArtworkUpdateModelAdmin artwork);
     Task<bool> DeleteArtworkAdmin(Guid artworkId);
     Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!);
+    Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy);
 }

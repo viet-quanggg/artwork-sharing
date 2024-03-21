@@ -2,6 +2,7 @@
 using Firebase.Auth;
 using Firebase.Storage;
 using Microsoft.AspNetCore.Http;
+using System.Reactive.Disposables;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -12,7 +13,7 @@ public class FireBaseService : IFireBaseService
     private static readonly string AuthEmail = "recipeorganizert3@gmail.com";
     private static readonly string AuthPassword = "recipeorganizer123";
 
-    public async Task<string> UploadImageSingleNotList(IFormFile files)
+    public async Task<string> UploadImageSingle(IFormFile files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
@@ -47,7 +48,7 @@ public class FireBaseService : IFireBaseService
 
         return imageLink;
     }
-    public async Task<string> UploadImageSingleNotList(byte[] imageBytes, string imageType)
+    public async Task<string> UploadImageWatermarkIntoFireBase(byte[] imageBytes, string imageType)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
@@ -85,7 +86,7 @@ public class FireBaseService : IFireBaseService
 
 
 
-    public async Task<string> UploadImageSingle(List<IFormFile> files)
+    public async Task<string> Test(List<IFormFile> files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
@@ -121,7 +122,7 @@ public class FireBaseService : IFireBaseService
         return imageLink;
     }
 
-    public async Task<string> UploadImage(List<IFormFile> files)
+    public async Task<string> Test2(List<IFormFile> files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
@@ -157,10 +158,10 @@ public class FireBaseService : IFireBaseService
         return imageLink;
     }
 
-    public async Task<string> UploadImages(List<IFormFile> files)
+    public async Task<List<string>> UploadMultiImagesAsync(List<IFormFile> files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
-
+        List<string> images = new List<string>();
         // get authentication token
         var authResultTask = auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
         var authResult = await authResultTask;
@@ -191,6 +192,7 @@ public class FireBaseService : IFireBaseService
 
                     cancellation.Cancel();
                     imageLink += result + "ygbygyn34897gnygytfrfr";
+                    images.Add(result);
                 }
                 else
                 {
@@ -199,7 +201,7 @@ public class FireBaseService : IFireBaseService
                 }
             }
 
-        return imageLink;
+        return images;
     }
 
     private bool IsImage(IFormFile file)

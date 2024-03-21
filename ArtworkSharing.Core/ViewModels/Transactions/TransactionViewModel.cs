@@ -12,5 +12,4 @@ public class TransactionViewModel
     public float TotalBill { get; set; }
     public DateTime CreatedDate { get; set; }
     public TransactionType Type { get; set; }
-
 }

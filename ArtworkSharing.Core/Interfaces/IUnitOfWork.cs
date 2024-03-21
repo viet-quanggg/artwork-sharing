@@ -28,6 +28,11 @@ public interface IUnitOfWork : IDisposable
     IPaypalOrderRepository PaypalOrderRepository { get; }
     IPaypalAmountRepository PaypalAmountRepository { get; }
     IPaypalItemRepository PaypalItemRepository { get; }
+    IPaymentRefundEventRepository PaymentRefundEventRepository { get; }
+    IPaypalPaymentEventRepository PaypalPaymentEventRepository { get; }
+    IPaypalRefundEventRepository PaypalRefundEventRepository { get; }
+    IPaymentMethodRepository PaymentMethodRepository { get; }
+    IPaypalRefundRepository PaypalRefundRepository { get; }
 
 
     /// <summary>
