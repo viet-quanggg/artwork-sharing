@@ -4,7 +4,7 @@ $(document).ready(function() {
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/GetArtworkRequestsByUser/a6f05ea7-d058-4563-abf0-b28cdf7c46d3',
+            url: 'https://localhost:7270/GetArtworkRequestsByUser/983a7d69-09ff-41eb-a679-33eae761c3c8',
             type: 'GET',
             success: function(response) {
                 console.log(response);
