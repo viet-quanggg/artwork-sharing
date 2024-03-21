@@ -264,5 +264,33 @@ public class ArtworkService : IArtworkService
         }
                 
         return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x=>x.ArtistId.Equals(artistId), orderByExp, x=>x.Likes, x=>x.MediaContents);
+       
+    }
+    public IEnumerable<Artwork> Get(Expression<Func<Artwork, bool>> filter = null,
+      Func<IQueryable<Artwork>, IOrderedQueryable<Artwork>> orderBy = null, string includeProperties = "",
+      int? pageIndex = null, int? pageSize = null)
+    {
+        try
+        {
+            var PackageRepository =
+                _unitOfWork.ArtworkRepository.Get(filter, orderBy, includeProperties, pageIndex, pageSize);
+
+            return PackageRepository;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public async Task<Artwork> GetMediaContentforArtwork(Guid artworkId)
+    {
+
+        return await _unitOfWork.ArtworkRepository.Include(x => x.Likes)
+            .Include(x => x.Comments).ThenInclude(x => x.CommentedUser)!
+            .Include(x => x.Artist)
+            .ThenInclude(x => x.User)
+             .Include(x => x.MediaContents)
+            .FirstOrDefaultAsync(x => x.Id == artworkId);
     }
 }
