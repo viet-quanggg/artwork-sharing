@@ -128,6 +128,7 @@ public static class ServiceCollectionExtension
         }).AddCookie(x =>
         {
             x.Cookie.Name = "token";
+
         }).AddJwtBearer(options =>
             {
                 options.RequireHttpsMetadata = true;
