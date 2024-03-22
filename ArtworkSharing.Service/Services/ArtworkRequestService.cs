@@ -2,6 +2,7 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
+using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
@@ -45,27 +46,7 @@ public class ArtworkRequestService : IArtworkRequestService
             await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.Id == guid));
     }
 
-    public async Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam)
-    {
-        var artworkService = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(_ => _.Id == id);
-        if (artworkService == null) return null;
-
-        return null;
-    }
-
-    public async Task<bool> DeleteArtworkRequest(Guid id)
-    {
-        var artworkService = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(_ => _.Id == id);
-
-        if (artworkService == null) throw new ArgumentNullException(nameof(artworkService));
-
-        await _unitOfWork.ArtworkServiceRepository.DeleteAsync(artworkService);
-
-        var rs = await _unitOfWork.SaveChangesAsync();
-
-        return rs > 0;
-    }
-
+    //User Services
     public async Task<Core.Domain.Entities.ArtworkService> CreateArtworkRequest(CreateArtworkRequestModel carm)
     {
         if (carm != null)
@@ -96,4 +77,179 @@ public class ArtworkRequestService : IArtworkRequestService
 
         return null;
     }
+
+    public async Task<List<ArtworkRequestViewModelUser>> GetArtworkRequestsByUser(Guid userId)
+    {
+        return AutoMapperConfiguration.Mapper.Map<List<ArtworkRequestViewModelUser>>(await _unitOfWork
+            .ArtworkServiceRepository
+            .Include(r => r.Artist)
+            .ThenInclude(a => a.User)
+            .Where(r => r.AudienceId == userId)
+            .OrderByDescending(r => r.RequestedDate)
+            .ToListAsync());
+    }
+    
+    public async Task<bool> CancelArtworkRequestByUser(Guid requestId)
+    {
+        if (requestId != null)
+        {
+            await _unitOfWork.BeginTransaction();
+            var repo = _unitOfWork.ArtworkServiceRepository;
+            try
+            {
+                var artworkRequest = await repo.FirstOrDefaultAsync(ar => ar.Id == requestId);
+                if (artworkRequest != null)
+                {
+                    artworkRequest.Status = ArtworkServiceStatus.Rejected;
+
+                    repo.UpdateArtworkRequest(artworkRequest);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitTransaction();
+                    return true;
+                }
+                else
+                {
+                    // return new KeyNotFoundException();
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        return false;
+    }
+
+    public async Task<bool> ChangeStatusAfterDeposit(TransactionViewModel tvm)
+    {
+        if (tvm != null)
+        {
+            await _unitOfWork.BeginTransaction();
+
+            var artworkRequestRepo = _unitOfWork.ArtworkServiceRepository;
+
+            var artworkRequest = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.Id == tvm.ArtworkServiceId);
+            if (artworkRequest != null)
+            {
+                artworkRequest.Status = ArtworkServiceStatus.InProgress;
+                artworkRequestRepo.UpdateArtworkRequest(artworkRequest);
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+
+            return false;
+
+        }
+
+        return false;
+    }
+
+    //User Services
+
+
+    
+    //Artist Services
+    public async Task<List<ArtworkRequestViewModelUser>> GetArtworkRequestByArtist(Guid artistId)
+    {
+        return AutoMapperConfiguration.Mapper.Map<List<ArtworkRequestViewModelUser>>(await _unitOfWork
+            .ArtworkServiceRepository
+            .Include(r => r.Audience)
+            .Where(r => r.ArtistId == artistId)
+            .OrderByDescending(r => r.RequestedDate)
+            .ToListAsync());
+    }
+
+    public async Task<bool> CancelArtworkRequestByArtist(Guid requestId)
+    {
+        if (requestId != null)
+        {
+            await _unitOfWork.BeginTransaction();
+            var repo = _unitOfWork.ArtworkServiceRepository;
+            try
+            {
+                var artworkRequest = await repo.FirstOrDefaultAsync(ar => ar.Id == requestId);
+                if (artworkRequest != null)
+                {
+                    artworkRequest.Status = ArtworkServiceStatus.Rejected;
+
+                    repo.UpdateArtworkRequest(artworkRequest);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitTransaction();
+                    return true;
+                }
+                else
+                {
+                    // return new KeyNotFoundException();
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        return false;
+    }
+
+    public async Task<bool> AcceptArtworkRequestByArtist(Guid requestId)
+    {
+        if (requestId != null)
+        {
+            await _unitOfWork.BeginTransaction();
+            var repo = _unitOfWork.ArtworkServiceRepository;
+            try
+            {
+                var artworkRequest = await repo.FirstOrDefaultAsync(ar => ar.Id == requestId);
+                if (artworkRequest != null)
+                {
+                    artworkRequest.Status = ArtworkServiceStatus.Accepted;
+
+                    repo.UpdateArtworkRequest(artworkRequest);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitTransaction();
+                    return true;
+                }
+                else
+                {
+                    // return new KeyNotFoundException();
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        return false;
+    }
+    //Artist Services
+
+    public async Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam)
+    {
+        var artworkService = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(_ => _.Id == id);
+        if (artworkService == null) return null;
+
+        return null;
+    }
+
+    public async Task<bool> DeleteArtworkRequest(Guid id)
+    {
+        var artworkService = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(_ => _.Id == id);
+
+        if (artworkService == null) throw new ArgumentNullException(nameof(artworkService));
+
+        await _unitOfWork.ArtworkServiceRepository.DeleteAsync(artworkService);
+
+        var rs = await _unitOfWork.SaveChangesAsync();
+
+        return rs > 0;
+    }
+
+
 }

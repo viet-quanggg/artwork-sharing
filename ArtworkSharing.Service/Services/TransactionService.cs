@@ -6,6 +6,7 @@ using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using ArtworkSharing.Core.Domain.Enums;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -78,11 +79,46 @@ public class TransactionService : ITransactionService
             .Include(t => t.Audience)
             .ThenInclude(a => a.UserRoles)
             .Include(t => t.Artwork)
+            .Include(t => t.PaymentMethod)
             .Where(t => t.AudienceId == userId)
             .AsQueryable()
             .ToListAsync());
+
+
+    public async Task<TransactionViewModel> CreateTransactionForArtworkRequestDeposit(Guid artworkrequestId, Guid audienceId, Guid paymentMethodId)
+    {
+        try
+        {
+            await _uow.BeginTransaction();
+            var artworkRequestRepo = _uow.ArtworkServiceRepository;
+            var transactionRepo = _uow.TransactionRepository;
+            var paymentMethodRepo = _uow.PaymentMethodRepository;
+
+            var artworkService = await artworkRequestRepo.FirstOrDefaultAsync(a => a.Id == artworkrequestId);
+            var paymentMethod = await paymentMethodRepo.FirstOrDefaultAsync(a => a.Id == paymentMethodId);
+            
+            Transaction transaction = new Transaction();
+            transaction.Id = Guid.NewGuid();
+            transaction.ArtworkServiceId = artworkrequestId;
+            transaction.AudienceId = audienceId;
+            transaction.CreatedDate = DateTime.Now;
+            transaction.TotalBill = artworkService.RequestedDeposit;
+            transaction.Type = TransactionType.ArtworkService;
+            transaction.Status = TransactionStatus.Pending;
+            transaction.PaymentMethod = paymentMethod;
+            
+            await transactionRepo.AddAsync(transaction);
+            await _uow.SaveChangesAsync();
+            await _uow.CommitTransaction();
+            
+            return AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(transaction);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
        
-    
+    }
 
     public async Task<List<TransactionViewModel>> GetAll()
     {
@@ -144,5 +180,8 @@ public class TransactionService : ITransactionService
         }
         return await query.CountAsync();
     }
-
+    public async Task<List<TransactionsViewModelUser>> GetAudience() =>
+      AutoMapperConfiguration.Mapper.Map<List<TransactionsViewModelUser>>(await _uow.TransactionRepository
+          .Include(t => t.Audience).AsQueryable()
+            .ToListAsync());
 }

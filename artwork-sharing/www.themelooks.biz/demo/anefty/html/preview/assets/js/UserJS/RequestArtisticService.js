@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var artistId = localStorage.getItem("artistId");
-    
+    console.log(artistId);
     $(document).on('click', '#sendRequest', function (event) {
         event.preventDefault(); // Prevent the default form submission behavior
         createArtworkRequest(artistId); // Call the createArtworkRequest function
@@ -12,13 +12,13 @@ $(document).ready(function() {
         var requestDeposit = document.getElementById("percent-deposit").value;
         var requestDeadline = document.getElementById("requestDate").value;
         var artistID = artistId;
-        var userID = 'a6f05ea7-d058-4563-abf0-b28cdf7c46d3';
+        var userID = '56a3e149-2c89-4d85-5ac9-08dc4956f46d';
 
         if(requestDescription.trim() === ""){
             showWarning("Description can not be empty!");
             
-        }else if(requestPrice.trim() === "" || requestPrice <= 0 || requestPrice > 10000){
-            showWarning("Request Price must be higher than 0 and smaller than 10000");
+        }else if(requestPrice.trim() === "" || requestPrice <= 10000 || requestPrice >= 5000000){
+            showWarning("Request Price must be higher than 10000 and smaller than 5000000");
             
         }else if(requestDeadline.trim() === "" || new Date(requestDeadline) < new Date())
         {
