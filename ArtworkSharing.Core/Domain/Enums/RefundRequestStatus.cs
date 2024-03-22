@@ -7,7 +7,7 @@
         AcceptedBySystem,
         DeniedByArist,
         AcceptedByArist,
-        CanceledByUser
-        
+        CanceledByUser,
+        Payyed,
     }
 }

@@ -7,6 +7,8 @@ public interface IArtistService
 {
     Task<IList<Artist>> GetAll();
     Task<Artist> GetOne(Guid artistId);
+
+    Task<Artist> GetOneArist(Guid artistId);
     Task Update(Artist artist);
     Task Add(Artist artist);
     Task Delete(Guid artist);

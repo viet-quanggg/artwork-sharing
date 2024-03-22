@@ -126,7 +126,10 @@ $(document).ready(function() {
     function cancelArtworkRequest(requestId) {
         $.ajax({
             url: 'https://localhost:7270/CancelArtworkRequestByUser/' + requestId,
-            type: 'PUT',
+            type: 'PUT', 
+            headers: {
+                "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+            },
             success: function(response) {
                 if(response === true){
                     $('#confirmModal').modal('hide'); // Corrected from dismiss to hide

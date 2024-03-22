@@ -1,11 +1,14 @@
 ﻿using System.Linq.Expressions;
 using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Package;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
+using Firebase.Auth;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services;
@@ -22,10 +25,15 @@ public class PackageService : IPackageService
 
     private readonly IPackageService _packageService;
 
-    public PackageService(IUnitOfWork unitOfWork)
+    private readonly UserManager<Core.Domain.Entities.User> _userManager;
+    public PackageService(IUnitOfWork unitOfWork, UserManager<Core.Domain.Entities.User> userManager
+        , IUserRoleService userRoleService, IArtistService artistService, IArtistPackageService artistPackageService)
     {
         _unitOfWork = unitOfWork;
-      
+        _userManager = userManager;
+        _userRoleService = userRoleService;
+        _artistService = artistService;
+        _artistPackageService = artistPackageService;
     }
 
     public async Task<IList<PackageViewModel>> GetAll()
@@ -128,40 +136,58 @@ public class PackageService : IPackageService
       
         try
         {
-            PackageViewModel package = await _packageService.GetOne(transaction.PackageId.Value);
-
-            UserRole userRole = new UserRole
+            if (transaction != null && transaction.PackageId.HasValue)
             {
-                UserId = transaction.AudienceId,
-             //   RoleId = nameof(Core.Domain.Enums.RoleOfSystem.Artist)  // guid for idRole
+                await _unitOfWork.BeginTransaction();
+                Guid k = Guid.Parse(transaction.PackageId.Value.ToString());
+                //  Guid currentUserId = new Guid(transaction.PackageId.Value);
+                //  PackageViewModel package = await _packageService.GetOne((Guid)transaction.PackageId);
+                Package package =  _unitOfWork.PackageRepository.Get(x => x.Id == transaction.PackageId);
+
+                //UserRole userRole = new UserRole
+                //{
+                //    UserId = transaction.AudienceId,
+                //    RoleId = Guid.Parse("820fa473-2833-4dd6-9d04-eb8019bfbad5")  // guid for idRole
+
+                //};
+                //await _userRoleService.UpdateRole(userRole);
                
-            };
-            await _userRoleService.UpdateRole(userRole);
+               
+                var user = await _userManager.FindByIdAsync(transaction.AudienceId.ToString());
+                var roleResult = await _userManager.AddToRoleAsync(user, RoleOfSystem.Artist.ToString());
+                //Create AritrstPackage
+                // Create Banking for Aritst
+                Artist artist = new Artist
+                {
+                    Id = new Guid(),
+                    UserId = transaction.AudienceId,
+                    Bio = string.Empty  ,
+                     BankAccount = string.Empty,
+                };
 
-            //Create AritrstPackage
-            ArtistPackage artistPackage = new ArtistPackage
-            {
-                Id = new Guid(),
-                ArtistId = transaction.AudienceId,
+                ArtistPackage artistPackage = new ArtistPackage
+                {
+                    Id = new Guid(),
                 PackageId = transaction.PackageId ?? new Guid(),
                 TransactionId = transaction.Id,
                 PurchasedDate = DateTime.UtcNow.AddDays(package.Duration),
+                Artist = artist
 
 
-            };
-            // Create Banking for Aritst
-            Artist artist = new Artist
+                };
+
+                await _unitOfWork.ArtworkPackageRepository.AddAsync(artistPackage);
+                await _unitOfWork.CommitTransaction();
+            }
+            else
             {
-                Id = transaction.AudienceId,
-                UserId = transaction.AudienceId,
-                // BankAccount = BankingAccount
-            };
-            await _artistService.Add(artist);
-            _artistPackageService.Add(artistPackage);
+                // Handle the case where transaction is null or PackageId is null
+            }
         }
         catch (Exception e)
         {
-            
+            await _unitOfWork.RollbackTransaction();
+            throw;
         }
     }
 }

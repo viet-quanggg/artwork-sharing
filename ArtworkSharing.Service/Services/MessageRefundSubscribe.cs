@@ -37,7 +37,7 @@ namespace ArtworkSharing.Service.Services
             };
             _channel = _getChannel.InititalBus(messageChanel);
             var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += (s, e) =>
+            consumer.Received += async (s, e) =>
             {
                 var body = System.Text.Encoding.UTF8.GetString(e.Body.ToArray());
                 body = body.Replace("\\", "");
@@ -52,8 +52,18 @@ namespace ArtworkSharing.Service.Services
                         {
                             using (var scope = _serviceScope.CreateScope())
                             {
-                                var refundRequestService = scope.ServiceProvider.GetRequiredService<IRefundRequestService>();
-                                // updating
+                                switch (data.Type)
+                                {
+                                    case TransactionType.Artwork:
+                                        await UpdateArtwork(data);
+                                        break;
+                                    case TransactionType.ArtworkService:
+                                        await UpdateArtworkService(data);
+                                        break;
+                                    case TransactionType.Package:
+                                        await UpdatePackage(data);
+                                        break;
+                                }
                             }
                         }
                         _channel.BasicAck(e.DeliveryTag, false);
@@ -61,6 +71,19 @@ namespace ArtworkSharing.Service.Services
                 }
             };
             _channel.BasicConsume(messageChanel.QueueName, false, consumer);
+            await Task.CompletedTask;
+        }
+
+        private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
+        {
+            await Task.CompletedTask;
+        }
+        private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
+        {
+            await Task.CompletedTask;
+        }
+        private async Task UpdatePackage(TransactionViewModel transactionViewModel)
+        {
             await Task.CompletedTask;
         }
     }

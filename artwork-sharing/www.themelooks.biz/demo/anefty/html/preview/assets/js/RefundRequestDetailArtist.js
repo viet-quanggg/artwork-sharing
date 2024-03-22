@@ -75,13 +75,13 @@ fetch(apiUrl)
 
   // Khi nhấp vào nút "Deny"
 $('#btn-border').click(function() {
-    updateRefundRequestStatus('DenyByArist');
+    updateRefundRequestStatus('DeniedByArist');
    
 });
 
 // Khi nhấp vào nút "Accept"
 $('#btn-sm').click(function() {
-    updateRefundRequestStatus('AcceptByArist');
+    updateRefundRequestStatus('AcceptedByArist');
    
 });
 

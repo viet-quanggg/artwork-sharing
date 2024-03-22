@@ -19,6 +19,7 @@ const params = cleanQueryString.split('&').reduce((acc, param) => {
     acc[key] = decodeURIComponent(value.replace(/\+/g, ' '));
     return acc;
 }, {});
+// neu ma params.vnp_TransactionStatus = 02 bao fail va tra ve tranghome
 loadData(params);
 // In ra đối tượng JSON
 console.log(params);
@@ -88,7 +89,7 @@ const createdDate = new Date(year, month, day, hours, minutes, seconds);
                                             </tr>
                                             <tr>
                                                 <td>Time</td>
-                                                <td class="alignright"> ${createdDate
+                                                <td class="alignright"> ${createdDate.toLocaleDateString()
                                                     }
 
                                                 </td>
