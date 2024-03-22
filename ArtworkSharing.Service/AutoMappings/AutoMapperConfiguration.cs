@@ -79,6 +79,7 @@ public class MapperHandler : Profile
         CreateMap<Artwork, ArtworkViewModel>().ForMember(x => x.MediaContents, x => x.MapFrom(x => x.MediaContents));
         CreateMap<CreateArtworkModel, Artwork>()
             .ForMember(dest => dest.MediaContents, opt => opt.Ignore());
+
         CreateMap<Category, CategoryViewModel>().ReverseMap();
         CreateMap<Artist, ArtistViewModel>().ReverseMap();
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();
@@ -103,6 +104,7 @@ public class MapperHandler : Profile
 
         CreateMap<VNPayTransaction, VNPayTransactionViewModel>().ReverseMap();
         CreateMap<ITransactionService, TransactionService>().ReverseMap();      
+
     }
    
 }

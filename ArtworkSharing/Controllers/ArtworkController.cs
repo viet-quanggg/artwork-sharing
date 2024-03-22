@@ -96,6 +96,7 @@ public class ArtworkController : ControllerBase
     }
 
     [HttpPost("/user/artist/postartwork")]
+
     [Authorize]
     public async Task<IActionResult> CreateNewArtWork([FromForm] CreateArtworkModel artworkModel)
     {        
@@ -113,6 +114,7 @@ public class ArtworkController : ControllerBase
             try
             {
                 artwork.MediaContents = await MapMediaContents(artworkModel.MediaContents);
+
                 await _artworkService.Add(artwork);
                 return Ok("Artwork created successfully");
             }
@@ -126,6 +128,7 @@ public class ArtworkController : ControllerBase
             return BadRequest(ModelState);
         }
     }
+
 
     private async Task<List<MediaContent>> MapMediaContents(List<IFormFile> mediaContents)
     {
@@ -144,4 +147,5 @@ public class ArtworkController : ControllerBase
         }
         return listToReturn;
     }
+
 }
