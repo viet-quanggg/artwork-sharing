@@ -141,11 +141,14 @@ $(document).ready(function() {
 
     $(document).on('click', '#payDepositButton', function (event) {
         event.preventDefault();
+        var paymentMethod;
+        document.getElementById("methodSelection").addEventListener("change", function() {
+            paymentMethod = this.options[this.selectedIndex].innerText;
+        });
         var requestId = $(this).data('id');
         var paymentId = document.getElementById("methodSelection").value;
         var userId = "56a3e149-2c89-4d85-5ac9-08dc4956f46d";
         $('#paymentMethod').modal('show');
-
         $('#closePaymentButton').click(function () {
             $('#paymentMethod').modal('hide'); // Corrected from dismiss to hide
         });
@@ -156,7 +159,7 @@ $(document).ready(function() {
 
         $(document).on('click', '#confirmPaymentButton', function () {
             event.preventDefault(); // Prevent the default form submission behavior
-            proceedToPaymentPage(requestId, paymentId, userId); // Call the createRefundRequest function
+            proceedToPaymentPage(requestId, paymentId, userId, paymentMethod); // Call the createRefundRequest function
             // $('#myModal').modal('hide'); // Hide the modal
         });
 
@@ -164,7 +167,7 @@ $(document).ready(function() {
 
     });
 
-    function proceedToPaymentPage(requestId, paymentId, userId) {
+    function proceedToPaymentPage(requestId, paymentId, userId, paymentMethod) {
         $.ajax({
             url: 'https://localhost:7270/CreateTransactionForArtworkServiceDeposit?artworkServiceId=' + requestId 
                 + '&audienceId=' + userId + '&paymentMethodId=' + paymentId,
@@ -172,21 +175,37 @@ $(document).ready(function() {
             success: function(response) {
                 if(response != null){
                     $('#confirmModal').modal('hide'); // Corrected from dismiss to hide
-                    if(response.paymentMethod)
-                    $.ajax({
-                        url: 'https://localhost:7270/api/Payment/vnpay/' + response.id,
-                        type: 'GET',
-                        success: function(response) {
-                            if(response != null){
-                                window.location.href = response;
-                            }
+                    if(paymentMethod === "Credit Card"){
+                        $.ajax({
+                            url: 'https://localhost:7270/api/Payment/vnpay/' + response.id,
+                            type: 'GET',
+                            success: function(response) {
+                                if(response != null){
+                                    window.location.href = response;
+                                }
 
-                        },
-                        error: function(xhr, status, error) {
-                            console.error(xhr.responseText);
-                            showError("Something is wrong. Please try again!");
-                        }
-                    });
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(xhr.responseText);
+                                showError("Something is wrong. Please try again!");
+                            }
+                        });
+                    }else if(paymentMethod==="PayPal"){
+                        $.ajax({
+                            url: 'https://localhost:7270/api/Payment/paypal/' + response.id,
+                            type: 'GET',
+                            success: function(response) {
+                                if(response != null){
+                                    window.location.href = response;
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(xhr.responseText);
+                                showError("Something is wrong. Please try again!");
+                            }
+                        });
+                    }
+                   
                 }else{
                     showError("Something is wrong in proceed to payment page! Please try again !");
                 }      

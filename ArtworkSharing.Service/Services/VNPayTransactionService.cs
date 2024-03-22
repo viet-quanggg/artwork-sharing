@@ -84,6 +84,7 @@ public class VNPayTransactionService : IVNPayTransactionService
 
     public async Task<VNPayResponseModel> HandleQuery(string query)
     {
+        var queryString = GetFromQuery(query);
         if (pParams["vnp_ResponseCode"] + "" != "00")
         {
             return new VNPayResponseModel
@@ -96,8 +97,6 @@ public class VNPayTransactionService : IVNPayTransactionService
                 }
             };
         }
-
-        var queryString = GetFromQuery(query);
         var response = Utils.HmacSHA512(Vnpay.HashSetcret, queryString);
         if (!response.Equals(pParams["vnp_SecureHash"] + "", StringComparison.InvariantCultureIgnoreCase))
             return new VNPayResponseModel
