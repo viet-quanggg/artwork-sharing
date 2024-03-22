@@ -1,3 +1,4 @@
+var token = localStorage.getItem("token");
 $(document).ready(function() {
     // Initialize DataTable
     $('#refundTable').DataTable();
@@ -5,8 +6,11 @@ $(document).ready(function() {
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/RefundRequestByUser/56a3e149-2c89-4d85-5ac9-08dc4956f46d',
+            url: 'https://localhost:7270/RefundRequestByUser',
             type: 'GET',
+            headers: {
+                'Authorization': "Bearer " + token
+            },
             success: function(response) {
                
                 // console.log(response);

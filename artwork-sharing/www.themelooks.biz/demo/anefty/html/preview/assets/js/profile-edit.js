@@ -5,7 +5,7 @@ window.onload = async function LoadProfile() {
     }
     await GetUser();
 
-
+ 
 }
 async function GetUser() {
     var url = "https://localhost:7270/api/usercontroller/getuser?userId=" + sessionStorage.getItem("uid");
