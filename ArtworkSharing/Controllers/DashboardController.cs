@@ -195,7 +195,7 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
+    [Authorize(nameof(RoleOfSystem.Audience))]
     [HttpGet("/SearchArtwork", Name = "GetSearchArtwork")]
     public async Task<IActionResult> GetSearchArtwork(Guid id)
     {
