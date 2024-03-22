@@ -26,8 +26,8 @@ public class TokenService : ITokenService
     {
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Email, user.Email),
-            new(JwtRegisteredClaimNames.NameId, user.Id.ToString())
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString())
         };
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -40,7 +40,7 @@ public class TokenService : ITokenService
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.Now.AddDays(7),
+            Expires = DateTime.Now.AddDays(30),
             SigningCredentials = creds
         };
 

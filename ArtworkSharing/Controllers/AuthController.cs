@@ -53,9 +53,10 @@ public class AuthController : ControllerBase
             if (!result.Succeeded) return Unauthorized("Invalid password");
             var userMapping = AutoMapperConfiguration.Mapper.Map<User>(userToLoginDTO);
             var userToReturn = AutoMapperConfiguration.Mapper.Map<UserDto>(userMapping);
-            userToReturn.Token = await _tokenService.CreateToken(userMapping);
+            var userToGenerateToken = await _userManager.FindByEmailAsync(userToLoginDTO.Email);
+            userToReturn.Token = await _tokenService.CreateToken(userToGenerateToken);
             SaveTokenToHttpContext(userToReturn.Token);
-            return Ok();
+            return Ok(userToReturn.Token);
         }
         catch (Exception ex)
         {
