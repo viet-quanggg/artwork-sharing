@@ -108,7 +108,7 @@ public class ArtworkController : ControllerBase
             {
                 return BadRequest("You are not an artist");
             }
-            artworkModel.ArtistId = new Guid(artist.Id);
+            artworkModel.ArtistId = artist.Id;
             var artwork = AutoMapperConfiguration.Mapper.Map<Artwork>(artworkModel);
             try
             {
