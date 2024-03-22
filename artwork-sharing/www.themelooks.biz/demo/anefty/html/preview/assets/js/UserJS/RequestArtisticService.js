@@ -1,3 +1,5 @@
+var token = localStorage.getItem("token");
+console.log(token);
 $(document).ready(function() {
     var artistId = localStorage.getItem("artistId");
     console.log(artistId);
@@ -12,8 +14,7 @@ $(document).ready(function() {
         var requestDeposit = document.getElementById("percent-deposit").value;
         var requestDeadline = document.getElementById("requestDate").value;
         var artistID = artistId;
-        var userID = '56a3e149-2c89-4d85-5ac9-08dc4956f46d';
-
+        var userID = 'c7e2ccbd-aa3f-4820-84bd-4201b377e623';
         if(requestDescription.trim() === ""){
             showWarning("Description can not be empty!");
             
@@ -36,6 +37,9 @@ $(document).ready(function() {
             $.ajax({
                 url : "https://localhost:7270/api/artworkrequest/createartworkrequest",
                 method : "POST",
+                headers: {
+                    "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+                },
                 data: JSON.stringify(data),
                 contentType: 'application/json',
                 success: function (response) {
