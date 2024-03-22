@@ -1,4 +1,4 @@
-const token = localStorage.getItem('token');
+const tokenHome = localStorage.getItem('token');
 document.addEventListener('DOMContentLoaded', function() {
     // Fetch header content
     fetch('header.html')
@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(html => {
         // Insert header content into headerContainer
         document.getElementById('headerContainer').innerHTML = html;
-        if (!token) {
+        if (!tokenHome) {
             document.getElementById('is-login').style.display = 'none';
         } else {
             document.getElementById('is-login').style.display = 'list-item';
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
 async function logout() {
     try {
         
-        if (!token) {
+        if (!tokenHome) {
             // Token not found, handle the case appropriately (e.g., redirect to login page)
             window.location.href = 'login.html';
             return;
@@ -42,7 +42,7 @@ async function logout() {
         const response = await fetch('https://localhost:7270/api/Auth/Logout', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${token}` 
+                'Authorization': `Bearer ${tokenHome}` 
             }
         });
 
