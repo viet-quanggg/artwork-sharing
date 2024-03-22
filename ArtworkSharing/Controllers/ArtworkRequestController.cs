@@ -1,8 +1,11 @@
+using System.Security.Claims;
 using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Service.AutoMappings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
@@ -32,6 +35,7 @@ public class ArtworkRequestController : Controller
         }
     }
 
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet]
     public async Task<IActionResult> GetAllArtworkRequests(int pageNumber, int pageSize)
     {
@@ -46,14 +50,19 @@ public class ArtworkRequestController : Controller
         }
     }
     
+
     //Artist Controllers
-    [HttpGet("/GetArtworkRequestsByArtist/{artistId}")]
-    public async Task<IActionResult> GetArtworkRequestsByArtist(Guid artistId)
+    [Authorize(nameof(RoleOfSystem.Artist))]
+    [HttpGet("/GetArtworkRequestsByArtist")]
+    public async Task<IActionResult> GetArtworkRequestsByArtist()
     {
-        if (artistId == null) return BadRequest();
-        return Ok(await _requestService.GetArtworkRequestByArtist(artistId));
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid currentUserId = new Guid(userIdClaim?.Value);
+        if (currentUserId == null) return BadRequest();
+        return Ok(await _requestService.GetArtworkRequestByArtist(currentUserId));
     }
     
+    [Authorize(nameof(RoleOfSystem.Artist))]
     [HttpPut("/CancelArtworkRequestByArtist/{artworkRequestId}")]
     public async Task<IActionResult> CancelArtworkRequestByArtist(Guid artworkRequestId)
     {
@@ -62,6 +71,7 @@ public class ArtworkRequestController : Controller
         
     }
     
+    [Authorize(nameof(RoleOfSystem.Artist))]
     [HttpPut("/AcceptArtworkRequestByArtist/{artworkRequestId}")]
     public async Task<IActionResult> AcceptArtworkRequestByArtist(Guid artworkRequestId)
     {
@@ -74,13 +84,26 @@ public class ArtworkRequestController : Controller
     
     
     //User Controllers
-    [HttpGet("/GetArtworkRequestsByUser/{userId}")]
-    public async Task<IActionResult> GetArtworkRequestsByUser(Guid userId)
+    [Authorize(nameof(RoleOfSystem.Audience))]
+    [HttpGet("/GetArtworkRequestsByUser")]
+    public async Task<IActionResult> GetArtworkRequestsByUser()
     {
-        if (userId == null) return BadRequest();
-        return Ok(await _requestService.GetArtworkRequestsByUser(userId));
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid currentUserId = new Guid(userIdClaim?.Value);
+        if (currentUserId == null) return BadRequest();
+        try
+        {
+            var list = await _requestService.GetArtworkRequestsByUser(currentUserId);
+            return Ok(list);
+
+        }
+        catch (Exception ex)
+        {
+            return BadRequest();
+        }
     }
 
+    [Authorize(nameof(RoleOfSystem.Audience))]
     [HttpPut("/CancelArtworkRequestByUser/{artworkRequestId}")]
     public async Task<IActionResult> CancelArtworkRequestByUser(Guid artworkRequestId)
     {
@@ -89,6 +112,7 @@ public class ArtworkRequestController : Controller
         
     }
     
+    [Authorize(nameof(RoleOfSystem.Audience))]
     [HttpPut("/ChangeStatusAfterDeposit/")]
     public async Task<IActionResult> ChangeStatusAfterDeposit(TransactionViewModel tvm)
     {
@@ -97,11 +121,15 @@ public class ArtworkRequestController : Controller
         
     }
     
+    [Authorize(nameof(RoleOfSystem.Audience))]
     [HttpPost("createartworkrequest")]
     public async Task<IActionResult> CreateArtworkRequest(CreateArtworkRequestModel cam)
     {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid currentUserId = new Guid(userIdClaim?.Value);
         try
         {
+            cam.AudienceId = currentUserId;
             return Ok(await _requestService.CreateArtworkRequest(cam));
         }
         catch (Exception ex)
