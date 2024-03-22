@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:13 GMT -->
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/upload.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:21 GMT -->
 
 <head>
     <title>Anefty || NFT Marketplace HTML5 Template</title>
@@ -22,6 +22,20 @@
     <link rel="stylesheet" href="assets/plugins/nice-select/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <style>
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(20%, 1fr));
+            grid-gap: 10px;
+        }
+
+        .image-grid img {
+            width: 100%;
+            height: auto;
+            max-height: 100px;
+            /* Set max height to control image size */
+        }
+    </style>
 </head>
 
 <body>
@@ -29,8 +43,7 @@
         <div class="preloader-inner"><img src="assets/img/icons/text.svg" alt="" class="svg preloader-svg"></div>
     </div>
     <header class="header">
-
-        <div class="header-main style--three position-relative">
+        <div class="header-main style--three love-sticky">
             <div class="container">
                 <div class="header-inner position-relative px-0 mt-0 bg-transparent">
                     <div class="row align-items-center">
@@ -77,9 +90,8 @@
                                                 <li><a href="collection.html">Collection</a></li>
                                                 <li><a href="item-details.html">Item Details</a></li>
                                                 <li><a href="activity.html">Activity</a></li>
-                                                <li><a href="upload.html">Upload</a></li>
-                                                <li><a href="profile-edit.html">Profile Edit</a></li>
-                                                <li class="current-menu-children"><a href="login.html">Login</a></li>
+                                                <li class="current-menu-children"><a href="upload.html">Upload</a></li>
+                                                <li><a href="login.html">Login</a></li>
                                                 <li><a href="register.html">Register</a></li>
                                                 <li><a href="404.html">404</a></li>
                                                 <li><a href="coming-soon.html">Coming Soon</a></li>
@@ -120,158 +132,123 @@
                 </div>
             </div>
         </div>
-
-    </header>
-    <div class="py-5 d-flex align-items-center" style="min-height: calc(100vh - 100px);"
-        data-bg-img="assets/img/bg/page-bg2.png">
+    </header>   
+    <section class="pt-120 pb-120">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-xl-5 col-lg-7 col-md-10">
-                    <div class="card login-register-card">
-                        <div class="card-body">
-                            <div class="text-center mb-5">
-                                <h2>Login</h2>
-                                <p>Don't have an account yet? <a href="register.html" class="c1">Register Now!</a></p>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="section-title text-white">
+                        <h3>Upload new artwork</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <form class="upload-form text-white" id="UploadImg" enctype="multipart/form-data">
+                        <div class="card mb-60">
+                            <div class="card-body">
+                                <div class="dropzone-wrap">
+                                    <h3>Your artwork images</h3>
+                                    <p>Upload max 5 images</p>
+                                    <span>
+                                        <input id="fileInput" type="file" accept="image/*" name="MediaContents" multiple>
+                                    </span>
+
+                                    <div id="imagePreview" class="image-grid"></div>
+                                    <!-- Container to display selected images -->
+                                </div>
                             </div>
-                            <form id="login-form" method="post">
-                                <div class="form-group">
-                                    <label for="email" class="mb-2">Email Address</label>
-                                    <input type="email" id="email" class="form-control" placeholder="anefty@gmail.com">
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group d-flex justify-content-end pt-2 mb-0"><button class="btn"
+                                    type="submit"><img src="assets/img/icons/btn-save.svg" alt="" class="svg">
+                                    Create Now</button></div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="password" class="mb-2">Password</label>
-                                    <input type="password" id="password" class="form-control"
-                                        placeholder="*** **** *** ****">
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <a href="forgot-password.html" class="text-muted">Forgot Password?</a>
-                                    </div>
-                                    <button type="submit" class="btn"><img src="assets/img/icons/btn-login.svg" alt=""
-                                            class="svg"> Login Now</button>
-                                </div>
-                                <div id="error-message"></div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="footer-main">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-2 col-sm-6">
+                        <div class="widget widget_nav_menu">
+                            <h4 class="widget_title">My Account</h4>
+                            <ul>
+                                <li><a href="profile.html">Profile</a></li>
+                                <li><a href="author.html">Author</a></li>
+                                <li><a href="collection.html">My Collections</a></li>
+                                <li><a href="author.html">Settings</a></li>
+                                <li><a href="activity.html">Activity</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="widget widget_nav_menu">
+                            <h4 class="widget_title">Marketplace</h4>
+                            <div class="footer-list-wrap">
+                                <ul>
+                                    <li><a href="explore.html">All NFTs</a></li>
+                                    <li><a href="explore.html">Trading Paint</a></li>
+                                    <li><a href="explore.html">Art Painting</a></li>
+                                    <li><a href="explore.html">Virtual Paints</a></li>
+                                    <li><a href="explore.html">Collectibles</a></li>
+                                </ul>
+                                <ul>
+                                    <li><a href="contact.html">Terms of Service</a></li>
+                                    <li><a href="contact.html">Privacy Policy</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6">
+                        <div class="widget widget_newsletter">
+                            <h4 class="widget_title">Newsletter</h4>
+                            <form
+                                action="https://themelooks.us13.list-manage.com/subscribe/post?u=79f0b132ec25ee223bb41835f&amp;id=f4e0e93d1d"
+                                class="newslatter-form">
+                                <div class="theme-input-group"><input class="form-control" type="email"
+                                        placeholder="Enter Your Email..."> <button type="submit"
+                                        class="submit-btn btn"><img src="assets/img/icons/mail.svg" alt="" class="svg">
+                                        Signup Now</button></div>
                             </form>
-                            <!-- Add Google Sign-In Button -->
-                            <div class="text-center mt-3">
-                                <button class="btn btn-google" id="login-google">
-                                    <i class="fab fa-google mr-2"></i> Login with Google
-                                </button>
-                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-sm-6">
+                        <div class="widget text-center text-white widget_about"><img
+                                src="assets/img/footer-logo-light.svg" alt="" class="svg footer-logo">
+                            <p>The anefty first large digital marketplace crypto collectibles & non fungible token buy
+                                sell & discover digital assets.</p>
+                            <div class="socials d-flex justify-content-center align-items-center"><a
+                                    href="https://www.twitter.com/" target="_blank"><img
+                                        src="assets/img/icons/twitter-round.svg" alt="" class="svg"></a><a
+                                    href="https://www.instagram.com/" target="_blank"><img
+                                        src="assets/img/icons/instagram-round.svg" alt="" class="svg"></a><a
+                                    href="https://www.pinterest.com/" target="_blank"><img
+                                        src="assets/img/icons/pinterest.svg" alt="" class="svg"></a><a
+                                    href="https://www.whatsapp.com/" target="_blank"><img
+                                        src="assets/img/icons/whatsapp.svg" alt="" class="svg"></a></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    </div><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
-    <!-- Add this script in your HTML file -->
-    <script>
-
-
-        function displayErrorMessage(errorMessage) {
-
-            const errorContainer = document.getElementById('error-message');
-            const errorMessageElement = document.createElement('p');
-            errorMessageElement.textContent = errorMessage;
-            errorContainer.appendChild(errorMessageElement);
-        }
-
-        async function loginUser() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            const data = {
-                Email: email,
-                Password: password
-            };
-
-            try {
-                const response = await fetch('https://localhost:7270/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    const errorMessageElement = document.getElementById('error-message');
-                    errorMessageElement.textContent = "";
-                    if (response.status === 401) {
-                        const errorText = await response.text(); // Get the plain text error message
-                        displayErrorMessage(errorText);
-                    } else {
-                        const errorResponse = await response.json(); // Parse the JSON response
-                        const errorMessages = []; // Array to store error messages
-
-                        // Iterate over each error in the 'errors' object
-                        for (const [key, value] of Object.entries(errorResponse.errors)) {
-                            // If the value is an array, concatenate all error messages
-                            if (Array.isArray(value)) {
-                                errorMessages.push(...value);
-                            } else {
-                                errorMessages.push(value); // Otherwise, add the single error message
-                            }
-                        }
-
-                        // Display each error message
-                        errorMessages.forEach(errorMessage => displayErrorMessage(errorMessage));
-                    }
-                    return;
-                }
-                // Extract the token from the response
-                const token = await response.text();
-
-                // Save the token to localStorage
-                localStorage.setItem('token', token);
-
-                window.location.href = "Home.html";
-
-            } catch (error) {
-                console.error('Error:', error);
-                // Handle error, such as displaying an error message to the user
-                displayErrorMessage('An error occurred while processing your request. Please try again later.');
-            }
-        }
-
-        // Add an event listener to the login form
-        document.getElementById('login-form').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent the default form submission
-            loginUser(); // Call the loginUser function to handle the login process
-        });
-        // JavaScript
-        document.addEventListener('DOMContentLoaded', function () {
-            const googleLoginButton = document.getElementById('login-google');
-
-            googleLoginButton.addEventListener('click', function () {
-                fetch('https://localhost:7270/api/auth/externallogin?provider=Google', {
-                    mode: 'cors',
-                    credentials: 'include',
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(function (response) {
-                    if (response.ok) {
-                        // Redirect to Google initiated from the backend
-                        window.location.href = 'home-v5.html';
-                    } else {
-                        throw new Error('Failed to initiate login with Google');
-                    }
-                }).catch(function (error) {
-                    console.error('Error initiating login with Google:', error);
-                    alert('Failed to initiate login with Google. Please try again later.');
-                });
-            });
-        });
-
-
-    </script>
-
-
-
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="copyright-content text-center text-white">© 2018 - <span
+                                class="currentYear">2022</span> <a href="https://www.themelooks.com/"
+                                class="text-white">Themelooks</a> Networks, Inc. All Right Reserved.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
     <script src="assets/plugins/particles/particles.min.js"></script>
@@ -285,8 +262,8 @@
     <script src="assets/plugins/counterup/jquery.counterup.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/custom.js"></script>
-
+    <script src="assets/js/ArtistJS/SubmitReponseimg.js"></script>
 </body>
-<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:13 GMT -->
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/upload.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:21 GMT -->
 
 </html>

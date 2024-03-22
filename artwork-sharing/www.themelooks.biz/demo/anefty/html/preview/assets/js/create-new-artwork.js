@@ -27,9 +27,10 @@ fileInput.addEventListener('change', function () {
 const form = document.querySelector('.upload-form');
 
 form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(form);
+    event.preventDefault(); // Prevent the default form submission behavior
+    
+    const formData = new FormData(form); // Create FormData object from the form
+    
 
     try {
         const response = await fetch('https://localhost:7270/user/artist/postartwork', {
@@ -38,6 +39,8 @@ form.addEventListener('submit', async (event) => {
         });
 
         if (!response.ok) {
+            console.log(response);
+
             throw new Error('Failed to upload artwork');
         }
         console.log('create artwork successfully');

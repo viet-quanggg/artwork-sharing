@@ -1,21 +1,44 @@
+using System;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using ArtworkSharing.Controllers;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.DAL.Data;
 using ArtworkSharing.Exceptions;
 using ArtworkSharing.Extensions;
+using ArtworkSharing.Service.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var ArtworkSharing = "ArtworkSharing";
 
 // Add services to the container.
+//builder.Services.AddCors(options =>
+//{
+//    options.AddDefaultPolicy(builder =>
+//    {
+//        builder.AllowAnyOrigin()
+//               .AllowAnyMethod()
+//               .AllowAnyHeader();
+//    });
+//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin",
+        builder =>
+        {
+            builder.WithOrigins("*")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+            //    .AllowCredentials(); 
+        });
+});
 
+builder.Services.AddSession();
+
+builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-builder.Services.AddSession();
-builder.Services.AddIdentityServices(builder.Configuration);
-
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -38,7 +61,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.Expiration = TimeSpan.FromDays(7);
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
     options.Cookie.IsEssential = true;
+
     options.Cookie.SameSite = SameSiteMode.None;
     options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
     options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
@@ -64,22 +89,27 @@ builder.Services.AddCors(options =>
 
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
+builder.Services.AddTransient<IWatermarkService, WatermarkService>();
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
-builder.Services.AddAuthorization();
+
 var app = builder.Build();
+//app.UseCors();
+app.UseCors("AllowOrigin");
 app.UseSession();
-//app.UseCors(builder => builder
-//    .AllowAnyOrigin()  
-//    .AllowAnyMethod()   
-//    .AllowAnyHeader());
+app.UseCors(builder => builder
+    .AllowAnyOrigin()  
+    .AllowAnyMethod()   
+    .AllowAnyHeader());
 EnsureMigrate(app);
 
+EnsureMigrate(app);
 
+//app.UseCors("AllowOrigin");
 // Configure the HTTP request pipeline.
-app.UseMiddleware<ExceptionMiddleware>();
+
 
 if (app.Environment.IsDevelopment())
 {
@@ -88,11 +118,27 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseException();
+
+
+
+
+app.UseException();
+
+//app.UseHttpsRedirection();
+//app.UseAuthentication();
+//app.UseAuthorization();
+//app.MapControllers();
+
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-//app.UseCors("AllowAll");
+app.UseAuthorization(); // Add this line to enable authorization
+app.UseMiddleware<ExceptionMiddleware>(); 
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 app.Run();
 
 void EnsureMigrate(WebApplication webApp)

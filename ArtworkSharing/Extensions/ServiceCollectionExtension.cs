@@ -127,13 +127,8 @@ public static class ServiceCollectionExtension
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddCookie(x =>
-        {
-            x.Cookie.Name = "token";
         }).AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = true;
-                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -142,15 +137,7 @@ public static class ServiceCollectionExtension
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        context.Token = context.Request.Cookies["token"];
-
-                        return Task.CompletedTask;
-                    }
-                };
+               
 
             })
             ;
@@ -159,7 +146,6 @@ public static class ServiceCollectionExtension
 
             // You can set other options as needed.
         });
-
 
         //services.AddAuthorization(opt =>
         //{

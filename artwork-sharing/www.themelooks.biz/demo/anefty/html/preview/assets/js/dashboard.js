@@ -1,18 +1,21 @@
-$(function () {
+$(document).ready(function () {
 
   try {
     compareYearAndMonthlyValues();
     var val = "year";
     getData(val);
     getTransactionbyDay();
+    CountUser();
+    CountArtwork();
     $('#transactionlist').on('change', '#Softchart', function (e) {
       e.preventDefault();
-      getTransactionbyDay();
+      var val = $(this).val();
+      getData(val);
+      
     });
     $('#transactionbyday').on('change', '#Softchart1', function (e) {
       e.preventDefault();
-      var val = $(this).val();
-
+      getTransactionbyDay();
     });
   } catch (error) {
     console.error('Error:', error);
@@ -85,7 +88,6 @@ async function getData(val) {
     $('#transactionChart').text('Error loading chart data.');
   }
 }
-
 
 async function compareYearAndMonthlyValues() {
   try {
@@ -185,12 +187,6 @@ async function displaytransactioninday() {
     throw error;
   }
 }
-async function getnameArtist(id) {
-  const response = await $.ajax({
-    url: `https://localhost:7270/GetNameArtist/${All.artistId}?page=1`,
-    type: 'GET',
-  });
-}
 
 async function getTransactionbyDay() {
   try {
@@ -201,8 +197,9 @@ async function getTransactionbyDay() {
 
 
     response.forEach(item => {
-      console.log (item.artworkId);
+      if(item.artworkId != null){
       GetArtwork(item);
+      }
     });
 
   } catch (error) {
@@ -214,14 +211,65 @@ async function getTransactionbyDay() {
 async function GetArtwork(Item) {
   try {
     const response = await $.ajax({
-      url: 'https://localhost:7270/ArtworkbyId?id='+ Item.artworkId,
+      url: 'https://localhost:7270/ArtworkbyId?id=' + Item.artworkId,
       type: 'GET',
     });
-    console.log(response);
+
+    const createdDate = new Date(response.createdDate);
+    // Create DOM elements for the data with classes
+    const nameElement =  $('<h6>').text(Item.audience.name).addClass('fw-semibold mb-1');
+    const emailElement =  $('<h6>').text(response.artist.user.name).addClass('fw-semibold mb-1');
+    const artworkNameElement =  $('<div>').addClass('d-flex align-items-center gap-2').append(
+      $('<span>').text(response.name).addClass('badge bg-primary rounded-3 fw-semibold')
+      );
+    const priceElement =  $('<h6>').text(response.price.toString() + " $").addClass('fw-semibold mb-0 fs-4');
+    const dateElement = $('<h6>').text(createdDate.toLocaleDateString('VN', { day: 'numeric', month: 'numeric', year: 'numeric' })).addClass('fw-semibold mb-0 fs-4');
+    // Clear the table body
+    $('#transactionTable tbody').empty();
+
+    // Add a new row with the created elements
+    $('#transactionTable').DataTable().row.add([
+      nameElement[0],
+      emailElement[0],
+      artworkNameElement[0],
+      priceElement[0],
+      dateElement[0]
+    ]).draw();
+    $('#transactionTable tbody td ').addClass('border-bottom-0');
   } catch (error) {
     console.error('Error fetching transaction data:', error);
   }
-
 }
+
+async function CountUser(){
+  try {
+    const response = await $.ajax({
+      url: 'https://localhost:7270/Artist',
+      type: 'GET',
+    });
+    
+    var COunt = response.length;
+    $('#UserCount h7').empty();
+    $('#UserCount h7').append(COunt + ' Users');
+  } catch (error) {
+    console.error('Error counting User data:', error);
+  }
+}
+
+async function CountArtwork(){
+  try {
+    const response = await $.ajax({
+      url: 'https://localhost:7270/Artwork',
+      type: 'GET',
+    });
+    var COunt = response.length;
+    $('#ArtworkCount h7').empty();
+    $('#ArtworkCount h7').append(COunt + ' Artworks');
+    
+  } catch (error) {
+    console.error('Error counting User data:', error);
+  }
+}
+
 
 

@@ -2,9 +2,12 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
+using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.DAL;
 using ArtworkSharing.DAL.Extensions;
 using ArtworkSharing.Service.AutoMappings;
+using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace ArtworkSharing.Service.Services;
@@ -84,6 +87,7 @@ public class ArtworkRequestService : IArtworkRequestService
             .Include(r => r.Artist)
             .ThenInclude(a => a.User)
             .Where(r => r.AudienceId == userId)
+            .OrderByDescending(r => r.RequestedDate)
             .ToListAsync());
     }
     
@@ -119,7 +123,33 @@ public class ArtworkRequestService : IArtworkRequestService
         }
         return false;
     }
-    
+
+    public async Task<bool> ChangeStatusAfterDeposit(TransactionViewModel tvm)
+    {
+        if (tvm != null)
+        {
+            await _unitOfWork.BeginTransaction();
+
+            var artworkRequestRepo = _unitOfWork.ArtworkServiceRepository;
+
+            var artworkRequest = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(a => a.Id == tvm.ArtworkServiceId);
+            if (artworkRequest != null)
+            {
+                artworkRequest.Status = ArtworkServiceStatus.InProgress;
+                artworkRequestRepo.UpdateArtworkRequest(artworkRequest);
+
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransaction();
+                return true;
+            }
+
+            return false;
+
+        }
+
+        return false;
+    }
+
     //User Services
 
 
@@ -131,6 +161,7 @@ public class ArtworkRequestService : IArtworkRequestService
             .ArtworkServiceRepository
             .Include(r => r.Audience)
             .Where(r => r.ArtistId == artistId)
+            .OrderByDescending(r => r.RequestedDate)
             .ToListAsync());
     }
 
@@ -201,12 +232,37 @@ public class ArtworkRequestService : IArtworkRequestService
     }
     //Artist Services
 
-    public async Task<UpdateArtworkRequestModel> UpdateArtworkRequest(Guid id, UpdateArtworkRequestModel uam)
+    public async Task<bool> CommitArtworkRequest(Guid id, CommitArtworkRequestModel uam)
     {
-        var artworkService = await _unitOfWork.ArtworkServiceRepository.FirstOrDefaultAsync(_ => _.Id == id);
-        if (artworkService == null) return null;
+        if (id != null)
+        {
+            await _unitOfWork.BeginTransaction();
+            var repo = _unitOfWork.ArtworkServiceRepository;
+            try
+            {
+                var artworkRequest = await repo.FirstOrDefaultAsync(ar => ar.Id == id);
+                if (artworkRequest != null)
+                {
+                    artworkRequest.ArtworkProduct = uam.ArtworkProduct;
+                    artworkRequest.Status |= ArtworkServiceStatus.Completed;
+                    repo.UpdateArtworkRequest(artworkRequest);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitTransaction();
+                    return true;
+                }
+                else
+                {
+                    // return new KeyNotFoundException();
+                    return false;
+                }
 
-        return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        return false;
     }
 
     public async Task<bool> DeleteArtworkRequest(Guid id)
@@ -222,5 +278,5 @@ public class ArtworkRequestService : IArtworkRequestService
         return rs > 0;
     }
 
-
+   
 }
