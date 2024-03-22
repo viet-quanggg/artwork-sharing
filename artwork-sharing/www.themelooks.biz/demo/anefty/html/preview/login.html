@@ -29,6 +29,7 @@
         <div class="preloader-inner"><img src="assets/img/icons/text.svg" alt="" class="svg preloader-svg"></div>
     </div>
     <header class="header">
+
         <div class="header-main style--three position-relative">
             <div class="container">
                 <div class="header-inner position-relative px-0 mt-0 bg-transparent">
@@ -41,7 +42,8 @@
                                 <form class="search-form d-none d-sm-block ms-4" action="#">
                                     <div class="form-group"><button type="submit"><img
                                                 src="assets/img/icons/search-gradient.svg" class="svg" alt=""></button>
-                                        <input type="text" class="form-control mb-0" placeholder="Search item…"></div>
+                                        <input type="text" class="form-control mb-0" placeholder="Search item…">
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -118,8 +120,10 @@
                 </div>
             </div>
         </div>
+
     </header>
-    <div class="py-5 d-flex align-items-center" style="min-height: calc(100vh - 100px);" data-bg-img="assets/img/bg/page-bg2.png">
+    <div class="py-5 d-flex align-items-center" style="min-height: calc(100vh - 100px);"
+        data-bg-img="assets/img/bg/page-bg2.png">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-xl-5 col-lg-7 col-md-10">
@@ -136,13 +140,15 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="password" class="mb-2">Password</label>
-                                    <input type="password" id="password" class="form-control" placeholder="*** **** *** ****">
+                                    <input type="password" id="password" class="form-control"
+                                        placeholder="*** **** *** ****">
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div>
                                         <a href="forgot-password.html" class="text-muted">Forgot Password?</a>
                                     </div>
-                                    <button type="submit" class="btn"><img src="assets/img/icons/btn-login.svg" alt="" class="svg"> Login Now</button>
+                                    <button type="submit" class="btn"><img src="assets/img/icons/btn-login.svg" alt=""
+                                            class="svg"> Login Now</button>
                                 </div>
                                 <div id="error-message"></div>
                             </form>
@@ -158,27 +164,29 @@
             </div>
         </div>
     </div>
-    
+
     </div><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
     <!-- Add this script in your HTML file -->
     <script>
-        // Function to display error message
-        function displayErrorMessage(message) {
-            const errorMessageElement = document.getElementById('error-message');
-            errorMessageElement.textContent = "";
-            errorMessageElement.textContent = message;
-            errorMessageElement.style.display = 'block';
+
+
+        function displayErrorMessage(errorMessage) {
+
+            const errorContainer = document.getElementById('error-message');
+            const errorMessageElement = document.createElement('p');
+            errorMessageElement.textContent = errorMessage;
+            errorContainer.appendChild(errorMessageElement);
         }
-    
+
         async function loginUser() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-    
+
             const data = {
                 Email: email,
                 Password: password
             };
-    
+
             try {
                 const response = await fetch('https://localhost:7270/api/auth/login', {
                     method: 'POST',
@@ -187,56 +195,82 @@
                     },
                     body: JSON.stringify(data)
                 });
-    
+
                 if (!response.ok) {
-                    const errorMessage = await response.text();
-                    displayErrorMessage(errorMessage);
-                    return; // Exit the function to prevent further execution
+                    const errorMessageElement = document.getElementById('error-message');
+                    errorMessageElement.textContent = "";
+                    if (response.status === 401) {
+                        const errorText = await response.text(); // Get the plain text error message
+                        displayErrorMessage(errorText);
+                    } else {
+                        const errorResponse = await response.json(); // Parse the JSON response
+                        const errorMessages = []; // Array to store error messages
+
+                        // Iterate over each error in the 'errors' object
+                        for (const [key, value] of Object.entries(errorResponse.errors)) {
+                            // If the value is an array, concatenate all error messages
+                            if (Array.isArray(value)) {
+                                errorMessages.push(...value);
+                            } else {
+                                errorMessages.push(value); // Otherwise, add the single error message
+                            }
+                        }
+
+                        // Display each error message
+                        errorMessages.forEach(errorMessage => displayErrorMessage(errorMessage));
+                    }
+                    return;
                 }
-                window.location.href = "home-v5.html";
-               
+                // Extract the token from the response
+                const token = await response.text();
+
+                // Save the token to localStorage
+                localStorage.setItem('token', token);
+
+                window.location.href = "Home.html";
+
             } catch (error) {
                 console.error('Error:', error);
                 // Handle error, such as displaying an error message to the user
                 displayErrorMessage('An error occurred while processing your request. Please try again later.');
             }
         }
-    
+
         // Add an event listener to the login form
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        document.getElementById('login-form').addEventListener('submit', function (event) {
             event.preventDefault(); // Prevent the default form submission
             loginUser(); // Call the loginUser function to handle the login process
         });
         // JavaScript
         document.addEventListener('DOMContentLoaded', function () {
-    const googleLoginButton = document.getElementById('login-google');
+            const googleLoginButton = document.getElementById('login-google');
 
-    googleLoginButton.addEventListener('click', function () {
-        fetch('https://localhost:7270/api/auth/externallogin?provider=Google', {
-            mode: 'cors',
-  credentials: 'include',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(function (response) {
-            if (response.ok) {
-                // Redirect to Google initiated from the backend
-                window.location.href = 'home-v5.html';
-            } else {
-                throw new Error('Failed to initiate login with Google');
-            }
-        }).catch(function (error) {
-            console.error('Error initiating login with Google:', error);
-            alert('Failed to initiate login with Google. Please try again later.');
+            googleLoginButton.addEventListener('click', function () {
+                fetch('https://localhost:7270/api/auth/externallogin?provider=Google', {
+                    mode: 'cors',
+                    credentials: 'include',
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function (response) {
+                    if (response.ok) {
+                        // Redirect to Google initiated from the backend
+                        window.location.href = 'home-v5.html';
+                    } else {
+                        throw new Error('Failed to initiate login with Google');
+                    }
+                }).catch(function (error) {
+                    console.error('Error initiating login with Google:', error);
+                    alert('Failed to initiate login with Google. Please try again later.');
+                });
+            });
         });
-    });
-});
 
 
     </script>
-    
-    
+
+
 
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
@@ -251,7 +285,7 @@
     <script src="assets/plugins/counterup/jquery.counterup.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/custom.js"></script>
-    
+
 </body>
 <!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:13 GMT -->
 

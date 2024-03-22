@@ -55,11 +55,22 @@ public class FollowService : IFollowService
 
     public async Task FollowUser(Guid currentUserId, Guid followUserId)
     {
+        var followedArtist = await _unitOfWork.ArtistRepository.FindAsync(followUserId);
+        if (followedArtist == null)
+            throw new KeyNotFoundException();
+        var follow =
+            await _unitOfWork.FollowRepository.GetAsync(f =>
+                f.FollowerId == currentUserId && f.FollowedId == followedArtist.UserId);
+        if (follow != null)
+            throw new Exception();
         await _unitOfWork.FollowRepository.AddAsync(new Follow
         {
             FollowerId = currentUserId,
-            FollowedId = followUserId
+            FollowedId = followedArtist.UserId
         });
+        
+        
+        await _unitOfWork.CommitTransaction();
     }
 
     public async Task<IList<Follow>> GetAll()
@@ -74,9 +85,12 @@ public class FollowService : IFollowService
 
     public async Task<bool> IsFollowing(Guid currentUserId, Guid followUserId)
     {
+        var followedArtist = await _unitOfWork.ArtistRepository.FindAsync(followUserId);
+        if (followedArtist == null)
+            throw new KeyNotFoundException();
         var follow =
             await _unitOfWork.FollowRepository.GetAsync(f =>
-                f.FollowerId == currentUserId && f.FollowedId == followUserId);
+                f.FollowerId == currentUserId && f.FollowedId == followedArtist.UserId);
         if (follow == null)
             return false;
         return true;
@@ -84,10 +98,16 @@ public class FollowService : IFollowService
 
     public async Task UnFollowUser(Guid currentUserId, Guid followUserId)
     {
+        var followedArtist = await _unitOfWork.ArtistRepository.FindAsync(followUserId);
+        if (followedArtist == null)
+            throw new KeyNotFoundException();
         var follow =
             await _unitOfWork.FollowRepository.GetAsync(f =>
-                f.FollowerId == currentUserId && f.FollowedId == followUserId);
+                f.FollowerId == currentUserId && f.FollowedId == followedArtist.UserId);
+        if (follow == null)
+            throw new KeyNotFoundException();
         await _unitOfWork.FollowRepository.DeleteAsync(follow);
+        await _unitOfWork.CommitTransaction();
     }
 
     public async Task Update(Follow follow)

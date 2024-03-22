@@ -1,4 +1,4 @@
-
+var token = localStorage.getItem("token");
 $(document).ready(function() {
     // Initialize DataTable
     
@@ -7,8 +7,11 @@ $(document).ready(function() {
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/api/Transaction/userTransactions/32fddca3-6ebf-43c8-87ac-a6948626e2dc',
+            url: 'https://localhost:7270/api/Transaction/userTransactions',
             type: 'GET',
+            headers: {
+                "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+            },
             success: function(response) {
                 console.log(response);
                 // Clear existing table data
@@ -24,7 +27,7 @@ $(document).ready(function() {
                         '<a class="text-capitalize"  id="refundButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Refund</button>'+'</a>';
                     $('#transactionTable').DataTable().row.add([
                         // item.id,
-                        item.artwork.name,
+                        item.paymentMethod.name,
                         item.totalBill + '$',
                         formattedDate,
                         statusText,
@@ -50,6 +53,11 @@ $(document).ready(function() {
 
 //Handle Create Refund Button
 $(document).ready(function () {
+    
+    $(document).on('click', '#managerefundButton', function () {
+        window.location.href = "RefundRequestListUser.html";
+    });
+    
     $(document).on('click', '#refundButton', function () {
         var id = $(this).data('id');
         $('#myModal').modal('show');

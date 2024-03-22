@@ -1,8 +1,13 @@
-﻿using ArtworkSharing.Core.Interfaces.Services;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
+using ArtworkSharing.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
+using System.Linq.Expressions;
 using System.Transactions;
 
 namespace ArtworkSharing.Controllers;
@@ -24,7 +29,7 @@ public class DashboardController : ControllerBase
         _ArtworkService = artworkService;
         _ArtistService = artistService;
     }
-
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Transaction",Name = "Getalltransactionfordashboard")]
     public async Task<IActionResult> GetTransactionsByTimeRange(string timeRange, int page)
     {
@@ -68,7 +73,7 @@ public class DashboardController : ControllerBase
 
         }
     }
-
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Transaction/Chart", Name = "GetalltransactionforChart")]
     public async Task<IActionResult> GetalltransactionforChart(string timeRange)
     {
@@ -97,7 +102,7 @@ public class DashboardController : ControllerBase
                     return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
             }
             }
-            var transactions = await _TransactionService.GetAll();
+            var transactions = await _TransactionService.GetAudience();
             var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
 
             return Ok(filteredTransactions);
@@ -110,57 +115,39 @@ public class DashboardController : ControllerBase
 
         }
     }
-
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Artwork",Name = "GetallArtworkforDashboard")]
-    public async Task<ActionResult> GetArtWork(int page)
+    public async Task<ActionResult> GetArtWork()
     {
         try
         {
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
-            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
-            JObject jsonObject = JObject.Parse(jsonString);
-            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
-
-
+           
             var transactions = await _ArtworkService.GetAll();
-            var pagetransaction = transactions.Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(pagetransaction);
+            return Ok(transactions);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting transactions: {ex.Message}");
+            _logger.LogError($"Error getting Artwork: {ex.Message}");
             return StatusCode(500, "Internal server error");
         }
     }
-
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Artist",Name = "GetArtistforDashboard")]
-    public async Task<IActionResult> GetArtistforDashboard(int page)
+    public async Task<IActionResult> GetArtistforDashboard()
     {
         try
         {
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
-            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
-            JObject jsonObject = JObject.Parse(jsonString);
-            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
-
-
             var worker = await _ArtistService.GetAll();
-            var Pageforworker = worker.Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-            ;
-            return Ok(Pageforworker);
+
+            return Ok(worker);
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error getting transactions: {ex.Message}");
+            _logger.LogError($"Error getting Artist: {ex.Message}");
             return StatusCode(500, "Internal server error");
         }
     }
-
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Search/{name}", Name = "GetSearchArtist")]
     public async Task<IActionResult> GetSearchArtist(string name, int page)
     {
@@ -186,6 +173,7 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/GetNameArtist/{id}", Name = "GetNameArtist")]
     public async Task<IActionResult> GetNameArtist(Guid id)
     {
@@ -207,23 +195,15 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-    [HttpGet("/SearchArtwork/{Name}", Name = "GetSearchArtwork")]
-    public async Task<IActionResult> GetSearchArtwork(String Name, int page)
+    [Authorize(nameof(RoleOfSystem.Admin))]
+    [HttpGet("/SearchArtwork", Name = "GetSearchArtwork")]
+    public async Task<IActionResult> GetSearchArtwork(Guid id)
     {
         try
         {
-            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Page.json");
-            var jsonString = await System.IO.File.ReadAllTextAsync(filePath);
-            JObject jsonObject = JObject.Parse(jsonString);
-            var pageSize = int.Parse(jsonObject["Page"]["Value"].ToString());
 
-            var worker = await _ArtworkService.GetAll();
-            var Pageforworker = worker.Where(i => i.Name.ToLower().Contains(Name.ToLower()))
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-
-            return Ok(Pageforworker);
+            var transactions = await _ArtworkService.GetMediaContentforArtwork(id);
+            return Ok(transactions);
         }
         catch (Exception ex)
         {
@@ -231,14 +211,13 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
+    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/ArtworkbyId", Name = "GetArtworkbyId")]
     public async Task<ActionResult> GetArtworkbyId(Guid id)
     {
         try
         {
-            
             var transactions = await _ArtworkService.GetOne(id);
-
             return Ok(transactions);
         }
         catch (Exception ex)

@@ -117,4 +117,10 @@ public class ArtistService : IArtistService
             throw new KeyNotFoundException();
         }
     }
+
+    public async Task<Artist> GetArtistByUserId(Guid userId)
+    {
+        var artist = await _unitOfWork.ArtistRepository.FirstAsync(a => a.UserId == userId);
+        return artist;
+    }
 }

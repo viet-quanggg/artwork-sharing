@@ -1,18 +1,33 @@
 // Get the artistId from the URL
+
 const urlParams = new URLSearchParams(window.location.search);
+
+
+const artistId1 = 'f630d130-9dfb-4986-b3a3-6a9a1b714304';
+
 const artistId = '60DE5964-13FC-4F7A-91FD-C8C75268D2D0';
 //urlParams.get('id');
+const token = localStorage.getItem('token');
+
+//let selected = selectElement.value;
+let paginated = new Object;
+
+const selectElement = document.querySelector('.select-rounded');
+
+selectElement.onchange = function(event) {    
+    const selected = event.target.value;        
+    fetchArtworks(artistId, paginated.pageIndex, selected);
+};
 
 // Function to fetch artworks for the artist
-async function fetchArtworks(artistId, pageIndex) {
-    const selectElement = document.querySelector('.select-rounded');
-const selectedValue = selectElement.value;
+async function fetchArtworks(artistId, pageIndex, selectedValue="") {   
     try {
         const response = await fetch(`https://localhost:7270/artist/${artistId}?pageIndex=${pageIndex}&orderBy=${selectedValue}`);
         if (!response.ok) {
             throw new Error('Failed to fetch artworks');
         }
         const artworks = await response.json();
+        paginated = artworks;
         displayArtworks(artworks);
         updatePaginationButtons(artworks);
     } catch (error) {
@@ -101,36 +116,51 @@ fetchArtworks(artistId, 1);
 //follow
 var followButton = document.getElementById("follow");
 followButton.addEventListener("click", async()=>{
-    await fetchFollowArtist(artistId);
+    if(token==null){
+        window.location.href="login.html";
+    }else{
+        await fetchFollowArtist(artistId);
+    }
+    
 })
 
 var isFollowed = false;
-async function fetchFollowInfor(artistId){
-    fetch('https://localhost:7270/api/Follow/isFollowed',{
-        method: 'GET',
-        headers:{
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(artistId)
-    }).then(response=>{
-        isFollowed = response.json;
-        updateFollowButton();
-    })
+async function fetchFollowInfor(artistId) {
+    try {
+        const response = await fetch(`https://localhost:7270/api/Follow/isFollowed/${artistId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',  
+                'Authorization': `Bearer ${token}`                        
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch follow information');
+        }
+
+        const isFollowed = await response.json();
+        updateFollowButton(isFollowed);
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
+
 async function fetchFollowArtist(artistId){
-   const apiPostFollow = isFollowed?`https://localhost:7270/api/Follow/unfollow`:
-   `https://localhost:7270/api/Follow/follow`;
+   const apiPostFollow = isFollowed?`https://localhost:7270/api/Follow/unfollow/${artistId}`:
+   `https://localhost:7270/api/Follow/follow/${artistId}`;
     try {
         const response = await fetch(apiPostFollow,{
         method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(artistId)
 
             });
         if (!response.ok) {
+            console.log(response.text());
             throw new Error('Failed to follow or unfollow');
         }
         isFollowed = !isFollowed;
@@ -153,39 +183,39 @@ function updateFollowButton(){
     }
 }
 
-// $(document).ready(function() {
-//     function fetchData() {
-//         $.ajax({
-//             url: 'https://localhost:7270/GetArtistProfile/41dfeaca-fcee-4d24-aab9-289a53219fa0',
-//             type: 'GET',
-//             success: function(response) {
-//                 document.getElementById("profile-div")
-//                     .innerHTML += '</div><a id="requestButton" data-id="'+response.id+'" class="btn btn-primary style--two mr-10 mb-4">' +'<button style="color: white" >Request Service</button>' + '</a></div>';
+$(document).ready(function() {
+    function fetchData() {
+        $.ajax({
+            url: 'https://localhost:7270/GetArtistProfile/60DE5964-13FC-4F7A-91FD-C8C75268D2D0',
+            type: 'GET',
+            success: function(response) {
+                document.getElementById("profile-div")
+                    .innerHTML += '</div><a id="requestButton" data-id="'+response.id+'" class="btn btn-primary style--two mr-10 mb-4">' +'<button style="color: white" >Request Service</button>' + '</a></div>';
                 
-//                 fetchArtistData(response);
-//                 console.log(response);
+                fetchArtistData(response);
+                console.log(response);
  
-//             },
-//             error: function(xhr, status, error) {
-//                 // Handle error
-//                 console.error(xhr.responseText);
-//             }
-//         });
-//     }
-//     // Initial data fetch when the page loads
-//     fetchData();
-//     // setInterval(fetchData, 5000);
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(xhr.responseText);
+            }
+        });
+    }
+    // Initial data fetch when the page loads
+    fetchData();
+    // setInterval(fetchData, 5000);
 
 
-//     function fetchArtistData(response) {
-//         document.getElementById("artist_name").textContent = response.user.name;
-//         document.getElementById("artist_description").textContent = response.bankAccount;
-//         document.getElementById("get-link").value = "@" + response.user.normalizedUserName.toLowerCase();
+    function fetchArtistData(response) {
+        document.getElementById("artist_name").textContent = response.user.name;
+        document.getElementById("artist_description").textContent = response.bankAccount;
+        document.getElementById("get-link").value = "@" + response.user.normalizedUserName.toLowerCase();
         
-//     }
+    }
     
     
-// });
+});
 
 $(document).ready(function () {
     $(document).on('click', '#requestButton', function () {

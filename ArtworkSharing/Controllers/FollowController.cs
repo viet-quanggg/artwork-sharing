@@ -1,5 +1,7 @@
 ﻿using ArtworkSharing.Core.Interfaces.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ArtworkSharing.Controllers;
 
@@ -14,10 +16,12 @@ public class FollowController : ControllerBase
         _followService = followService;
     }
 
-    [HttpPost("follow")]
+    [HttpPost("follow/{followUserId}")]
+    
     public async Task<IActionResult> FollowCreator(Guid followUserId)
     {
-        Guid currentUserId = Guid.Empty;
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid currentUserId = new Guid(userIdClaim?.Value);
         if (string.IsNullOrEmpty(currentUserId.ToString()) || string.IsNullOrEmpty(followUserId.ToString()))
             return BadRequest();
         if (currentUserId == followUserId)
@@ -25,16 +29,25 @@ public class FollowController : ControllerBase
 
         if (await _followService.IsFollowing(currentUserId, followUserId))
             return BadRequest("You are already following this user");
-
-        await _followService.FollowUser(currentUserId, followUserId);
+        try
+        {
+            await _followService.FollowUser(currentUserId, followUserId);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest();
+        }
+        
 
         return Ok();
     }
 
-    [HttpPost("unfollow")]
+    [HttpPost("unfollow/{followUserId}")]
+   
     public async Task<IActionResult> UnFollowCreator(Guid followUserId)
     {
-        Guid currentUserId = Guid.Empty;
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid currentUserId = new Guid(userIdClaim?.Value);
         if (string.IsNullOrEmpty(currentUserId.ToString()) || string.IsNullOrEmpty(followUserId.ToString()))
             return BadRequest();
 
@@ -43,16 +56,23 @@ public class FollowController : ControllerBase
 
         if (!await _followService.IsFollowing(currentUserId, followUserId))
             return BadRequest("You are not already following this user");
-
-        await _followService.UnFollowUser(currentUserId, followUserId);
+        try
+        {
+            await _followService.UnFollowUser(currentUserId, followUserId);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest();
+        }
 
         return Ok();
     }
 
-    [HttpGet("isFollowed")]
+    [HttpGet("isFollowed/{followUserId}")]    
     public async Task<IActionResult> IsFollowed(Guid followUserId)
     {
-        Guid currentUserId = Guid.Empty;
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid currentUserId = new Guid(userIdClaim?.Value);
         if (string.IsNullOrEmpty(currentUserId.ToString()) || string.IsNullOrEmpty(followUserId.ToString()))
             return BadRequest();
 

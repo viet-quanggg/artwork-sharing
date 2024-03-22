@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
@@ -6,6 +7,7 @@ using ArtworkSharing.Core.ViewModels.Package;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Service.Services;
 using Firebase.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
@@ -51,6 +53,9 @@ public class ManagePackageController : Controller
     {
         try
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
+            var token = HttpContext.Request;
+            var k = Request.Cookies["token"];
             Expression<Func<Package, bool>> filter = null;
             Func<IQueryable<Package>, IOrderedQueryable<Package>> orderBy = null;
             var includeProperties = "";
@@ -117,13 +122,16 @@ public class ManagePackageController : Controller
     }
 
     //9c68f75b-ed05-4718-b6b8-05211342a80f
-    //8f5c103a-8cfb-4cc2-bf93-05286b79c43e
+    //32c5d536-a8dc-4e87-9018-11348de74b74
     //098901890883
     [HttpPut("{UserId}/checkout")]
     public async Task<IActionResult> CheckOutPackage(Guid UserId,Guid PackageId)
     {
         try
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
+            var token = HttpContext.Request;
+            var k = Request.Cookies["token"];
             PackageViewModel package = await _packageService.GetOne(PackageId);
             if (package == null) return StatusCode(404);    
             //Create transaction
@@ -138,12 +146,13 @@ public class ManagePackageController : Controller
                 Status = TransactionStatus.Fail, // Đặt trạng thái mặc định
                 Type = TransactionType.Package,
                 PackageId = PackageId,
-                
+                PaymentMethodId= Guid.Parse("d9bfaaf3-a690-46cd-8387-4e1f318ec76f")
+               
             };
             await _transactionService.AddTransaction(transaction);
 
             // Call API VNPay
-            var response = await _httpClient.GetAsync($"Payment/{transaction.Id}");
+            var response = await _httpClient.GetAsync($"Payment/vnpay/{transaction.Id}");
 
             //if (response.IsSuccessStatusCode)
             //{

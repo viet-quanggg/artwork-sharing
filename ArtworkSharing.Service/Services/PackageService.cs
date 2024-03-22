@@ -133,7 +133,8 @@ public class PackageService : IPackageService
             UserRole userRole = new UserRole
             {
                 UserId = transaction.AudienceId,
-                RoleId = new Guid(), // guid for idRole
+             //   RoleId = nameof(Core.Domain.Enums.RoleOfSystem.Artist)  // guid for idRole
+               
             };
             await _userRoleService.UpdateRole(userRole);
 

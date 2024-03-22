@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/ranking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:22 GMT -->
+
+<head>
+    <title>Anefty || NFT Marketplace HTML5 Template</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link rel="shortcut icon" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&amp;family=Roboto:wght@400;700&amp;display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/plugins/swiper/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/plugins/magnific-popup/magnific-popup.css">
+    <link rel="stylesheet" href="assets/plugins/nice-select/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="assets/css/TransactionListUser.css">
+</head>
+
+<body>
+    <div class="preloader">
+        <div class="preloader-inner"><img src="assets/img/icons/text.svg" alt="" class="svg preloader-svg"></div>
+    </div>
+    <header class="header">
+        <div id="headerContainer"></div>
+    </header>
+    <div class="author-area">
+        <div class="author-cover" data-bg-img="assets/img/bg/author-cover.png"></div>
+        <div class="toast error" style="position: fixed; z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Error</p>
+                    <p></p>
+                </div>
+                <div class="loading1"></div>
+            </div>
+        </div>
+        
+    <section class="pt-120 pb-120">
+
+        <!--    ERROR-->
+        <div class="toast error" style="position: fixed; z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Error</p>
+                    <p></p>
+                </div>
+                <div class="loading1"></div>
+            </div>
+        </div>
+        <!--    ERROR-->
+        <div class="toast error" style="position: fixed; z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Error</p>
+                    <p></p>
+                </div>
+                <div class="loading1"></div>
+            </div>
+        </div>
+        <!--    ERROR-->
+
+        <!--    SUCCESS-->
+        <div class="toast success" style="position: fixed;z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Success</p>
+                    <p></p>
+                </div>
+                <div class="loadingSucces"></div>
+            </div>
+        </div>
+        <!--    SUCCESS-->
+
+        <!--    WARNING-->
+        <div class="toast warning" style="position: fixed;z-index:1001
+        ;display: flex; align-items: center; gap: 15px;
+        right: 0; margin: 10px 40px 0 0; opacity: 0">
+            <div class="container-1">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="container-2">
+                <div class="container-2Text">
+                    <p>Warning</p>
+                    <p></p>
+                </div>
+                <div class="loadingWarning"></div>
+            </div>
+        </div>
+        <!--WARNING-->
+        
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="section-title text-white text-center mb-35">
+                        <h2>Your Artistic Requests</h2>
+                        <p>All your requests for artists will be stored here.
+                        You can manage these requests.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-n3">
+                <div class="col-12 pb-lg-3">
+                    <div class="table-responsive" >
+                        <table id="artisticTable" class="text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th>Request Date</th>
+                                    <th>Description</th>
+                                    <th>Artist Name</th>
+                                    <th>Price</th>
+                                    <th>Deposit Amount</th>
+                                    <th>Status</th>
+                                    <th>Deadline Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="container">
+<!--                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>-->
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="confirmModal" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Are you sure to cancel this request ?</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div>
+                                        <p>
+                                            Please note that canceling your request is irreversible and will result in the cancellation of your artwork request process !
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="closeButton" type="button" class="btn btn-close" data-dismiss="modal">Close</button>
+                                    <button type="button" id="confirmCancelButton" class="btn btn-primary">Cancel The Request</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="container">
+                    <!--                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>-->
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="paymentMethod" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Select Payment Method</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div>
+                                        <p>
+                                        Please select payment method for your transaction
+                                        </p>
+                                    </div>
+                                    <div id="methodSelect">
+                                    </div>
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="closePaymentButton" type="button" class="btn btn-close" data-dismiss="modal">Close</button>
+                                    <button type="button" id="confirmPaymentButton" class="btn btn-primary">Proceed To Payment</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                
+        </div>
+        </div>
+        
+        
+        
+    </section>
+
+
+     
+    <footer class="footer">
+        <div id="footerContainer"></div>
+    </footer><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/plugins/particles/particles.min.js"></script>
+    <script src="assets/js/menu.min.js"></script>
+    <script src="assets/plugins/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/plugins/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="assets/plugins/countdown/countdown.min.js"></script>
+    <script src="assets/plugins/nice-select/jquery.nice-select.min.js"></script>
+    <script src="assets/plugins/Isotope/isotope.pkgd.js"></script>
+    <script src="assets/plugins/counterup/waypoints.min.js"></script>
+    <script src="assets/plugins/counterup/jquery.counterup.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/custom.js"></script>
+    <script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+        <script src="assets/js/UserJS/ArtisticRequestManagerUser.js"></script>
+        <script src="assets/js/HomeJS.js"></script>
+</body>
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/ranking.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:25 GMT -->
+
+</html>

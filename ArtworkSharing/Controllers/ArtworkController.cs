@@ -5,7 +5,9 @@ using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Service.AutoMappings;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ArtworkSharing.Controllers;
 
@@ -14,11 +16,20 @@ namespace ArtworkSharing.Controllers;
 public class ArtworkController : ControllerBase
 {
     private readonly IArtworkService _artworkService;
+    private readonly IFireBaseService _fireBaseService;
+    private readonly IWatermarkService _watermarkService;
+    private readonly IArtistService _artistService;
     private IMapper mapper;
 
-    public ArtworkController(IArtworkService artworkService)
+    public ArtworkController(IArtworkService artworkService,
+        IFireBaseService fireBaseService,
+        IWatermarkService watermarkService,
+        IArtistService artistService)
     {
         _artworkService = artworkService;
+        _fireBaseService = fireBaseService;
+        _watermarkService = watermarkService;
+        _artistService = artistService;
     }
 
     /// <summary>
@@ -29,7 +40,8 @@ public class ArtworkController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetArtworks(Guid? ArtistId, string? Name, string? Description, bool IsPopular, bool IsAscRecent, int PageIndex, Guid? categoryId)
     {
-        var PageSize = 10;
+        var PageSize = PageIndex > 0 ? 10 * PageIndex : 10;
+        PageIndex = 0;
         BrowseArtworkModel browseArtwork = new BrowseArtworkModel
         {
             ArtistId = ArtistId,
@@ -41,6 +53,7 @@ public class ArtworkController : ControllerBase
             PageSize = PageSize > 0 ? PageSize : 10,
             CategoryId = categoryId
         };
+        var a = await _artworkService.GetArtworks(browseArtwork);
         return Ok(AutoMapperConfiguration.Mapper.Map<List<ArtworkViewModel>>(await _artworkService.GetArtworks(browseArtwork)));
     }
 
@@ -83,13 +96,25 @@ public class ArtworkController : ControllerBase
     }
 
     [HttpPost("/user/artist/postartwork")]
-    public async Task<IActionResult> CreateNewArtWork([FromBody] CreateArtworkModel artworkModel)
+
+    [Authorize]
+    public async Task<IActionResult> CreateNewArtWork([FromForm] CreateArtworkModel artworkModel)
     {        
         if (ModelState.IsValid)
         {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var artist = await _artistService.GetArtistByUserId(currentUserId);
+            if (artist == null)
+            {
+                return BadRequest("You are not an artist");
+            }
+            artworkModel.ArtistId = new Guid(artist.Id);
             var artwork = AutoMapperConfiguration.Mapper.Map<Artwork>(artworkModel);
             try
             {
+                artwork.MediaContents = await MapMediaContents(artworkModel.MediaContents);
+
                 await _artworkService.Add(artwork);
                 return Ok("Artwork created successfully");
             }
@@ -103,4 +128,24 @@ public class ArtworkController : ControllerBase
             return BadRequest(ModelState);
         }
     }
+
+
+    private async Task<List<MediaContent>> MapMediaContents(List<IFormFile> mediaContents)
+    {
+        var listToReturn = new List<MediaContent>();
+      
+        var mediaList = await _fireBaseService.UploadMultiImagesAsync(mediaContents);
+
+        foreach (var media in mediaList)
+        {
+            var mediaReturn = new MediaContent
+            {
+                Media = await _watermarkService.AddWatermarkAsync(media),
+                MediaWithoutWatermark = media
+            };
+            listToReturn.Add(mediaReturn);
+        }
+        return listToReturn;
+    }
+
 }
