@@ -127,8 +127,8 @@ async function fetchFollowInfor(artistId) {
         const response = await fetch(`https://localhost:7270/api/Follow/isFollowed/${artistId}`, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Content-Type': 'application/json',  
+                'Authorization': `Bearer ${token}`                        
             }
         });
         if (!response.ok) {
