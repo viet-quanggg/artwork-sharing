@@ -1,7 +1,10 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
+using ArtworkSharing.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ArtworkSharing.Controllers;
 
@@ -57,7 +60,37 @@ public class TransactionController : ControllerBase
         if (artworkServiceId == null || currentUserId == null) return BadRequest();
         return Ok(await _transactionService.CreateTransactionForArtworkRequestDeposit(artworkServiceId, currentUserId, paymentMethodId));
     }
-    
 
-    
+    [HttpGet("/Count")]
+    public async Task<IActionResult> GetalltransactionforChart(string timeRange)
+    {
+        if (timeRange == null) return BadRequest();
+            DateTime startDate;
+            if (timeRange.IsNullOrEmpty())
+            {
+                startDate = DateTime.Now.AddYears(-1);
+            }
+            else
+            {
+                switch (timeRange.ToLower())
+                {
+                    case "day":
+                        startDate = DateTime.Now.AddDays(-10);
+                        break;
+                    case "month":
+                        startDate = DateTime.Now.AddMonths(-5);
+                        break;
+                    case "year":
+                        startDate = DateTime.Now.AddYears(-5);
+                        break;
+                    default:
+                        return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
+                }
+            }
+            var transactions = await _transactionService.GetAudience();
+            var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
+
+            return Ok(filteredTransactions);
+    }
+
 }
