@@ -21,6 +21,14 @@ public class RefundRequestController : ControllerBase
 
     private readonly IArtworkService _artworkService;
 
+    public RefundRequestController(IRefundRequestService refundRequestService, ITransactionService transactionService, IArtworkService artworkService)
+    {
+        _refundRequestService = refundRequestService;
+        _artworkService = artworkService;
+        _transactionService = transactionService;   
+    }
+
+    [Authorize]
     [HttpPost("createRefundRequestUser")]
     public async Task<ActionResult> CreateRefundRequestUser(CreateRefundRequestModel crrm)
     {
@@ -34,18 +42,6 @@ public class RefundRequestController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
-    
-
- 
-
-    public RefundRequestController(IRefundRequestService refundRequestService, ITransactionService transactionService, IArtworkService artworkService)
-    {
-        _refundRequestService = refundRequestService;
-        _artworkService = artworkService;
-        _transactionService = transactionService;   
-    }
-
-
     //[HttpGet("{id}")]
     //public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)
     //{
@@ -305,6 +301,7 @@ public class RefundRequestController : ControllerBase
     }
 
 
+    [Authorize]
     [HttpGet("/RefundRequestByUser")]
     public async Task<IActionResult> RefundRequestForUser()
     {
@@ -314,7 +311,8 @@ public class RefundRequestController : ControllerBase
         {
             if (currentUserId != null)
             {
-                return Ok(await _refundRequestService.GetRefundRequestForUser(currentUserId));
+                var list = await _refundRequestService.GetRefundRequestForUser(currentUserId);
+                return Ok(list);
             }
 
             return BadRequest();
@@ -325,7 +323,7 @@ public class RefundRequestController : ControllerBase
         }
     }
     
-    // [Authorize("")]
+    [Authorize]
     [HttpGet("/RefundRequestDetailByUser/{refundId}")]
     public async Task<IActionResult> RefundRequestDetailForUser(Guid refundId)
     {
@@ -344,6 +342,7 @@ public class RefundRequestController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPut("/CancelRequestByUser/{refundId}")]
     public async Task<IActionResult> CancelRequestByUser(Guid refundId)
     {
