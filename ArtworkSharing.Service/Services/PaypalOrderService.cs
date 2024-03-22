@@ -273,12 +273,27 @@ namespace ArtworkSharing.Service.Services
                 value = ConvertToDollar(transaction.TotalBill),
                 currency_code = "USD"
             };
+            string description = "";
+            string name = "";
+
+            switch (transaction.Type)
+            {
+                case Core.Domain.Enums.TransactionType.Artwork:
+                    description = transaction.Artwork!.Description!;
+                    name = transaction.Artwork.Name; break;
+                case Core.Domain.Enums.TransactionType.Package:
+                    description = transaction.Package!.Description!;
+                    name = transaction.Package.Name; break;
+                case Core.Domain.Enums.TransactionType.ArtworkService:
+                    description = transaction.ArtworkService!.Description!;
+                    name = "ArtworkService"; break;
+            }
             List<PurchaseUnit> purchase_units = new List<PurchaseUnit>();
             List<Item> items = new List<Item>();
             items.Add(new Item
             {
-                name = transaction.Artwork!.Name,
-                description = transaction.Artwork!.Description!,
+                name = name,
+                description = description,
                 quantity = 1,
                 unit_amount = unitAmount
             });
@@ -351,9 +366,9 @@ namespace ArtworkSharing.Service.Services
                 PaypalItem paypalItem = new PaypalItem
                 {
                     CurrencyCode = "VND",
-                    Description = transaction.Artwork!.Description!,
+                    Description = description,
                     Id = Guid.NewGuid(),
-                    Name = transaction.Artwork.Name,
+                    Name = name,
                     PaypalOrderId = paypal.Id,
                     Quantity = 1,
                     Value = ConvertToDollar(transaction.TotalBill),
