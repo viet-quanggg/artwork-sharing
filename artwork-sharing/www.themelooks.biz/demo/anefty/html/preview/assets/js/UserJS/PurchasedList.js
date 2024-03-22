@@ -1,4 +1,4 @@
-
+const token = localStorage.getItem('token');
 $(document).ready(function () {
     // Initialize DataTable
     $('#purchaseTable').DataTable();
@@ -6,8 +6,11 @@ $(document).ready(function () {
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/api/Transaction/userTransactions/BEE66267-596A-4B81-826B-83391FCE0352',
+            url: 'https://localhost:7270/api/Transaction/userTransactions',
             type: 'GET',
+            headers: {               
+                'Authorization': `Bearer ${token}`                        
+            },
             success: function (response) {
                 // Clear existing table data
 

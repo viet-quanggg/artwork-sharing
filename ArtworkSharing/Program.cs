@@ -61,7 +61,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.Expiration = TimeSpan.FromDays(7);
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
     options.Cookie.IsEssential = true;
+
     options.Cookie.SameSite = SameSiteMode.None;
     options.LoginPath = "/Account/Login"; // If the LoginPath is not set here, ASP.NET Core will default to /Account/Login
     options.LogoutPath = "/Account/Logout"; // If the LogoutPath is not set here, ASP.NET Core will default to /Account/Logout
@@ -74,15 +76,15 @@ builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = 
 builder.Services.AddHttpClient();
 
 // Configure CORS to allow any origin
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", policy =>
-//    {
-//        policy.AllowAnyOrigin()
-//              .AllowAnyMethod()
-//              .AllowAnyHeader();
-//    });
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 
 // Đăng ký WatermarkController
@@ -97,6 +99,11 @@ var app = builder.Build();
 //app.UseCors();
 app.UseCors("AllowOrigin");
 app.UseSession();
+app.UseCors(builder => builder
+    .AllowAnyOrigin()  
+    .AllowAnyMethod()   
+    .AllowAnyHeader());
+EnsureMigrate(app);
 
 EnsureMigrate(app);
 
@@ -110,11 +117,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseException();
 
 
 
 
-//app.UseException();
+app.UseException();
+
 //app.UseHttpsRedirection();
 //app.UseAuthentication();
 //app.UseAuthorization();
@@ -134,8 +143,7 @@ app.Run();
 
 void EnsureMigrate(WebApplication webApp)
 {
-
-   using var scope = webApp.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<ArtworkSharingContext>();
-   context.Database.Migrate();
+   //using var scope = webApp.Services.CreateScope();
+   // var context = scope.ServiceProvider.GetRequiredService<ArtworkSharingContext>();
+   //context.Database.Migrate();
 }

@@ -118,8 +118,15 @@ public class ArtistService : IArtistService
         }
     }
 
+<<<<<<< HEAD
     public async Task<Artist> GetOneArist(Guid artistId)
     {
         return await _unitOfWork.ArtistRepository.Include(u => u.User).FirstOrDefaultAsync(u => u.UserId == artistId);
+=======
+    public async Task<Artist> GetArtistByUserId(Guid userId)
+    {
+        var artist = await _unitOfWork.ArtistRepository.FirstAsync(a => a.UserId == userId);
+        return artist;
+>>>>>>> 542d18e4abd6c3ea17e707e1a62eb3c1f64f89d4
     }
 }

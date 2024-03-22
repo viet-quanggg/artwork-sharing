@@ -13,6 +13,7 @@ public interface IArtistService
     Task Add(Artist artist);
     Task Delete(Guid artist);
     Task<Artist> GetnameArtist(Guid artistId);
+    Task<Artist> GetArtistByUserId(Guid userId);
     Task<IList<Artist>> GetAllField();
     Task<ArtistProfileViewModel> GetArtistProfile(Guid artistId);
 }

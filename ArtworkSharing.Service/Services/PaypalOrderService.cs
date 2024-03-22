@@ -118,18 +118,45 @@ namespace ArtworkSharing.Service.Services
             };
         }
 
+        /// <summary>
+        /// Check invoice on paypal
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private async Task<bool> GetInvoice(string token)
         {
-            await Task.CompletedTask;
-            return true;
+            using var client = new HttpClient();
+            client.BaseAddress = new Uri("https://api-m.sandbox.paypal.com");
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.ConnectionClose = true;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var authenticationString = $"{_paypalKey.ClientId}:{_paypalKey.ClientSecret}";
+            var base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, $"/v2/checkout/orders/{token}");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64EncodedAuthenticationString);
+
+
+            var response = await client.SendAsync(requestMessage);
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            response.EnsureSuccessStatusCode();
+
+            JObject jObj = JObject.Parse(responseBody);
+
+            if (jObj["id"] + "" == token && jObj["status"] + "" == "APPROVED") return true;
+
+            return false;
         }
 
         public async Task<PaypalINPModel> CompletedOrder(PaypalOrder paypalOrder)
         {
-            if (await GetInvoice(paypalOrder.Token)) return new PaypalINPModel
+            if (await GetInvoice(paypalOrder.Token) is false) return new PaypalINPModel
             {
                 TransactionViewModel = null!,
-                Code = 01
+                Code = 99,
+                Message = ResponseMessage.TransactionNotPayYet
             };
 
             var paypal = await _uow.PaypalOrderRepository.FirstOrDefaultAsync(x => x.Id == paypalOrder.Id);
@@ -137,14 +164,17 @@ namespace ArtworkSharing.Service.Services
             if (paypal == null) return new PaypalINPModel
             {
                 TransactionViewModel = null!,
-                Code = 01
+                Code = 01,
+                Message= ResponseMessage.TransactionNotFound
             };
             var transactionTransfer = await _uow.VNPayTransactionTransferRepository.FirstOrDefaultAsync(x => x.Id == paypalOrder.Id && !x.IsCompleted);
 
             if (transactionTransfer == null) return new PaypalINPModel
             {
                 TransactionViewModel = null!,
-                Code = 01
+                Code = 01,
+                Message = ResponseMessage.TransactionNotFound
+
             };
 
             using var client = new HttpClient();
@@ -197,7 +227,8 @@ namespace ArtworkSharing.Service.Services
             return new PaypalINPModel
             {
                 Code = 00,
-                TransactionViewModel = AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == paypalOrder.TransactionId))
+                TransactionViewModel = AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == paypalOrder.TransactionId)),
+                Message = ResponseMessage.Success
             };
         }
 
