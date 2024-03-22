@@ -13,7 +13,7 @@ $(document).ready(function() {
             },
             success: function(response) {
                
-                // console.log(response);
+                console.log(response);
                 // Clear existing table data
                 $('#refundTable').DataTable().clear().destroy();
 
@@ -22,14 +22,21 @@ $(document).ready(function() {
                     var dateTimeString = item.refundRequestDate;
                     var datetime = new Date(dateTimeString);
                     var formattedDate = datetime.toLocaleDateString('en-Gb');
+                    var service;
+                    if(item.transaction.artwork != null){
+                        service = "Artwork";
+                    }else if(item.transaction.package != null){
+                        service = "Package";
+                    }else if(item.transaction.artworkService != null){
+                        service = "Artwork Request";
+                    }
                     var links = '<a class="text-capitalize" id="detailsButton" data-id="' + item.id + '" href="RefundRequestDetailUser.html">'+'<button class="btn btn-primary">Detail</button>'+'</a>';
                     $('#refundTable').DataTable().row.add([
-                        // item.id,
-                        // item.transactionId,
-                        item.transaction.artwork.name,
-                        item.transaction.artwork.price + '$',
-                       formattedDate,
+                        item.description,
+                        item.reason,
+                        formattedDate,
                         item.status,
+                        service,
                         links
                         // Add more data if needed
                     ]).draw();

@@ -3,9 +3,11 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Service.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Security.Claims;
 
 namespace ArtworkSharing.Controllers;
 
@@ -18,14 +20,17 @@ public class ManageOrderController : Controller
     private readonly IArtistService _artistService;
     private readonly IArtworkService _artworkService;
     private readonly IArtworkRequestService _artworkRequestService;
+    private readonly IUserRoleService _userRoleService;
 
-    public ManageOrderController(ITransactionService transactionService, IPackageService packageService, IArtistService artistService, IArtworkService artworkService, IArtworkRequestService artworkRequestService)
+    public ManageOrderController(ITransactionService transactionService, IPackageService packageService, IArtistService artistService, IArtworkService artworkService, IArtworkRequestService artworkRequestService, IUserRoleService userRoleService)
     {
         _transactionService = transactionService;
         _packageService = packageService;
         _artistService = artistService;
         _artworkService = artworkService;
         _artworkRequestService = artworkRequestService;
+        _userRoleService = userRoleService;
+
     }
 
     [HttpGet]
@@ -64,12 +69,22 @@ public class ManageOrderController : Controller
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
-
+    [Authorize]
     [HttpGet("countArtist")]
-    public async Task<ActionResult<int>> GetTransactionCountArtist(Guid ArtistId,[FromQuery] string searchKeyword = null)
+    public async Task<ActionResult<int>> GetTransactionCountArtist([FromQuery] string searchKeyword = null)
     {
         try
         {
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var Artists = await _artistService.GetOneArist(currentUserId);
+            if (Artists == null)
+            {
+                return StatusCode(200);
+            }
+
+            Guid ArtistId = Artists.Id;
             Expression<Func<Transaction, bool>> filter = r => ((r.Artwork.ArtistId == ArtistId) || (r.ArtworkService.ArtistId == ArtistId));
 
             // Tạo điều kiện tìm kiếm dựa trên searchKeyword
@@ -122,15 +137,26 @@ public class ManageOrderController : Controller
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
-
+    [Authorize]
     [HttpGet("GeTransactionWithPagingArtist")]
-    public async Task<ActionResult<List<Transaction>>> GetTransactionWithPaginArtist([FromQuery] Guid ArtistId,
+    public async Task<ActionResult<List<Transaction>>> GetTransactionWithPaginArtist(
 [FromQuery] int? pageIndex = null,
 [FromQuery] int? pageSize = null, [FromQuery] string searchKeyword = null)
     {
         try
         {
-            Expression<Func<Transaction, bool>> filter = r => ((r.Artwork.ArtistId==ArtistId) || (r.ArtworkService.ArtistId == ArtistId));
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var Artists = await _artistService.GetOneArist(currentUserId) ;
+            if (Artists == null) {
+                return StatusCode(200);
+            }
+           
+                Guid ArtistId = Artists.Id;
+           
+            
+            Expression<Func<Transaction, bool>> filter = r => (
+            (r.Artwork.ArtistId == ArtistId) || (r.ArtworkService.ArtistId == ArtistId));
 
             // Tạo điều kiện tìm kiếm dựa trên searchKeyword
             if (!string.IsNullOrEmpty(searchKeyword))

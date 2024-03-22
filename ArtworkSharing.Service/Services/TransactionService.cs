@@ -77,7 +77,7 @@ public class TransactionService : ITransactionService
     public async Task<List<TransactionsViewModelUser>> GetTransactionsForUser(Guid userId) =>
         AutoMapperConfiguration.Mapper.Map<List<TransactionsViewModelUser>>(await _uow.TransactionRepository
             .Include(t => t.Audience)
-            .ThenInclude(a => a.UserRoles)
+                .ThenInclude(a => a.UserRoles)
             .Include(t => t.Artwork)
             .Include(t => t.PaymentMethod)
             .Where(t => t.AudienceId == userId)

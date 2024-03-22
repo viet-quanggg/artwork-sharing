@@ -1,7 +1,8 @@
 const pageSize = 3; // Định nghĩa pageSize ở đầu tập tin hoặc ở phạm vi có thể truy cập trước khi sử dụng
 let keyword = '';
+const token = localStorage.getItem('token');
 // Define the URL of the API endpoint
-const apiUrl = 'https://localhost:7270/ManageOrder/GeTransactionWithPagingArtist?ArtistId=1baa3322-d509-4db4-a56f-0f48e3171ae9&pageIndex=1&pageSize=3';
+const apiUrl = 'https://localhost:7270/ManageOrder/GeTransactionWithPagingArtist?pageIndex=1&pageSize=3';
 // Function to handle search form submission
 document.getElementById('searchForm').addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent the default form submission behavior
@@ -55,10 +56,10 @@ function getTypeString(statusNumber) {
   switch (statusNumber) {
       case 1:
           return "Artwork";
-      case 2:
-          return "ArtworkService";
-      case 3:
-          return "Package";
+          case 2:
+            return "Package";
+        case 3:
+            return "ArtworkService";
       default:
           return "Unknown";
   }
@@ -111,7 +112,13 @@ function fetchRefundRequests(pageIndex,keyword) {
   //console.log(keyword+"me") pa(keyword);
 
   const apiUrl = `https://localhost:7270/ManageOrder/GeTransactionWithPagingArtist?ArtistId=1baa3322-d509-4db4-a56f-0f48e3171ae9&pageIndex=${pageIndex}&pageSize=${pageSize}&searchKeyword=${keyword}`; // Sử dụng biến pageSize đã được định nghĩa
-  fetch(apiUrl)
+  fetch(apiUrl, {
+   
+    headers: {
+      'Content-Type': 'application/json',  
+      'Authorization': `Bearer ${token}`                        
+  }
+})
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -128,7 +135,13 @@ function fetchRefundRequests(pageIndex,keyword) {
 function pa(keyword) {
   let countApiUrl;
   const apiUrlCount = `https://localhost:7270/ManageOrder/countArtist?ArtistId=1baa3322-d509-4db4-a56f-0f48e3171ae9&searchKeyword=${keyword}`;
-  fetch(apiUrlCount)
+  fetch(apiUrlCount,{
+   
+    headers: {
+      'Content-Type': 'application/json',  
+      'Authorization': `Bearer ${token}`                        
+  }
+})
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -138,7 +151,13 @@ function pa(keyword) {
     .then(data => {
       countApiUrl = data;
       // Sau khi lấy được dữ liệu, bạn có thể tiếp tục thực hiện các thao tác khác ở đây
-      fetch(apiUrl)
+      fetch(apiUrl,{
+   
+        headers: {
+          'Content-Type': 'application/json',  
+          'Authorization': `Bearer ${token}`                        
+      }
+    })
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok');

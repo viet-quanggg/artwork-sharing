@@ -91,7 +91,7 @@ public class ArtworkRequestController : Controller
 
 
     //User Controllers
-    [Authorize(nameof(RoleOfSystem.Audience))]
+    [Authorize]
     [HttpGet("/GetArtworkRequestsByUser")]
     public async Task<IActionResult> GetArtworkRequestsByUser()
     {
@@ -110,7 +110,7 @@ public class ArtworkRequestController : Controller
         }
     }
 
-    [Authorize(nameof(RoleOfSystem.Audience))]
+    [Authorize]
     [HttpPut("/CancelArtworkRequestByUser/{artworkRequestId}")]
     public async Task<IActionResult> CancelArtworkRequestByUser(Guid artworkRequestId)
     {
@@ -119,7 +119,7 @@ public class ArtworkRequestController : Controller
         
     }
     
-    [Authorize(nameof(RoleOfSystem.Audience))]
+    [Authorize]
     [HttpPut("/ChangeStatusAfterDeposit/")]
     public async Task<IActionResult> ChangeStatusAfterDeposit(TransactionViewModel tvm)
     {
@@ -128,7 +128,7 @@ public class ArtworkRequestController : Controller
         
     }
     
-    [Authorize(nameof(RoleOfSystem.Audience))]
+    [Authorize]
     [HttpPost("createartworkrequest")]
     public async Task<IActionResult> CreateArtworkRequest(CreateArtworkRequestModel cam)
     {
