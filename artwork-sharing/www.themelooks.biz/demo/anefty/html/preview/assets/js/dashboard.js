@@ -78,7 +78,8 @@ async function getData(val) {
         categories: dates,
       },
     };
-
+    $('#PercentTransaction h7').empty();
+    $('#PercentTransaction h7').append(totalBills / 100 * 10 + ' $');
     // Render the chart using ApexCharts
     const chart = new ApexCharts(document.querySelector("#transactionChart"), chartOptions);
     chart.render();
