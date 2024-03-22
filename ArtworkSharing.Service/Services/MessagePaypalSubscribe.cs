@@ -26,10 +26,9 @@ namespace ArtworkSharing.Service.Services
                 QueueName = Queue.PaypalPaidRaiseQueue,
                 RoutingKey = RoutingKey.PaypalPaidRaise
             };
-
             _chanel = _msgConnection.InititalBus(messageChanel);
             var consumer = new EventingBasicConsumer(_chanel);
-            consumer.Received += (sender, args) =>
+            consumer.Received += async (sender, args) =>
             {
                 var body = System.Text.Encoding.UTF8.GetString(args.Body.ToArray());
                 body = body.Replace("\\", "");
@@ -40,15 +39,36 @@ namespace ArtworkSharing.Service.Services
                     var data = JsonConvert.DeserializeObject<TransactionViewModel>(body)!;
                     if (data != null)
                     {
-                        if (data.Type == TransactionType.Artwork)
+                        var type = data.Type;
+                        switch (type)
                         {
-                            // udpate action
+                            case TransactionType.Artwork:
+                                await UpdateArtwork();
+                                break;
+                            case TransactionType.ArtworkService:
+                                await UpdateArtworkService();
+                                break;
+                            case TransactionType.Package:
+                                await UpdatePackage();
+                                break;
                         }
                         _chanel.BasicAck(args.DeliveryTag, false);
                     }
                 }
             };
             _chanel.BasicConsume(messageChanel.QueueName, false, consumer);
+            await Task.CompletedTask;
+        }
+        private async Task UpdateArtwork()
+        {
+            await Task.CompletedTask;
+        }
+        private async Task UpdateArtworkService()
+        {
+            await Task.CompletedTask;
+        }
+        private async Task UpdatePackage()
+        {
             await Task.CompletedTask;
         }
     }

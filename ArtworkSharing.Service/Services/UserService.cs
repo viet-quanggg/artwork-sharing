@@ -179,7 +179,7 @@ public class UserService : IUserService
     }
 
 
-    public async Task<UserViewModel> UpdateUser(Guid id,UpdateUserModel um)
+    public async Task<UserViewModel> UpdateUser(Guid id, UpdateUserModel um)
     {
         var repo = _unitOfWork.UserRepository;
         var u = await repo.FirstOrDefaultAsync(u => u.Id == id);
@@ -187,11 +187,15 @@ public class UserService : IUserService
 
         u.Name = um.Name ?? u.Name;
         u.PhoneNumber = um.Phone ?? u.PhoneNumber;
+        u.Gender = um.Gender ?? um.Gender;
+        u.PhotoUrl = um.PhotoUrl ?? um.PhotoUrl;
+
         _unitOfWork.UserRepository.UpdateUser(u);
 
         await _unitOfWork.SaveChangesAsync();
         return await GetOne(id);
     }
+
 
 
     public async Task DeleteUserAdmin(Guid userId)

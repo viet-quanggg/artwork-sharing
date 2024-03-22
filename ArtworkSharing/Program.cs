@@ -51,15 +51,15 @@ builder.Services.AddMvc(options => { options.SuppressAsyncSuffixInActionNames = 
 builder.Services.AddHttpClient();
 
 // Configure CORS to allow any origin
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAll", policy =>
-//    {
-//        policy.AllowAnyOrigin()
-//              .AllowAnyMethod()
-//              .AllowAnyHeader();
-//    });
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 
 // Đăng ký WatermarkController
@@ -71,10 +71,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddAuthorization();
 var app = builder.Build();
 app.UseSession();
-app.UseCors(builder => builder
-    .AllowAnyOrigin()  
-    .AllowAnyMethod()   
-    .AllowAnyHeader());
+//app.UseCors(builder => builder
+//    .AllowAnyOrigin()  
+//    .AllowAnyMethod()   
+//    .AllowAnyHeader());
 EnsureMigrate(app);
 
 
@@ -87,10 +87,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
-
-
-
 app.UseException();
 app.UseHttpsRedirection();
 app.UseAuthentication();
@@ -101,8 +97,7 @@ app.Run();
 
 void EnsureMigrate(WebApplication webApp)
 {
-
-   using var scope = webApp.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<ArtworkSharingContext>();
-   context.Database.Migrate();
+   //using var scope = webApp.Services.CreateScope();
+   // var context = scope.ServiceProvider.GetRequiredService<ArtworkSharingContext>();
+   //context.Database.Migrate();
 }

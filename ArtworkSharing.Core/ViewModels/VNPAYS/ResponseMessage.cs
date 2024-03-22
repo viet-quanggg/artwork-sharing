@@ -15,6 +15,7 @@ public static class ResponseMessage
     public const string ErrorAddImage = "can't upload more upto only four image.";
 
     public const string TransactionNotFound = "Transaction is not found";
+    public const string TransactionNotPayYet = "Transaction not pay yet";
 
     //======================= 
     public const string ProductNotFound = "Not found this product.";
