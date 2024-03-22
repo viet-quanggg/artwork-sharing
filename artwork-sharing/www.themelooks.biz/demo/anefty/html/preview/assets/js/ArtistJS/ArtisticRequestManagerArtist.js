@@ -4,7 +4,7 @@ $(document).ready(function() {
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/GetArtworkRequestsByArtist/f630d130-9dfb-4986-b3a3-6a9a1b714304',
+            url: 'https://localhost:7270/GetArtworkRequestsByArtist/71ab22de-3937-482b-8650-2f39f0338408',
             type: 'GET',
             success: function(response) {
                 console.log(response);
@@ -24,7 +24,7 @@ $(document).ready(function() {
                     var formattedDate = datetime.toLocaleDateString('en-Gb');
 
                     var status = getStatusText(item.status);
-                    
+                    console.log(item);
                     if(item.status == 0){
                         var links = '<a class="text-capitalize" id="denyButton" data-id="' + item.id + '">'+'<button class="btn btn-primary">Deny </button>'+'</a>' + ' | ' +
                             '<a class="text-capitalize"  id="acceptButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Accept </button>'+'</a>';
@@ -33,7 +33,7 @@ $(document).ready(function() {
                         var links = 
                             '<a class="text-capitalize" >'+'<button class="btn btn-primary" >Waiting for deposit</button>'+'</a>';
                     }else if(item.status == 2){
-                        var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Update your work</button>'+'</a>' 
+                        var links = '<a class="text-capitalize" id="AddArtworkButton" href="SubmitArtworkArtist.html" data-id="' + item.id + '">'+'<button class="btn btn-primary">Update your work</button>'+'</a>';
                     }else if(item.status == 3){
                         var links = '<a class="text-capitalize" >'+'<button class="btn btn-primary" >Deneid</button>'+'</a>';
                     }else if(item.status == 4){
@@ -150,7 +150,11 @@ $(document).ready(function() {
         
     }
 
+    $(document).on('click', '#AddArtworkButton', function (event) {
+        var requestId = $(this).data('id');
+        localStorage.setItem('ArtworkId', requestId);
 
+    });
 });
 
 function getStatusText(statusInt) {
