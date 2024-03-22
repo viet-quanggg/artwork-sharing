@@ -1,5 +1,6 @@
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.ViewModels.MediaContent;
+using Microsoft.AspNetCore.Http;
 
 namespace ArtworkSharing.Core.ViewModels.ArtworkRequest;
 
@@ -15,4 +16,5 @@ public class UpdateArtworkRequestModel
     public DateTime RequestedDeadlineDate { get; set; }
     public ArtworkServiceStatus Status { get; set; }
     public ICollection<MediaContentViewModel>? ArtworkProduct { get; set; }
+    public List<IFormFile> MediaContents { get; set; } = null!;
 }

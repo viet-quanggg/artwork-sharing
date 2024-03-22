@@ -2,6 +2,7 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Service.AutoMappings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
@@ -17,6 +18,7 @@ public class AdminController : ControllerBase
         _artworkService = artworkService;
     }
 
+    [Authorize("Admin")]
     [HttpGet("artworks")]
     public async Task<ActionResult> GetArtworks(int pageNumber, int pageSize)
     {

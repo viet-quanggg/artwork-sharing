@@ -5,6 +5,7 @@ using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -304,14 +305,16 @@ public class RefundRequestController : ControllerBase
     }
 
 
-    [HttpGet("/RefundRequestByUser/{userId}")]
-    public async Task<IActionResult> RefundRequestForUser(Guid userId)
+    [HttpGet("/RefundRequestByUser")]
+    public async Task<IActionResult> RefundRequestForUser()
     {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid currentUserId = new Guid(userIdClaim?.Value);
         try
         {
-            if (userId != null)
+            if (currentUserId != null)
             {
-                return Ok(await _refundRequestService.GetRefundRequestForUser(userId));
+                return Ok(await _refundRequestService.GetRefundRequestForUser(currentUserId));
             }
 
             return BadRequest();

@@ -92,7 +92,7 @@ fetch(apiUrl,{
     // Define the URL of the API endpoint for checkout
     const packageId = event.target.dataset.id;
     console.log("hi iam here"+ packageId)
-    const checkoutApiUrl = `https://localhost:7270/ManagePackage/9c68f75b-ed05-4718-b6b8-05211342a80f/checkout?PackageId=${packageId}`;
+    const checkoutApiUrl = `https://localhost:7270/ManagePackage/32c5d536-a8dc-4e87-9018-11348de74b74/checkout?PackageId=${packageId}`;
   
     fetch(checkoutApiUrl, {
         method: "PUT", // Sử dụng phương thức PUT
