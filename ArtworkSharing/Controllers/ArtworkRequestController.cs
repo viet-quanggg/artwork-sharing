@@ -69,10 +69,17 @@ public class ArtworkRequestController : Controller
         return Ok(await _requestService.AcceptArtworkRequestByArtist(artworkRequestId));
         
     }
+    [HttpPost("/CommitArtworkByArtist/{artworkRequestId}")]
+    public async Task<IActionResult> CommitArtworkByArtist(Guid artworkRequestId, CommitArtworkRequestModel uarm)
+    {
+        if (artworkRequestId == null) return BadRequest();
+        return Ok(await _requestService.CommitArtworkRequest(artworkRequestId,uarm));
+
+    }
     //Artist Controllers
 
-    
-    
+
+
     //User Controllers
     [HttpGet("/GetArtworkRequestsByUser/{userId}")]
     public async Task<IActionResult> GetArtworkRequestsByUser(Guid userId)
