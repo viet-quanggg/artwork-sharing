@@ -1,10 +1,19 @@
 window.onload = async function LoadItemDetail() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
+
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + token);
+
     const artworkId = urlParams.get('id');
     var url = "https://localhost:7270/api/Artwork/" + artworkId;
 
-    var request = new Request(url);
+    var request = new Request(url, {
+        method: 'GET',
+        headers: headers
+    });
     var rs = await fetch(request);
 
     if (rs.ok) {
@@ -22,11 +31,18 @@ window.onload = async function LoadItemDetail() {
         document.getElementById('btn-send-cmt').innerHTML = `                                <button onclick="SendCmt('${artworkId}')" type="button" class="btn btn-primary">Comments</button>`
     }
 }
-
 async function CheckLike(id) {
-    var uid = sessionStorage.getItem("uid");
-    var url = "https://localhost:7270/api/Like?artworkId=" + id + "&" + "userId=" + uid;
-    var request = new Request(url);
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + token);
+
+    var url = "https://localhost:7270/api/Like?artworkId=" + id;
+    var request = new Request(url, {
+        method: 'GET',
+        headers: headers
+    });
+
     var rs = await fetch(request);
     if (rs.ok) {
         var txt = await rs.text();
@@ -45,7 +61,6 @@ async function CheckLike(id) {
 
 async function SendLike(id) {
     var obj = {
-        "UserId": sessionStorage.getItem("uid"),
         "ArtworkId": id,
     }
     var url = "https://localhost:7270/api/Like";
@@ -105,7 +120,7 @@ async function SendCmt(id) {
         }
     );
     if (resultFet.ok) {
-        document.getElementById('content-cmt').value="";
+        document.getElementById('content-cmt').value = "";
         await GetComments(id);
     }
 }

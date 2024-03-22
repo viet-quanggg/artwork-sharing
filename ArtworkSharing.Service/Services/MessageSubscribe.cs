@@ -29,7 +29,7 @@ namespace ArtworkSharing.Service.Services
             _messageChannels = messageChanels;
             _serviceScope = serviceScope;
         }
-    
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             MessageChanel messageChanel = new MessageChanel
@@ -72,17 +72,24 @@ namespace ArtworkSharing.Service.Services
             _channel.BasicConsume(messageChanel.QueueName, false, consumer);
             await Task.CompletedTask; // Temp
         }
+
         private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
         {
             await Task.CompletedTask;
         }
+
         private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
         {
             await Task.CompletedTask;
         }
+
         private async Task UpdatePackage(TransactionViewModel transactionViewModel)
         {
-            await Task.CompletedTask;
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<IPackageService>();
+                await svc.CheckOutPackage(transactionViewModel);
+            }
         }
     }
 }

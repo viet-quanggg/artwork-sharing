@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Likes;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ArtworkSharing.Controllers;
 
@@ -36,15 +37,14 @@ public class LikeController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> LikeArtwork(LikeModel likeModel)
     {
-        if (HttpContext.Items.TryGetValue("UserId", out var u) is false)
-        {
-            return BadRequest();
-        }
+        var uidClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid uid = new Guid(uidClaim!.Value);
 
-        if (u == null) return BadRequest();
+        if (uid == Guid.Empty) return Unauthorized();
 
-        if (Guid.Parse(u + "") == Guid.Empty || likeModel.ArtworkId == Guid.Empty) return BadRequest();
-        var rs = await _likeService.Update(likeModel.ArtworkId, Guid.Parse(u + ""));
+        if (likeModel.ArtworkId == Guid.Empty) return BadRequest();
+
+        var rs = await _likeService.Update(likeModel.ArtworkId, uid);
         return rs != null
             ? Ok(rs)
             : StatusCode(StatusCodes.Status500InternalServerError, new { Message = "Action failed" });
@@ -57,10 +57,15 @@ public class LikeController : ControllerBase
     /// <param name="userId"></param>
     /// <returns></returns>
     [HttpGet]
-    public async Task<IActionResult> CheckLike(Guid artworkId, Guid userId)
+    public async Task<IActionResult> CheckLike(Guid artworkId)
     {
-        if (userId == Guid.Empty || artworkId == Guid.Empty) return BadRequest();
-        var rs = await _likeService.CheckLike(artworkId, userId);
+        var uidClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        Guid uid = new Guid(uidClaim!.Value);
+
+        if (uid == Guid.Empty) return Unauthorized();
+
+        if (artworkId == Guid.Empty) return BadRequest();
+        var rs = await _likeService.CheckLike(artworkId, uid);
 
         return Ok(rs);
     }
