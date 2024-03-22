@@ -5,7 +5,9 @@ using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Service.AutoMappings;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ArtworkSharing.Controllers;
 
@@ -16,13 +18,18 @@ public class ArtworkController : ControllerBase
     private readonly IArtworkService _artworkService;
     private readonly IFireBaseService _fireBaseService;
     private readonly IWatermarkService _watermarkService;
+    private readonly IArtistService _artistService;
     private IMapper mapper;
 
-    public ArtworkController(IArtworkService artworkService, IFireBaseService fireBaseService, IWatermarkService watermarkService)
+    public ArtworkController(IArtworkService artworkService,
+        IFireBaseService fireBaseService,
+        IWatermarkService watermarkService,
+        IArtistService artistService)
     {
         _artworkService = artworkService;
         _fireBaseService = fireBaseService;
         _watermarkService = watermarkService;
+        _artistService = artistService;
     }
 
     /// <summary>
@@ -89,11 +96,19 @@ public class ArtworkController : ControllerBase
     }
 
     [HttpPost("/user/artist/postartwork")]
+    [Authorize]
     public async Task<IActionResult> CreateNewArtWork([FromForm] CreateArtworkModel artworkModel)
     {        
         if (ModelState.IsValid)
         {
-            artworkModel.ArtistId = new Guid("60DE5964-13FC-4F7A-91FD-C8C75268D2D0"); 
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var artist = await _artistService.GetArtistByUserId(currentUserId);
+            if (artist == null)
+            {
+                return BadRequest("You are not an artist");
+            }
+            artworkModel.ArtistId = new Guid(artist.Id);
             var artwork = AutoMapperConfiguration.Mapper.Map<Artwork>(artworkModel);
             try
             {

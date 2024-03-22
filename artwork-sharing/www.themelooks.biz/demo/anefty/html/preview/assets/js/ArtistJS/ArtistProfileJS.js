@@ -1,7 +1,7 @@
 // Get the artistId from the URL
 const urlParams = new URLSearchParams(window.location.search);
 
-const artistId1 = 'f630d130-9dfb-4986-b3a3-6a9a1b714304';
+//const artistId1 = 'f630d130-9dfb-4986-b3a3-6a9a1b714304';
 const artistId = '60DE5964-13FC-4F7A-91FD-C8C75268D2D0';
 //urlParams.get('id');
 const token = localStorage.getItem('token');
@@ -183,7 +183,7 @@ function updateFollowButton(){
 $(document).ready(function() {
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/GetArtistProfile/f630d130-9dfb-4986-b3a3-6a9a1b714304',
+            url: 'https://localhost:7270/GetArtistProfile/60DE5964-13FC-4F7A-91FD-C8C75268D2D0',
             type: 'GET',
             success: function(response) {
                 document.getElementById("profile-div")
