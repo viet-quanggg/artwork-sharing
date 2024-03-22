@@ -5,7 +5,7 @@
                 <div class="row align-items-center">
                     <div class="col-lg-4 col-md-6 col-sm-9 col-6">
                         <div class="d-flex align-items-center">
-                            <div class="logo"><a href="index-2.html"><img src="assets/img/logo.svg" class="main-logo"
+                            <div class="logo"><a href="Home.html"><img src="assets/img/logo.svg" class="main-logo"
                                         alt=""> <img src="assets/img/sticky-logo.svg" class="sticky-logo" alt=""></a>
                             </div>
                             <form class="search-form d-none d-sm-block ms-4" action="#">
@@ -66,40 +66,3 @@
         </div>
     </div>
 </header>
-<!-- <script>
-    const token = localStorage.getItem('token');
-    console.log(token);
-    console.log("token");
-    if (!token) {
-        document.getElementById('is-login').style.display = 'none';
-    } else {
-        document.getElementById('is-login').style.display = 'list-item';
-    }
-
-    document.getElementById('logout-link').addEventListener('click', async function (event) {
-        event.preventDefault(); 
-        console.log("log out");
-        try {
-            const response = await fetch('https://localhost:7270/api/Auth/Logout', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}` 
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to logout');
-            }
-
-            // Clear token from localStorage
-            localStorage.removeItem('token');
-
-            // Redirect user to login page or perform any other action after logout
-            window.location.href = 'login.html';
-        } catch (error) {
-            console.error(error.message);
-            // Handle error, such as displaying an error message to the user
-            displayErrorMessage('Failed to logout. Please try again later.');
-        }
-    });
-</script> -->
