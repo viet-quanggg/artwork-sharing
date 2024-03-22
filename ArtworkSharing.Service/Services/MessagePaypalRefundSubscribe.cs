@@ -43,11 +43,11 @@ namespace ArtworkSharing.Service.Services
                     {
                         switch (data.Type)
                         {
-                            case TransactionType.Artwork:  await UpdateArtwork();
+                            case TransactionType.Artwork:  await UpdateArtwork(data);
                                 break;
-                            case TransactionType.ArtworkService: await UpdateArtworkService();
+                            case TransactionType.ArtworkService: await UpdateArtworkService(data);
                                 break;
-                            case TransactionType.Package: await UpdatePackage();
+                            case TransactionType.Package: await UpdatePackage(data);
                                 break;
                         }
                         _chanel.BasicAck(e.DeliveryTag, false);
@@ -57,15 +57,15 @@ namespace ArtworkSharing.Service.Services
             _chanel.BasicConsume(messageChanel.QueueName, false, consumer);
             await Task.CompletedTask; // Temp
         }
-        private async Task UpdateArtwork()
+        private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
         {
             await Task.CompletedTask;
         }
-        private async Task UpdateArtworkService()
+        private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
         {
             await Task.CompletedTask;
         }
-        private async Task UpdatePackage()
+        private async Task UpdatePackage(TransactionViewModel transactionViewModel)
         {
             await Task.CompletedTask;
         }
