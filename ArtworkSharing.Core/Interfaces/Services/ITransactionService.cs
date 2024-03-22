@@ -6,9 +6,7 @@ namespace ArtworkSharing.Core.Interfaces.Services;
 
 public interface ITransactionService
 {
-
-
-   
+        Task<TransactionViewModel> CreateTransactionForArtworkRequestDeposit(Guid artworkrequestId, Guid audienceId, Guid paymentMethodId);
         Task<List<TransactionViewModel>> GetAll();
         Task<TransactionViewModel> GetTransaction(Guid id);
         Task<Transaction> GetOne(Guid id);
@@ -20,7 +18,6 @@ public interface ITransactionService
 
         Task<TransactionViewModel> AddTransaction(Transaction transaction);
 
-
     IEnumerable<Transaction> Get(
 Expression<Func<Transaction, bool>> filter = null,
 Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderBy = null,
@@ -30,5 +27,7 @@ int? pageSize = null
 );
 
     Task<int> Count(Expression<Func<Transaction, bool>> filter = null);
+
+    Task<List<TransactionsViewModelUser>> GetAudience();
 
 }

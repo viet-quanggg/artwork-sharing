@@ -2,6 +2,30 @@ $(document).ready(function() {
     // Initialize DataTable
     $('#artisticTable').DataTable();
     // Function to fetch data from API and populate the table
+    function fetchPaymentMethod() {
+        $.ajax({
+            url: 'https://localhost:7270/api/Payment/paymentMethod',
+            type: 'GET',
+            success: function(response) {
+                console.log(response);
+                // Clear existing content
+                console.log(response); // Verify response structure
+                $("#methodSelect").empty(); // Clear existing content
+                // Append select tag before looping through options
+                var selectTag = $('<select class="form-control" id="methodSelection">');
+                $.each(response, function(index, item) {
+                    // Append each option to the select tag
+                    selectTag.append('<option value="' + item.id + '">' + item.name.toString() + '</option>');
+                });
+                // Append select tag with options to the methodSelect element
+                $("#methodSelect").append(selectTag);
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                showError("Something is wrong. Please try again!");
+            }
+        });
+    }
     function fetchData() {
         $.ajax({
             url: 'https://localhost:7270/GetArtworkRequestsByUser/56a3e149-2c89-4d85-5ac9-08dc4956f46d',
@@ -28,12 +52,17 @@ $(document).ready(function() {
                     if(item.status == 1){
                         var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
                             '<a class="text-capitalize"  id="payDepositButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Pay Deposit</button>'+'</a>';
-                    }else if(item.status == 0 || item.status == 2 || item.status == 4){
+                    }else if(item.status == 0){
                         var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
                             '<a class="text-capitalize"  id="cancelButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Cancel Request</button>'+'</a>';
-                    }else if(item.status == 3){
+                    }else if(item.status == 2){
+                        var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">View Process</button>'+'</a>'
+                    }
+                    else if(item.status == 3){
                         var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
                             '<a class="text-capitalize"  id="requestAgainButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Request again</button>'+'</a>';
+                    }else if(item.status == 4){
+                        var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">View Detail</button>'+'</a>'
                     }
 
                     $('#artisticTable').DataTable().row.add([
@@ -55,8 +84,14 @@ $(document).ready(function() {
             }
         });
     }
+
+    
+
+    fetchPaymentMethod();
+    
     // Initial data fetch when the page loads
     fetchData();
+    
     // setInterval(fetchData, 5000);
 
     $(document).on('click', '#cancelButton', function (event) {
@@ -65,11 +100,11 @@ $(document).ready(function() {
         $('#confirmModal').modal('show');
 
         $('#closeButton').click(function () {
-            $('#myModal').modal('hide'); // Corrected from dismiss to hide
+            $('#confirmModal').modal('hide'); // Corrected from dismiss to hide
         });
 
         $('.close').click(function () {
-            $('#myModal').modal('hide'); // Corrected from dismiss to hide
+            $('#confirmModal').modal('hide'); // Corrected from dismiss to hide
         })
 
         $(document).on('click', '#confirmCancelButton', function () {
@@ -77,9 +112,11 @@ $(document).ready(function() {
             cancelArtworkRequest(requestId); // Call the createRefundRequest function
             // $('#myModal').modal('hide'); // Hide the modal
         });
+        
+        
 
     });
-    
+
     function cancelArtworkRequest(requestId) {
         $.ajax({
             url: 'https://localhost:7270/CancelArtworkRequestByUser/' + requestId,
@@ -99,11 +136,97 @@ $(document).ready(function() {
                 showError("Something is wrong. Please try again!");
             }
         });
-        
+
     }
+
+    $(document).on('click', '#payDepositButton', function (event) {
+        event.preventDefault();
+        var paymentMethod;
+        document.getElementById("methodSelection").addEventListener("change", function() {
+            paymentMethod = this.options[this.selectedIndex].innerText;
+        });
+        var requestId = $(this).data('id');
+        var paymentId = document.getElementById("methodSelection").value;
+        var userId = "56a3e149-2c89-4d85-5ac9-08dc4956f46d";
+        $('#paymentMethod').modal('show');
+        $('#closePaymentButton').click(function () {
+            $('#paymentMethod').modal('hide'); // Corrected from dismiss to hide
+        });
+
+        $('.close').click(function () {
+            $('#paymentMethod').modal('hide'); // Corrected from dismiss to hide
+        })
+
+        $(document).on('click', '#confirmPaymentButton', function () {
+            event.preventDefault(); // Prevent the default form submission behavior
+            proceedToPaymentPage(requestId, paymentId, userId, paymentMethod); // Call the createRefundRequest function
+            // $('#myModal').modal('hide'); // Hide the modal
+        });
+
+
+
+    });
+
+    function proceedToPaymentPage(requestId, paymentId, userId, paymentMethod) {
+        $.ajax({
+            url: 'https://localhost:7270/CreateTransactionForArtworkServiceDeposit?artworkServiceId=' + requestId 
+                + '&audienceId=' + userId + '&paymentMethodId=' + paymentId,
+            type: 'POST',
+            success: function(response) {
+                if(response != null){
+                    $('#confirmModal').modal('hide'); // Corrected from dismiss to hide
+                    if(paymentMethod === "Credit Card"){
+                        $.ajax({
+                            url: 'https://localhost:7270/api/Payment/vnpay/' + response.id,
+                            type: 'GET',
+                            success: function(response) {
+                                if(response != null){
+                                    window.location.href = response;
+                                }
+
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(xhr.responseText);
+                                showError("Something is wrong. Please try again!");
+                            }
+                        });
+                    }else if(paymentMethod==="PayPal"){
+                        $.ajax({
+                            url: 'https://localhost:7270/api/Payment/paypal/' + response.id,
+                            type: 'GET',
+                            success: function(response) {
+                                if(response != null){
+                                    window.location.href = response;
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(xhr.responseText);
+                                showError("Something is wrong. Please try again!");
+                            }
+                        });
+                    }
+                   
+                }else{
+                    showError("Something is wrong in proceed to payment page! Please try again !");
+                }      
+
+            },
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+                showError("Something is wrong. Please try again!");
+            }
+        });
+
+    }
+    
+    
+    
     
 
 });
+
+
+
 
 function getStatusText(statusInt) {
     switch (statusInt) {
