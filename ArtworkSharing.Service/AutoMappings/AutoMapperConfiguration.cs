@@ -54,8 +54,7 @@ public class MapperHandler : Profile
         CreateMap<ArtworkService, CreateArtworkRequestModel>().ReverseMap();
         CreateMap<ArtworkService, UpdateArtworkRequestModel>().ReverseMap();
         CreateMap<ArtworkService, ArtworkRequestViewModel>().ReverseMap();
-        CreateMap<ArtworkService, ArtworkRequestViewModelUser>().ReverseMap();
-        
+
         CreateMap<User, CreateUserViewModel>().ReverseMap();
         CreateMap<User, UserToLoginDto>().ReverseMap();
         CreateMap<User, UserToRegisterDto>().ReverseMap();
@@ -78,7 +77,7 @@ public class MapperHandler : Profile
 
         CreateMap<Artwork, ArtworkViewModel>().ForMember(x => x.MediaContents, x => x.MapFrom(x => x.MediaContents));
         CreateMap<CreateArtworkModel, Artwork>()
-            .ForMember(dest => dest.MediaContents, opt => opt.MapFrom(src => MapMediaContents(src.MediaContents)));
+            .ForMember(dest => dest.MediaContents, opt => opt.Ignore());
         CreateMap<Category, CategoryViewModel>().ReverseMap();
         CreateMap<Artist, ArtistViewModel>().ReverseMap();
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();
@@ -104,22 +103,5 @@ public class MapperHandler : Profile
         CreateMap<VNPayTransaction, VNPayTransactionViewModel>().ReverseMap();
         CreateMap<ITransactionService, TransactionService>().ReverseMap();      
     }
-    private async Task<List<MediaContent>> MapMediaContents(List<IFormFile> mediaContents)
-    {
-        var listToReturn = new List<MediaContent>();
-        var firebaseService = ServiceLocator.GetFirebaseService();
-        var watermarkService = ServiceLocator.GetWatermarkService();
-        var mediaList = await firebaseService.UploadMultiImagesAsync(mediaContents);
-
-        foreach (var media in mediaList)
-        {
-            var mediaReturn = new MediaContent
-            {                
-                Media = await watermarkService.AddWatermarkAsync(media),
-                MediaWithoutWatermark = media
-            };
-            listToReturn.Add(mediaReturn);
-        }
-        return listToReturn;
-    }
+   
 }

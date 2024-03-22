@@ -14,11 +14,15 @@ namespace ArtworkSharing.Controllers;
 public class ArtworkController : ControllerBase
 {
     private readonly IArtworkService _artworkService;
+    private readonly IFireBaseService _fireBaseService;
+    private readonly IWatermarkService _watermarkService;
     private IMapper mapper;
 
-    public ArtworkController(IArtworkService artworkService)
+    public ArtworkController(IArtworkService artworkService, IFireBaseService fireBaseService, IWatermarkService watermarkService)
     {
         _artworkService = artworkService;
+        _fireBaseService = fireBaseService;
+        _watermarkService = watermarkService;
     }
 
     /// <summary>
@@ -85,13 +89,15 @@ public class ArtworkController : ControllerBase
     }
 
     [HttpPost("/user/artist/postartwork")]
-    public async Task<IActionResult> CreateNewArtWork([FromBody] CreateArtworkModel artworkModel)
+    public async Task<IActionResult> CreateNewArtWork([FromForm] CreateArtworkModel artworkModel)
     {        
         if (ModelState.IsValid)
         {
+            artworkModel.ArtistId = new Guid("60DE5964-13FC-4F7A-91FD-C8C75268D2D0"); 
             var artwork = AutoMapperConfiguration.Mapper.Map<Artwork>(artworkModel);
             try
             {
+                artwork.MediaContents = await MapMediaContents(artworkModel.MediaContents);
                 await _artworkService.Add(artwork);
                 return Ok("Artwork created successfully");
             }
@@ -104,5 +110,23 @@ public class ArtworkController : ControllerBase
         {           
             return BadRequest(ModelState);
         }
+    }
+
+    private async Task<List<MediaContent>> MapMediaContents(List<IFormFile> mediaContents)
+    {
+        var listToReturn = new List<MediaContent>();
+      
+        var mediaList = await _fireBaseService.UploadMultiImagesAsync(mediaContents);
+
+        foreach (var media in mediaList)
+        {
+            var mediaReturn = new MediaContent
+            {
+                Media = await _watermarkService.AddWatermarkAsync(media),
+                MediaWithoutWatermark = media
+            };
+            listToReturn.Add(mediaReturn);
+        }
+        return listToReturn;
     }
 }
