@@ -1,3 +1,5 @@
+var token = localStorage.getItem("token");
+
 $(document).ready(function() {
     var refundId =  localStorage.getItem("refundId");
     function fetchData() {
