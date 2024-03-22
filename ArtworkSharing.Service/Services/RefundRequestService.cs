@@ -168,8 +168,16 @@ public class RefundRequestService : IRefundRequestService
 
     }
 
-    public Task CheckOutRefundRequest(TransactionViewModel transaction)
+    public async Task CheckOutRefundRequest(TransactionViewModel transaction)
     {
-        throw new NotImplementedException();
+        var refundRequest = await _uow.RefundRequestRepository.FirstOrDefaultAsync(_ => _.Id == transaction.Id);
+        if (refundRequest != null)
+        {
+
+            refundRequest.Status = RefundRequestStatus.Payyed.ToString();
+
+            _uow.RefundRequestRepository.UpdateRefundRequest(refundRequest);
+            await _uow.SaveChangesAsync();
+        }
     }
 }

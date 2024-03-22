@@ -1,6 +1,6 @@
 // Define the URL of the API endpoint
 const apiUrl = 'https://localhost:7270/ManagePackage?pageIndex=1&pageSize=3';
-
+const token = localStorage.getItem('token');
 // Function to render packages on the HTML template
 function renderPackages(packages) {
   const packagesContainer = document.getElementById('packagesContainer');
@@ -65,7 +65,10 @@ function redirectToItemDetails() {
 // Fetch data from the API
 fetch(apiUrl,{
   method: "GET", 
-    credentials: "include",
+  headers: {
+    'Content-Type': 'application/json',  
+    'Authorization': `Bearer ${token}`                        
+}
       
 })
   .then(response => {
@@ -96,7 +99,11 @@ fetch(apiUrl,{
   
     fetch(checkoutApiUrl, {
         method: "PUT", // Sử dụng phương thức PUT
-        credentials: "include",
+       
+        headers: {
+          'Content-Type': 'application/json',  
+          'Authorization': `Bearer ${token}`                        
+      }
     })
     .then(response => {
         // Check if the request was successful
@@ -120,7 +127,10 @@ fetch(apiUrl,{
 function convertlink(checkoutApiUrl){
   fetch(checkoutApiUrl, {
       method: "GET", // Sử dụng phương thức GET
-      credentials: "include",
+      headers: {
+        'Content-Type': 'application/json',  
+        'Authorization': `Bearer ${token}`                        
+    }
   })
   .then(response => {
       // Check if the request was successful

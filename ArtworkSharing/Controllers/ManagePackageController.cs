@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
@@ -45,7 +46,7 @@ public class ManagePackageController : Controller
     //    var packages = await _packageService.GetAll();
     //    return Ok(packages);
     //}
-
+    [Authorize]
     [HttpGet(Name = "GetPackageWithPaging")]
     public async Task<ActionResult<List<PackageViewModel>>> GetPackageWithPaging(
         [FromQuery] int? pageIndex = null,
@@ -124,14 +125,15 @@ public class ManagePackageController : Controller
     //9c68f75b-ed05-4718-b6b8-05211342a80f
     //32c5d536-a8dc-4e87-9018-11348de74b74
     //098901890883
+    [Authorize]
     [HttpPut("{UserId}/checkout")]
     public async Task<IActionResult> CheckOutPackage(Guid UserId,Guid PackageId)
     {
         try
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
-            var token = HttpContext.Request;
-            var k = Request.Cookies["token"];
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Guid currentUserId = new Guid(userIdClaim?.Value);
+
             PackageViewModel package = await _packageService.GetOne(PackageId);
             if (package == null) return StatusCode(404);    
             //Create transaction
@@ -140,7 +142,7 @@ public class ManagePackageController : Controller
                 Id = new Guid(),
                 ArtworkId = null,
                 ArtworkServiceId = null,
-                AudienceId = UserId,
+                AudienceId = currentUserId,
                 TotalBill = package.Price,
                 CreatedDate = DateTime.UtcNow,
                 Status = TransactionStatus.Fail, // Đặt trạng thái mặc định
@@ -150,7 +152,19 @@ public class ManagePackageController : Controller
                
             };
             await _transactionService.AddTransaction(transaction);
+            TransactionViewModel transactionV = new TransactionViewModel
+            {
+                Id = transaction.Id,
+                ArtworkId = null,
+                ArtworkServiceId = null,
+                AudienceId = UserId,
+                TotalBill = package.Price,
+                CreatedDate = DateTime.UtcNow,
+                Type = TransactionType.Package,
+                PackageId = PackageId,
 
+            };
+            _packageService.CheckOutPackage(transactionV);
             // Call API VNPay
             var response = await _httpClient.GetAsync($"Payment/vnpay/{transaction.Id}");
 
