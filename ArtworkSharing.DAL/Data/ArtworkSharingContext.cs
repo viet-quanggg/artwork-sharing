@@ -51,7 +51,7 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
     {
         if (!options.IsConfigured)
             options.UseSqlServer(
-                "server =(local); database = ArtworkSharing;uid=sa;pwd=123456@Aa; TrustServerCertificate=True");
+                "server =(local); database = ArtworkSharing;uid=sa;pwd=12345; TrustServerCertificate=True");
     }
 
 
