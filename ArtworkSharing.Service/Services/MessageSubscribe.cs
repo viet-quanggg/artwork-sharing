@@ -29,19 +29,7 @@ namespace ArtworkSharing.Service.Services
             _messageChannels = messageChanels;
             _serviceScope = serviceScope;
         }
-        /// <summary>
-        /// Temp
-        /// </summary>
-        /// <returns></returns>
-        private async Task Update()
-        {
-            using (var _scope = _serviceScope.CreateScope())
-            {
-                var _packageService = _scope.ServiceProvider.GetRequiredService<IPackageService>();
-                // updating
-            }
-            await Task.CompletedTask;
-        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             MessageChanel messageChanel = new MessageChanel
@@ -65,11 +53,17 @@ namespace ArtworkSharing.Service.Services
                     if (data != null)
                     {
                         var type = data.Type;
-                        switch (data.Type)
+                        switch (type)
                         {
-                            case TransactionType.Artwork: await Update(); break;
-                            case TransactionType.ArtworkService: break;
-                            case TransactionType.Package: break;
+                            case TransactionType.Artwork:
+                                await UpdateArtwork(data);
+                                break;
+                            case TransactionType.ArtworkService:
+                                await UpdateArtworkService(data);
+                                break;
+                            case TransactionType.Package:
+                                await UpdatePackage(data);
+                                break;
                         }
                         _channel.BasicAck(ea.DeliveryTag, false);
                     }
@@ -77,6 +71,25 @@ namespace ArtworkSharing.Service.Services
             };
             _channel.BasicConsume(messageChanel.QueueName, false, consumer);
             await Task.CompletedTask; // Temp
+        }
+
+        private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
+        {
+            await Task.CompletedTask;
+        }
+
+        private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
+        {
+            await Task.CompletedTask;
+        }
+
+        private async Task UpdatePackage(TransactionViewModel transactionViewModel)
+        {
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<IPackageService>();
+                await svc.CheckOutPackage(transactionViewModel);
+            }
         }
     }
 }

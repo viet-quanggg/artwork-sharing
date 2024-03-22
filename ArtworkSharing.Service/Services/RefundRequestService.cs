@@ -57,16 +57,26 @@ public class RefundRequestService : IRefundRequestService
     public async Task<List<RefundRequestViewModelUser>> GetRefundRequestForUser(Guid userId)
         => AutoMapperConfiguration.Mapper.Map<List<RefundRequestViewModelUser>>(await _uow.RefundRequestRepository
             .Include(rr => rr.Transaction)
-            .ThenInclude(t => t.Artwork)
+                .ThenInclude(t => t.Artwork)
+            .Include(rr => rr.Transaction)
+                .ThenInclude(r => r.ArtworkService)
+            .Include(rr => rr.Transaction)
+                .ThenInclude(r => r.Package)
             .Where(rr => rr.Transaction != null && rr.Transaction.AudienceId == userId)
             .ToListAsync());
 
     public async Task<RefundRequestViewModelUser> GetRefundRequestDetail(Guid refundId)
         => AutoMapperConfiguration.Mapper.Map<RefundRequestViewModelUser>(await _uow.RefundRequestRepository
             .Include(rr => rr.Transaction)
-            .ThenInclude(r => r.Artwork)
-            .ThenInclude(a => a.Artist)
-            .ThenInclude(u => u.User)
+                .ThenInclude(r => r.Artwork)
+                    .ThenInclude(a => a.Artist)
+                        .ThenInclude(u => u.User)
+            .Include(rr => rr.Transaction)
+                .ThenInclude(r => r.ArtworkService)
+                .ThenInclude(r => r.Artist)
+                .ThenInclude(r => r.User)
+            .Include(rr => rr.Transaction)
+                .ThenInclude(r => r.Package)
             .FirstOrDefaultAsync(rr => rr.Id == refundId)
             );
 
@@ -168,8 +178,16 @@ public class RefundRequestService : IRefundRequestService
 
     }
 
-    public Task CheckOutRefundRequest(TransactionViewModel transaction)
+    public async Task CheckOutRefundRequest(TransactionViewModel transaction)
     {
-        throw new NotImplementedException();
+        var refundRequest = await _uow.RefundRequestRepository.FirstOrDefaultAsync(_ => _.Id == transaction.Id);
+        if (refundRequest != null)
+        {
+
+            refundRequest.Status = RefundRequestStatus.Payyed.ToString();
+
+            _uow.RefundRequestRepository.UpdateRefundRequest(refundRequest);
+            await _uow.SaveChangesAsync();
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Helpers.MsgQueues;
 using ArtworkSharing.Core.ViewModels.Transactions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -13,9 +14,9 @@ namespace ArtworkSharing.Service.Services
         private readonly MessageConnection _msgConnection;
         private IModel _chanel;
 
-        public MessagePaypalRefundSubscribe(MessageConnection messageConnection)
+        public MessagePaypalRefundSubscribe(IConfiguration configuration)
         {
-            _msgConnection = messageConnection;
+            _msgConnection = new MessageConnection(configuration);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -29,7 +30,7 @@ namespace ArtworkSharing.Service.Services
             _chanel = _msgConnection.InititalBus(messageChanel);
 
             var consumer = new EventingBasicConsumer(_chanel);
-            consumer.Received += (sender, e) =>
+            consumer.Received += async (sender, e) =>
             {
                 var body = System.Text.Encoding.UTF8.GetString(e.Body.ToArray());
                 body = body.Replace("\\", "");
@@ -42,9 +43,12 @@ namespace ArtworkSharing.Service.Services
                     {
                         switch (data.Type)
                         {
-                            case TransactionType.Artwork: break;
-                            case TransactionType.ArtworkService: break;
-                            case TransactionType.Package: break;
+                            case TransactionType.Artwork:  await UpdateArtwork(data);
+                                break;
+                            case TransactionType.ArtworkService: await UpdateArtworkService(data);
+                                break;
+                            case TransactionType.Package: await UpdatePackage(data);
+                                break;
                         }
                         _chanel.BasicAck(e.DeliveryTag, false);
                     }
@@ -52,6 +56,18 @@ namespace ArtworkSharing.Service.Services
             };
             _chanel.BasicConsume(messageChanel.QueueName, false, consumer);
             await Task.CompletedTask; // Temp
+        }
+        private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
+        {
+            await Task.CompletedTask;
+        }
+        private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
+        {
+            await Task.CompletedTask;
+        }
+        private async Task UpdatePackage(TransactionViewModel transactionViewModel)
+        {
+            await Task.CompletedTask;
         }
     }
 }

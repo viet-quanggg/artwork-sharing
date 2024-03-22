@@ -68,8 +68,7 @@ public class FollowController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("isFollowed/{followUserId}")]
- 
+    [HttpGet("isFollowed/{followUserId}")]    
     public async Task<IActionResult> IsFollowed(Guid followUserId)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);

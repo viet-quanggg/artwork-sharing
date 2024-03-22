@@ -1,11 +1,17 @@
+var token = localStorage.getItem("token");
+
 $(document).ready(function() {
     // Initialize DataTable
     $('#artisticTable').DataTable();
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/GetArtworkRequestsByArtist/71ab22de-3937-482b-8650-2f39f0338408',
+            url: 'https://localhost:7270/GetArtworkRequestsByArtist',
             type: 'GET',
+            headers: {
+                'Authorization': "Bearer " + token
+
+            },
             success: function(response) {
                 console.log(response);
 

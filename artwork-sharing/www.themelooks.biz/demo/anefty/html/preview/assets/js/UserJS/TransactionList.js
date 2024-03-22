@@ -1,4 +1,4 @@
-
+var token = localStorage.getItem("token");
 $(document).ready(function() {
     // Initialize DataTable
     
@@ -7,8 +7,11 @@ $(document).ready(function() {
     // Function to fetch data from API and populate the table
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/api/Transaction/userTransactions/56a3e149-2c89-4d85-5ac9-08dc4956f46d',
+            url: 'https://localhost:7270/api/Transaction/userTransactions',
             type: 'GET',
+            headers: {
+                "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+            },
             success: function(response) {
                 console.log(response);
                 // Clear existing table data
@@ -20,19 +23,42 @@ $(document).ready(function() {
                     var dateTimeString = item.createdDate;
                     var datetime = new Date(dateTimeString);
                     var formattedDate = datetime.toLocaleDateString('en-Gb');
-                    var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">'+'<button class="btn btn-primary">Detail</button>'+'</a>' + ' | ' +
-                        '<a class="text-capitalize"  id="refundButton" data-id="' + item.id + '">'+'<button class="btn btn-primary" >Refund</button>'+'</a>';
+
+                    var type;
+                    switch (item.type) {
+                        case 1:
+                            type = "Artwork";
+                            break;
+                        case 2:
+                            type = "ArtworkService";
+                            break;
+                        case 3:
+                            type = "Package";
+                            break;
+                        default:
+                            type = "Unknown";
+                            break;
+                    }
+                    
+                    // if(item.)
+                    var links = '<a class="text-capitalize" id="detailsButton" href="' + item.id + '">' +
+                        '<button class="btn btn-primary">Detail</button>' +
+                        '</a>' + ' | ' +
+                        '<a class="text-capitalize" id="refundButton" data-id="' + item.id + '">' +
+                        '<button class="btn btn-primary" >Refund</button>' +
+                        '</a>';
+
                     $('#transactionTable').DataTable().row.add([
-                        // item.id,
-                        item.artwork.name,
-                        item.totalBill + '$',
+                        item.paymentMethod.name,
+                        item.totalBill,
                         formattedDate,
                         statusText,
-                        item.type,
+                        type,
                         links
                         // Add more data if needed
                     ]).draw();
                 });
+
             },
             error: function(xhr, status, error) {
                 // Handle error
@@ -50,6 +76,11 @@ $(document).ready(function() {
 
 //Handle Create Refund Button
 $(document).ready(function () {
+    
+    $(document).on('click', '#managerefundButton', function () {
+        window.location.href = "RefundRequestListUser.html";
+    });
+    
     $(document).on('click', '#refundButton', function () {
         var id = $(this).data('id');
         $('#myModal').modal('show');
@@ -89,24 +120,27 @@ $(document).ready(function () {
             }
 
             $.ajax({
-                url : "https://localhost:7270/RefundRequest/createRefundRequestUser/",
-                method : "POST",
+                url: "https://localhost:7270/RefundRequest/createRefundRequestUser/",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+                },
                 data: JSON.stringify(data),
-                contentType: 'application/json',
-                success: function (response) {
+                success: function(response) {
                     console.log('Created Refund', response.id)
                     $('#myModal').modal('hide');
                     showSuccess("Your refund request has been created!");
                     setTimeout(function() {
                         window.location.href = "RefundRequestListUser.html";
                     }, 3000);
-
                 },
-                error: function (err) {
+                error: function(err) {
                     console.log('Can not create refund request', err);
                     showError("Something is wrong. Please try again!");
                 }
-            })
+            });
+
         }
     }
 });

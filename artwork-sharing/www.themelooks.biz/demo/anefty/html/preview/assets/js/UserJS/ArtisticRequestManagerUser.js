@@ -1,4 +1,6 @@
+const token = localStorage.getItem('token');
 $(document).ready(function() {
+    
     // Initialize DataTable
     $('#artisticTable').DataTable();
     // Function to fetch data from API and populate the table
@@ -28,9 +30,13 @@ $(document).ready(function() {
     }
     function fetchData() {
         $.ajax({
-            url: 'https://localhost:7270/GetArtworkRequestsByUser/56a3e149-2c89-4d85-5ac9-08dc4956f46d',
+            url: 'https://localhost:7270/GetArtworkRequestsByUser',
             type: 'GET',
+            headers: {
+                "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+            },
             success: function(response) {
+                
                 console.log(response);
                 
                 
@@ -120,7 +126,10 @@ $(document).ready(function() {
     function cancelArtworkRequest(requestId) {
         $.ajax({
             url: 'https://localhost:7270/CancelArtworkRequestByUser/' + requestId,
-            type: 'PUT',
+            type: 'PUT', 
+            headers: {
+                "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+            },
             success: function(response) {
                 if(response === true){
                     $('#confirmModal').modal('hide'); // Corrected from dismiss to hide
@@ -147,7 +156,6 @@ $(document).ready(function() {
         });
         var requestId = $(this).data('id');
         var paymentId = document.getElementById("methodSelection").value;
-        var userId = "56a3e149-2c89-4d85-5ac9-08dc4956f46d";
         $('#paymentMethod').modal('show');
         $('#closePaymentButton').click(function () {
             $('#paymentMethod').modal('hide'); // Corrected from dismiss to hide
@@ -159,7 +167,7 @@ $(document).ready(function() {
 
         $(document).on('click', '#confirmPaymentButton', function () {
             event.preventDefault(); // Prevent the default form submission behavior
-            proceedToPaymentPage(requestId, paymentId, userId, paymentMethod); // Call the createRefundRequest function
+            proceedToPaymentPage(requestId, paymentId, paymentMethod); // Call the createRefundRequest function
             // $('#myModal').modal('hide'); // Hide the modal
         });
 
@@ -167,11 +175,14 @@ $(document).ready(function() {
 
     });
 
-    function proceedToPaymentPage(requestId, paymentId, userId, paymentMethod) {
+    function proceedToPaymentPage(requestId, paymentId, paymentMethod) {
         $.ajax({
             url: 'https://localhost:7270/CreateTransactionForArtworkServiceDeposit?artworkServiceId=' + requestId 
-                + '&audienceId=' + userId + '&paymentMethodId=' + paymentId,
+                 + '&paymentMethodId=' + paymentId,
             type: 'POST',
+            headers: {
+                "Authorization": "Bearer " + token // Sử dụng Bearer token nếu cần
+            },
             success: function(response) {
                 if(response != null){
                     $('#confirmModal').modal('hide'); // Corrected from dismiss to hide

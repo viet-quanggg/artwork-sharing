@@ -1,8 +1,8 @@
 const pageSize = 3; // Định nghĩa pageSize ở đầu tập tin hoặc ở phạm vi có thể truy cập trước khi sử dụng
 
 // Define the URL of the API endpoint
-const apiUrl = 'https://localhost:7270/RefundRequest/GetRefundRequestWithPagingArist?AristId=9becfd9f-6a4c-4d0e-9f02-ede61a156c8a&pageIndex=1&pageSize=3';
-
+const apiUrl = 'https://localhost:7270/RefundRequest/GetRefundRequestWithPagingArist?pageIndex=1&pageSize=3';
+const token = localStorage.getItem('token');
 // Function to render refund requests on the HTML template
 function renderRefundRequests(refundRequests) {
   const dataBody = document.getElementById('dataBody');
@@ -71,8 +71,14 @@ function renderPagination(totalPages) {
 }
 
 function fetchRefundRequests(pageIndex) {
-  const apiUrl = `https://localhost:7270/RefundRequest/GetRefundRequestWithPagingArist?AristId=9becfd9f-6a4c-4d0e-9f02-ede61a156c8a&pageIndex=${pageIndex}&pageSize=${pageSize}`; // Sử dụng biến pageSize đã được định nghĩa
-  fetch(apiUrl)
+  const apiUrl = `https://localhost:7270/RefundRequest/GetRefundRequestWithPagingArist?pageIndex=${pageIndex}&pageSize=${pageSize}`; // Sử dụng biến pageSize đã được định nghĩa
+  fetch(apiUrl, {
+   
+    headers: {
+      'Content-Type': 'application/json',  
+      'Authorization': `Bearer ${token}`                        
+  }
+})
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -89,7 +95,13 @@ function fetchRefundRequests(pageIndex) {
 
 let countApiUrl;
 
-fetch('https://localhost:7270/RefundRequest/countAritst?AristId=9becfd9f-6a4c-4d0e-9f02-ede61a156c8a')
+fetch('https://localhost:7270/RefundRequest/countAritst', {
+   
+headers: {
+  'Content-Type': 'application/json',  
+  'Authorization': `Bearer ${token}`                        
+}
+})
   .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -103,7 +115,13 @@ fetch('https://localhost:7270/RefundRequest/countAritst?AristId=9becfd9f-6a4c-4d
     console.error('Error fetching data:', error);
   });
 
-fetch(apiUrl)
+fetch(apiUrl, {
+   
+  headers: {
+    'Content-Type': 'application/json',  
+    'Authorization': `Bearer ${token}`                        
+}
+})
   .then(response => {
     if (!response.ok) {
       throw new Error('Network response was not ok');
