@@ -1,7 +1,7 @@
-const pageSize = 3; // Định nghĩa pageSize ở đầu tập tin hoặc ở phạm vi có thể truy cập trước khi sử dụng
+const pageSize = 8; // Định nghĩa pageSize ở đầu tập tin hoặc ở phạm vi có thể truy cập trước khi sử dụng
 let keyword = '';
 // Define the URL of the API endpoint
-const apiUrl = 'https://localhost:7270/ManageOrder/GeTransactionWithPaging?pageIndex=1&pageSize=3';
+const apiUrl = 'https://localhost:7270/ManageOrder/GeTransactionWithPaging?pageIndex=1&pageSize=8';
 // Function to handle search form submission
 document.getElementById('searchForm').addEventListener('submit', function(event) {
   event.preventDefault(); // Prevent the default form submission behavior
@@ -56,9 +56,9 @@ function getTypeString(statusNumber) {
       case 1:
           return "Artwork";
       case 2:
-          return "ArtworkService";
-      case 3:
           return "Package";
+      case 3:
+          return "ArtworkService";
       default:
           return "Unknown";
   }

@@ -8,6 +8,8 @@ using System.Linq.Expressions;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Security.Claims;
+using ArtworkSharing.Core.Domain.Enums;
 
 namespace ArtworkSharing.Controllers;
 
@@ -21,11 +23,15 @@ public class RefundRequestController : ControllerBase
 
     private readonly IArtworkService _artworkService;
 
-    public RefundRequestController(IRefundRequestService refundRequestService, ITransactionService transactionService, IArtworkService artworkService)
+    private readonly IArtistService _artistService;
+
+
+     public RefundRequestController(IRefundRequestService refundRequestService, ITransactionService transactionService, IArtworkService artworkService,IArtistService artistService)
     {
         _refundRequestService = refundRequestService;
         _artworkService = artworkService;
-        _transactionService = transactionService;   
+        _transactionService = transactionService;  
+        _artistService = artistService;
     }
 
     [Authorize]
@@ -42,6 +48,14 @@ public class RefundRequestController : ControllerBase
             throw new Exception(ex.Message);
         }
     }
+    
+
+ 
+
+  
+
+  
+
     //[HttpGet("{id}")]
     //public async Task<ActionResult<RefundRequestViewModel>> GetRefundRequest(Guid id)
     //{
@@ -64,7 +78,7 @@ public class RefundRequestController : ControllerBase
     {
         try
         {
-            Expression<Func<RefundRequest, bool>> filter = r => ( (r.Status.Equals("Pending")));
+            Expression<Func<RefundRequest, bool>> filter = r => ( (r.Status.Equals(RefundRequestStatus.Pending.ToString())));
             int count = await _refundRequestService.Count(filter);
             return Ok(count);
         }
@@ -74,13 +88,23 @@ public class RefundRequestController : ControllerBase
         }
     }
 
-
+    [Authorize]
     [HttpGet("countAritst")]
-    public async Task<ActionResult<int>> GetRefundRequestCountArist(Guid AristId)
+    public async Task<ActionResult<int>> GetRefundRequestCountArist()
     {
         try
         {
-            Expression<Func<RefundRequest, bool>> filter = r => (r.Transaction.Artwork.ArtistId == AristId) && (r.Status.Equals("AcceptByAdmin"));
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var Artists = await _artistService.GetOneArist(currentUserId);
+            if (Artists == null)
+            {
+                return StatusCode(200);
+            }
+
+            Guid ArtistId = Artists.Id;
+            Expression<Func<RefundRequest, bool>> filter = r => (r.Transaction.Artwork.ArtistId == ArtistId) && (r.Status.Equals(RefundRequestStatus.AcceptedBySystem.ToString()));
             int count = await _refundRequestService.Count(filter);
             return Ok(count);
         }
@@ -138,6 +162,7 @@ public class RefundRequestController : ControllerBase
     {
         try
         {
+
             // Sử dụng phương thức Join để kết nối các bảng
             Expression<Func<Transaction, bool>> filtert =null;
 
@@ -156,7 +181,7 @@ public class RefundRequestController : ControllerBase
                 listId.Add(transac.Id);
             }
 
-            Expression<Func<RefundRequest, bool>> filter =  r => ( (r.Status.Equals("Pending")));
+            Expression<Func<RefundRequest, bool>> filter =  r => ( (r.Status.Equals(RefundRequestStatus.Pending.ToString())));
 
             // Khởi tạo hàm sắp xếp giảm dần theo thời gian
             Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = q => q.OrderByDescending(p => p.RefundRequestDate);
@@ -173,16 +198,26 @@ public class RefundRequestController : ControllerBase
             return StatusCode(500); // Lỗi máy chủ nội bộ
         }
     }
-
+    [Authorize]
     [HttpGet("GetRefundRequestWithPagingArist")]
-    public async Task<ActionResult<List<RefundRequest>>> GetPackageWithPagingArist( Guid AristId,
+    public async Task<ActionResult<List<RefundRequest>>> GetPackageWithPagingArist( 
 [FromQuery] int? pageIndex = null,
 [FromQuery] int? pageSize = null)
     {
         try
         {
+
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var Artists = await _artistService.GetOneArist(currentUserId);
+            if (Artists == null)
+            {
+                return StatusCode(200);
+            }
+
+            Guid ArtistId = Artists.Id;
             // Sử dụng phương thức Join để kết nối các bảng
-            Expression<Func<Transaction, bool>> filtert = t => t.Artwork.ArtistId == AristId;
+            Expression<Func<Transaction, bool>> filtert = t => t.Artwork.ArtistId == ArtistId;
         
 
             // Khởi tạo hàm sắp xếp giảm dần theo thời gian
@@ -199,7 +234,7 @@ public class RefundRequestController : ControllerBase
                 listId.Add(transac.Id);
             }
 
-            Expression<Func<RefundRequest, bool>> filter = r => (listId.Contains(r.TransactionId)) && ( r.Status.Equals("AcceptByAdmin")); 
+            Expression<Func<RefundRequest, bool>> filter = r => (listId.Contains(r.TransactionId)) && ( r.Status.Equals(RefundRequestStatus.AcceptedBySystem.ToString())); 
             // Khởi tạo hàm sắp xếp giảm dần theo thời gian
             Func<IQueryable<RefundRequest>, IOrderedQueryable<RefundRequest>> orderBy = q => q.OrderByDescending(p => p.RefundRequestDate);
 

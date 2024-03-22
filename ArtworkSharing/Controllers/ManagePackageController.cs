@@ -27,6 +27,7 @@ public class ManagePackageController : Controller
 
     private readonly IArtistService _artistService;
 
+
     private readonly HttpClient _httpClient;
 
     public ManagePackageController(IPackageService packageService, ITransactionService transactionService, IUserRoleService userRoleService, IArtistPackageService artistPackageService, IArtistService artistService)
@@ -152,19 +153,19 @@ public class ManagePackageController : Controller
                
             };
             await _transactionService.AddTransaction(transaction);
-            TransactionViewModel transactionV = new TransactionViewModel
-            {
-                Id = transaction.Id,
-                ArtworkId = null,
-                ArtworkServiceId = null,
-                AudienceId = UserId,
-                TotalBill = package.Price,
-                CreatedDate = DateTime.UtcNow,
-                Type = TransactionType.Package,
-                PackageId = PackageId,
+            //TransactionViewModel transactionV = new TransactionViewModel
+            //{
+            //    Id = transaction.Id,
+            //    ArtworkId = null,
+            //    ArtworkServiceId = null,
+            //    AudienceId = UserId,
+            //    TotalBill = package.Price,
+            //    CreatedDate = DateTime.UtcNow,
+            //    Type = TransactionType.Package,
+            //    PackageId = PackageId,
 
-            };
-            _packageService.CheckOutPackage(transactionV);
+            //};
+           // _packageService.CheckOutPackage(transactionV);
             // Call API VNPay
             var response = await _httpClient.GetAsync($"Payment/vnpay/{transaction.Id}");
 
