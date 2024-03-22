@@ -77,7 +77,7 @@ public class AuthController : ControllerBase
             if (!result.Succeeded)
                 
                 return BadRequest(result.Errors);
-
+            
             var roleResult = await _userManager.AddToRoleAsync(user, RoleOfSystem.Audience.ToString());
 
             if (!roleResult.Succeeded)
@@ -104,16 +104,17 @@ public class AuthController : ControllerBase
 
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Logout()
     {
-        try
-        {
-            await _signInManager.SignOutAsync();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        //try
+        //{
+        //    await _signInManager.SignOutAsync();
+        //}
+        //catch (Exception ex)
+        //{
+        //    return BadRequest(ex.Message);
+        //}
 
         return Ok();
     }
