@@ -61,8 +61,10 @@ public class LikeController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> CheckLike(Guid artworkId)
     {
-        var uidClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid uid = new Guid(uidClaim!.Value);
+        var id = HttpContext.Items["UserId"];
+        if (id == null) return Unauthorized();
+
+        Guid uid = Guid.Parse(id + "");
 
         if (uid == Guid.Empty) return Unauthorized();
 

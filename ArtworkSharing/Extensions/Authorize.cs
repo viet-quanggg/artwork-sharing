@@ -25,8 +25,6 @@ namespace ArtworkSharing.Extensions
             {
                 await TokenHandle(tk.Split(" ")[1] + "", context.HttpContext);
             }
-
-            throw new NotImplementedException();
         }
         public async Task TokenHandle(string token, HttpContext context)
         {
