@@ -96,7 +96,7 @@ public class TransactionService : ITransactionService
 
             var artworkService = await artworkRequestRepo.FirstOrDefaultAsync(a => a.Id == artworkrequestId);
             var paymentMethod = await paymentMethodRepo.FirstOrDefaultAsync(a => a.Id == paymentMethodId);
-            
+
             Transaction transaction = new Transaction();
             transaction.Id = Guid.NewGuid();
             transaction.ArtworkServiceId = artworkrequestId;
@@ -107,18 +107,18 @@ public class TransactionService : ITransactionService
             transaction.Status = TransactionStatus.Pending;
             transaction.ArtworkService = artworkService;
             transaction.PaymentMethod = paymentMethod;
-            
+
             await transactionRepo.AddAsync(transaction);
             await _uow.SaveChangesAsync();
             await _uow.CommitTransaction();
-            
+
             return AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(transaction);
         }
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
         }
-       
+
     }
 
     public async Task<List<TransactionViewModel>> GetAll()
@@ -129,7 +129,7 @@ public class TransactionService : ITransactionService
 
     public async Task<Transaction> GetOne(Guid id)
     {
-        return await _uow.TransactionRepository.Include(x=>x.Audience).Include(x=>x.Artwork).FirstOrDefaultAsync(x => x.Id == id);
+        return await _uow.TransactionRepository.Include(x => x.Audience).Include(x => x.Artwork).Include(x => x.ArtworkService).Include(x => x.Package).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<TransactionViewModel> GetTransaction(Guid id)

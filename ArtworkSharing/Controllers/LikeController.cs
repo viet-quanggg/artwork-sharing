@@ -35,11 +35,14 @@ public class LikeController : ControllerBase
     /// </summary>
     /// <param name="likeModel"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> LikeArtwork(LikeModel likeModel)
     {
-        var uidClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid uid = new Guid(uidClaim!.Value);
+        var id = HttpContext.Items["UserId"];
+        if (id == null) return Unauthorized();
+
+        Guid uid = Guid.Parse(id + "");
 
         if (uid == Guid.Empty) return Unauthorized();
 
