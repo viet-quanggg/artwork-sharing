@@ -50,8 +50,8 @@ async function LoadArtwork() {
                     </div>
                     <div class="product-bottom">
                         <div class="button-group">
-                           <a href="item-details.html" class="btn btn-border btn-sm"><img
-                                    src="assets/img/icons/judge-icon.svg" alt="" class="svg">Buy now</a>
+                           <a href="item-details.html?id=${element.id}" class="btn btn-border btn-sm"><img
+                                    src="assets/img/icons/judge-icon.svg" alt="" class="svg">Details</a>
                         </div>
                     </div>
                 </div>

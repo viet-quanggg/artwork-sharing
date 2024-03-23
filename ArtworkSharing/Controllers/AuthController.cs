@@ -8,6 +8,7 @@ using ArtworkSharing.Service.AutoMappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ArtworkSharing.Extensions;
 
 namespace ArtworkSharing.Controllers;
 
@@ -104,7 +105,7 @@ public class AuthController : ControllerBase
 
 
     [HttpPost]
-    [Authorize]
+    [Extensions.Authorize]
     public async Task<IActionResult> Logout()
     {
         //try
