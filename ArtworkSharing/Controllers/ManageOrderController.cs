@@ -3,7 +3,7 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.RefundRequests;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Service.Services;
-using Microsoft.AspNetCore.Authorization;
+using ArtworkSharing.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -76,8 +76,12 @@ public class ManageOrderController : Controller
         try
         {
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid currentUserId = Guid.Parse(id + "");
+
+            if (currentUserId == Guid.Empty) return Unauthorized();
             var Artists = await _artistService.GetOneArist(currentUserId);
             if (Artists == null)
             {
@@ -145,8 +149,12 @@ public class ManageOrderController : Controller
     {
         try
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid currentUserId = Guid.Parse(id + "");
+
+            if (currentUserId == Guid.Empty) return Unauthorized();
             var Artists = await _artistService.GetOneArist(currentUserId) ;
             if (Artists == null) {
                 return StatusCode(200);
