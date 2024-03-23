@@ -2,7 +2,7 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id');
-
+const token = localStorage.getItem('token');
 // If id is not available, you can handle it according to your requirements, for example, redirecting the user to a 404 page
 if (!id) {
     window.location.href = '404.html'; // Redirect to 404 page
@@ -112,13 +112,14 @@ function updateRefundRequestStatus(status) {
              
               
               
-              const apiUrl = `https://localhost:7270/api/RefundRequest/${id}/status?status=${status}`;
+              const apiUrl = `'https://localhost:7270/api/Payment/paypalRefund/${id}`;
               
               fetch(apiUrl, {
-                  method: 'PUT',
+                  method: 'POST',
                   headers: {
-                      'Content-Type': 'application/json'
-                  },
+                    'Content-Type': 'application/json',  
+                    'Authorization': `Bearer ${token}`                        
+                }
                   //body: JSON.stringify(data), // Nếu cần gửi dữ liệu trong body của request
               })
               .then(response => {
@@ -127,11 +128,7 @@ function updateRefundRequestStatus(status) {
                   }
                   console.log(`Refund request ${id} status updated to ${status}`);
                   // Thực hiện các hành động phản hồi sau khi cập nhật thành công
-                  if(status === 'AcceptedByArist') {
-                      // Code ở đây cho trường hợp trạng thái là 'AcceptedByArist'
-                  } else {
-                      window.location.href = 'RefundRequestHomeArtist.html';
-                  }
+                
               })
               .catch(error => {
                   console.error('Error updating refund request status:', error);
