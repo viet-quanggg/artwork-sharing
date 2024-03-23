@@ -105,6 +105,7 @@ public class TransactionService : ITransactionService
             transaction.TotalBill = artworkService.RequestedDeposit;
             transaction.Type = TransactionType.ArtworkService;
             transaction.Status = TransactionStatus.Pending;
+            transaction.ArtworkService = artworkService;
             transaction.PaymentMethod = paymentMethod;
 
             await transactionRepo.AddAsync(transaction);
