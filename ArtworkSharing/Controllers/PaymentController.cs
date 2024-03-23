@@ -118,12 +118,18 @@ public class PaymentController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPost("{id}")]
     public async Task<IActionResult> RefundTraction([FromRoute] Guid id)
     {
-        //var uId = HttpContext.Items["UserId"] + "";
-        //if (string.IsNullOrEmpty(uId)) return Unauthorized();
-        var rs = await _VNPayTransactionService.RefundVNPay(id, Guid.Parse("48485956-80A9-42AB-F8C2-08DC44567C01"));
+        var idRaw = HttpContext.Items["UserId"];
+        if (idRaw == null) return Unauthorized();
+
+        Guid uid = Guid.Parse(idRaw + "");
+
+        if (uid == Guid.Empty) return Unauthorized();
+
+        var rs = await _VNPayTransactionService.RefundVNPay(id, uid);
 
         if (rs.TransactionViewModel == null) return BadRequest(new { rs.IpnResponseViewModel.Message });
         await _paymentRefundEventService.CreatePaymentRefundEvent(new PaymentRefundEvent
@@ -207,14 +213,24 @@ public class PaymentController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpPost("paypalRefund")]
     public async Task<IActionResult> RefundPaypal([FromRoute] Guid id)
     {
+        var idRaw = HttpContext.Items["UserId"];
+        if (idRaw == null) return Unauthorized();
+
+        Guid uid = Guid.Parse(idRaw + "");
+
+        if (uid == Guid.Empty) return Unauthorized();
+
         if (id == Guid.Empty) return BadRequest(new { Message = "Not found transaction" });
 
         var transaction = await _transactionService.GetOne(id);
 
         if (transaction == null) return BadRequest(new { Message = "Not found transaction" });
+
+        if (transaction.AudienceId != uid) return Unauthorized();
 
         var rs = await _paypalOrderService.RefundPaypal(transaction);
 
