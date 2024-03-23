@@ -230,7 +230,7 @@ public class PaymentController : ControllerBase
 
         if (transaction == null) return BadRequest(new { Message = "Not found transaction" });
 
-        if (transaction.AudienceId != uid) return Unauthorized();
+        //  if (transaction.AudienceId != uid) return Unauthorized();
 
         var rs = await _paypalOrderService.RefundPaypal(transaction);
 
