@@ -5,9 +5,9 @@ using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Service.AutoMappings;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using ArtworkSharing.Extensions;
 
 namespace ArtworkSharing.Controllers;
 
@@ -96,15 +96,18 @@ public class ArtworkController : ControllerBase
     }
 
     [HttpPost("/user/artist/postartwork")]
-
     [Authorize]
     public async Task<IActionResult> CreateNewArtWork([FromForm] CreateArtworkModel artworkModel)
     {        
         if (ModelState.IsValid)
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Guid currentUserId = new Guid(userIdClaim?.Value);
-            var artist = await _artistService.GetArtistByUserId(currentUserId);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid uid = Guid.Parse(id + "");
+
+            if (uid == Guid.Empty) return Unauthorized();
+            var artist = await _artistService.GetArtistByUserId(uid);
             if (artist == null)
             {
                 return BadRequest("You are not an artist");
