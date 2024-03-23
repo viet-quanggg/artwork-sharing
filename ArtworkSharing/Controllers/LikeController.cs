@@ -1,5 +1,6 @@
 ﻿using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Likes;
+using ArtworkSharing.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -11,7 +12,7 @@ public class LikeController : ControllerBase
 {
     private readonly ILikeService _likeService;
 
-    public LikeController(ILikeService likeService)
+    public LikeController(ILikeService likeService, IConfiguration configuration)
     {
         _likeService = likeService;
     }
@@ -56,6 +57,7 @@ public class LikeController : ControllerBase
     /// <param name="artworkId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> CheckLike(Guid artworkId)
     {
