@@ -5,7 +5,7 @@ using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.ArtworkRequest;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Service.AutoMappings;
-using Microsoft.AspNetCore.Authorization;
+using ArtworkSharing.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArtworkSharing.Controllers;
@@ -35,7 +35,7 @@ public class ArtworkRequestController : Controller
         }
     }
 
-    [Authorize(nameof(RoleOfSystem.Admin))]
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllArtworkRequests(int pageNumber, int pageSize)
     {
@@ -52,17 +52,21 @@ public class ArtworkRequestController : Controller
     
 
     //Artist Controllers
-    [Authorize(nameof(RoleOfSystem.Artist))]
+    [Authorize]
     [HttpGet("/GetArtworkRequestsByArtist")]
     public async Task<IActionResult> GetArtworkRequestsByArtist()
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid currentUserId = new Guid(userIdClaim?.Value);
-        if (currentUserId == null) return BadRequest();
-        return Ok(await _requestService.GetArtworkRequestByArtist(currentUserId));
+        var id = HttpContext.Items["UserId"];
+        if (id == null) return Unauthorized();
+
+        Guid uid = Guid.Parse(id + "");
+
+        if (uid == Guid.Empty) return Unauthorized();
+        if (uid == null) return BadRequest();
+        return Ok(await _requestService.GetArtworkRequestByArtist(uid));
     }
     
-    [Authorize(nameof(RoleOfSystem.Artist))]
+    [Authorize]
     [HttpPut("/CancelArtworkRequestByArtist/{artworkRequestId}")]
     public async Task<IActionResult> CancelArtworkRequestByArtist(Guid artworkRequestId)
     {
@@ -71,7 +75,7 @@ public class ArtworkRequestController : Controller
         
     }
     
-    [Authorize(nameof(RoleOfSystem.Artist))]
+    [Authorize]
     [HttpPut("/AcceptArtworkRequestByArtist/{artworkRequestId}")]
     public async Task<IActionResult> AcceptArtworkRequestByArtist(Guid artworkRequestId)
     {
@@ -95,12 +99,18 @@ public class ArtworkRequestController : Controller
     [HttpGet("/GetArtworkRequestsByUser")]
     public async Task<IActionResult> GetArtworkRequestsByUser()
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid currentUserId = new Guid(userIdClaim?.Value);
-        if (currentUserId == null) return BadRequest();
+        
         try
         {
-            var list = await _requestService.GetArtworkRequestsByUser(currentUserId);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid uid = Guid.Parse(id + "");
+
+            if (uid == Guid.Empty) return Unauthorized();
+            if (uid == null) return BadRequest();
+            
+            var list = await _requestService.GetArtworkRequestsByUser(uid);
             return Ok(list);
 
         }
@@ -132,11 +142,17 @@ public class ArtworkRequestController : Controller
     [HttpPost("createartworkrequest")]
     public async Task<IActionResult> CreateArtworkRequest(CreateArtworkRequestModel cam)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid currentUserId = new Guid(userIdClaim?.Value);
         try
         {
-            cam.AudienceId = currentUserId;
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid uid = Guid.Parse(id + "");
+
+            if (uid == Guid.Empty) return Unauthorized();
+            if (uid == null) return BadRequest();
+            
+            cam.AudienceId = uid;
             return Ok(await _requestService.CreateArtworkRequest(cam));
         }
         catch (Exception ex)
