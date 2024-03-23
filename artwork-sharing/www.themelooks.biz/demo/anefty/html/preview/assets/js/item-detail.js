@@ -25,6 +25,8 @@ window.onload = async function LoadItemDetail() {
         document.getElementById('artwork-description').innerText = pTxt.description;
         var h5HTML = '<h5 id="name-artist"><a href="ArtistProfile.html?id=' + pTxt.artistId + '">' + pTxt.artist.user.name + '</a></h5>';
         document.getElementById('artistTab').insertAdjacentHTML('beforeend', h5HTML);
+        document.getElementById('btnPayment').innerHTML = ` <button  onclick="Payment('${pTxt.id}')" class="btn btn-border btn-sm"><img
+        src="assets/img/icons/btn-buy-now-icon.svg" alt="" class="svg"> Buy Now</button>`
 
         await GetUser();
         await CheckLike(artworkId);
@@ -106,39 +108,41 @@ async function GetComments(id) {
         pTxt.forEach(element => {
 
             document.getElementById('u-cmt').innerHTML += `<li > 
-            <h6><b>${element.commentedUser.name}</b></h6>
+            <h6><b>${element.commentedUser.name}</b></h6>   
             <h6>${element.content}</h6>
         </li>`
         });
     }
 }
-async function GetPaymentMethod(id) {
 
+async function Payment(id) {
     var token = localStorage.getItem('token');
 
     var headers = new Headers();
     headers.append('Authorization', 'Bearer ' + token);
-
-    var url = "https://localhost:7270/api/Payment/paymentMethod" + id;
+    headers.append('Content-Type', 'application/json');
+    var obj = {
+        "ArtworkId": id,
+        "PaymentMethodId": "1AC6A120-F067-4BAC-A413-1DD61A4B997B"
+    }
+    var url = "https://localhost:7270/api/Transaction";
     var request = new Request(url, {
-        method: 'GET',
-        headers: headers
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(obj)
+
     });
+
     var rs = await fetch(request);
+
     if (rs.ok) {
         var txt = await rs.text();
-        var pTxt = JSON.parse(txt);
-        document.getElementById('u-cmt').innerHTML = "";
-        var aa = 0
-        pTxt.forEach(element => {
-
-            document.getElementById('u-cmt').innerHTML += `<li > 
-            <h6><b>${element.commentedUser.name}</b></h6>
-            <h6>${element.content}</h6>
-        </li>`
-        });
+        window.location.href = txt + "";
+    } else {
+        alert('Can payment');
     }
 }
+
 async function SendCmt(id) {
 
     var token = localStorage.getItem('token');
@@ -187,3 +191,4 @@ async function GetUser() {
         document.getElementById('name-u').innerText = pTxt.name
     }
 }
+

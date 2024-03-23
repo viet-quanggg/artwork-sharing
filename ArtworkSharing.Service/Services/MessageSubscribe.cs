@@ -75,12 +75,20 @@ namespace ArtworkSharing.Service.Services
 
         private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
         {
-            await Task.CompletedTask;
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<ITransactionService>();
+                await svc.UpdateTransaction(transactionViewModel);
+            }
         }
 
         private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
         {
-            await Task.CompletedTask;
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<IArtworkRequestService>();
+                await svc.ChangeStatusAfterDeposit(transactionViewModel);
+            }
         }
 
         private async Task UpdatePackage(TransactionViewModel transactionViewModel)

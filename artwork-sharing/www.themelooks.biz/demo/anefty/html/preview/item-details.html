@@ -60,9 +60,10 @@
                             </div>
                         </div>
                         <br>
-                        <div class="button-group style--two"><a href="item-details.html"
-                                class="btn btn-border btn-sm"><img src="assets/img/icons/btn-buy-now-icon.svg" alt=""
-                                    class="svg"> Buy Now</a> </div>
+                        <div id="btnPayment" class="button-group style--two">
+                            <button onclick="Payment('i')" class="btn btn-border btn-sm"><img
+                                    src="assets/img/icons/btn-buy-now-icon.svg" alt="" class="svg"> Buy Now</button>
+                        </div>
                         <div class="row mb-4 mt-40 pt-1">
                             <div class="col-sm-6"><a  class="hz-profile creator media mb-4 mb-sm-0">
                                     <div class="avatar"><img src="assets/img/media/creator-avatar.png" alt=""></div>
@@ -147,16 +148,18 @@
                     <div class="modal-body">
                         <div>
                             <p>
-                            Please select payment method for your transaction
+                                Please select payment method for your transaction
                             </p>
                         </div>
                         <div id="methodSelect">
                         </div>
-                        
+
                     </div>
                     <div class="modal-footer">
-                        <button id="closePaymentButton" type="button" class="btn btn-close" data-dismiss="modal">Close</button>
-                        <button type="button" id="confirmPaymentButton" class="btn btn-primary">Proceed To Payment</button>
+                        <button id="closePaymentButton" type="button" class="btn btn-close"
+                            data-dismiss="modal">Close</button>
+                        <button type="button" id="confirmPaymentButton" class="btn btn-primary">Proceed To
+                            Payment</button>
                     </div>
                 </div>
 
