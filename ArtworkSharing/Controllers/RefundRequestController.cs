@@ -95,8 +95,12 @@ public class RefundRequestController : ControllerBase
         try
         {
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid currentUserId = Guid.Parse(id + "");
+
+            if (currentUserId == Guid.Empty) return Unauthorized();
             var Artists = await _artistService.GetOneArist(currentUserId);
             if (Artists == null)
             {
@@ -207,8 +211,12 @@ public class RefundRequestController : ControllerBase
         try
         {
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid currentUserId = Guid.Parse(id + "");
+
+            if (currentUserId == Guid.Empty) return Unauthorized();
             var Artists = await _artistService.GetOneArist(currentUserId);
             if (Artists == null)
             {

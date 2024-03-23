@@ -53,8 +53,7 @@ public class TransactionController : ControllerBase
         Guid uid = Guid.Parse(id + "");
 
         if (uid == Guid.Empty) return Unauthorized();
-        if (uid == null) return BadRequest();
-        if (uid == Guid.Empty) return BadRequest(new { Message = "User not found!" });
+
         return Ok(await _transactionService.GetTransactionsForUser(uid));
     }
 
