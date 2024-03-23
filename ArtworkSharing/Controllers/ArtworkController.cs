@@ -1,12 +1,10 @@
 ﻿using ArtworkSharing.Core.Domain.Entities;
-using ArtworkSharing.Core.Helpers;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.Models;
 using ArtworkSharing.Core.ViewModels.Artworks;
 using ArtworkSharing.Service.AutoMappings;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using ArtworkSharing.Extensions;
 
 namespace ArtworkSharing.Controllers;

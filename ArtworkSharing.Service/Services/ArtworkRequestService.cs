@@ -159,8 +159,9 @@ public class ArtworkRequestService : IArtworkRequestService
     {
         return AutoMapperConfiguration.Mapper.Map<List<ArtworkRequestViewModelUser>>(await _unitOfWork
             .ArtworkServiceRepository
-            .Include(r => r.Audience)
-            .Where(r => r.ArtistId == artistId)
+            .Include(r => r.Artist)
+                    .ThenInclude(r => r.User)
+            .Where(r => r.AudienceId == artistId)
             .OrderByDescending(r => r.RequestedDate)
             .ToListAsync());
     }
