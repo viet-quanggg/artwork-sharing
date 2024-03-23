@@ -96,7 +96,7 @@ public class TransactionService : ITransactionService
 
             var artworkService = await artworkRequestRepo.FirstOrDefaultAsync(a => a.Id == artworkrequestId);
             var paymentMethod = await paymentMethodRepo.FirstOrDefaultAsync(a => a.Id == paymentMethodId);
-            
+
             Transaction transaction = new Transaction();
             transaction.Id = Guid.NewGuid();
             transaction.ArtworkServiceId = artworkrequestId;
@@ -105,19 +105,20 @@ public class TransactionService : ITransactionService
             transaction.TotalBill = artworkService.RequestedDeposit;
             transaction.Type = TransactionType.ArtworkService;
             transaction.Status = TransactionStatus.Pending;
+            transaction.ArtworkService = artworkService;
             transaction.PaymentMethod = paymentMethod;
-            
+
             await transactionRepo.AddAsync(transaction);
             await _uow.SaveChangesAsync();
             await _uow.CommitTransaction();
-            
+
             return AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(transaction);
         }
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
         }
-       
+
     }
 
     public async Task<List<TransactionViewModel>> GetAll()
@@ -128,7 +129,7 @@ public class TransactionService : ITransactionService
 
     public async Task<Transaction> GetOne(Guid id)
     {
-        return await _uow.TransactionRepository.Include(x=>x.Audience).Include(x=>x.Artwork).FirstOrDefaultAsync(x => x.Id == id);
+        return await _uow.TransactionRepository.Include(x => x.Audience).Include(x => x.Artwork).Include(x => x.ArtworkService).Include(x => x.Package).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<TransactionViewModel> GetTransaction(Guid id)
@@ -152,6 +153,35 @@ public class TransactionService : ITransactionService
         _uow.TransactionRepository.UpdateTransaction(transaction);
         await _uow.SaveChangesAsync();
         return await GetTransaction(id);
+    }
+
+    public async Task<Transaction> CreateTransactionArtwork(TransactionCreateModel transactionCreateModel)
+    {
+        Transaction transaction = new Transaction
+        {
+            Id = Guid.NewGuid(),
+            ArtworkId = transactionCreateModel.ArtworkId,
+            TotalBill = transactionCreateModel.TotalBill,
+            CreatedDate = DateTime.Now,
+            PaymentMethodId = transactionCreateModel.PaymentMethodId,
+            Type = TransactionType.Artwork,
+            Status = TransactionStatus.Pending,
+            AudienceId = transactionCreateModel.AudienceId
+        };
+        await _uow.TransactionRepository.AddAsync(transaction);
+        await _uow.SaveChangesAsync();
+        return await GetOne(transaction.Id);
+    }
+
+    public async Task UpdateTransaction(TransactionViewModel transactionViewModel)
+    {
+        var transaction = await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == transactionViewModel.Id);
+        if (transaction != null)
+        {
+            transaction.Status = TransactionStatus.Success;
+            _uow.TransactionRepository.UpdateTransaction(transaction);
+            await _uow.SaveChangesAsync();
+        }
     }
 
     IEnumerable<Transaction> ITransactionService.Get(Expression<Func<Transaction, bool>> filter, Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderBy, string includeProperties, int? pageIndex, int? pageSize)

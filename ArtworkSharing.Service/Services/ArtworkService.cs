@@ -214,7 +214,7 @@ public class ArtworkService : IArtworkService
 
     public async Task<List<Artwork>> GetArtworks(BrowseArtworkModel? browserArtworkModel = null!)
     {
-        IQueryable<Artwork> artworks =  _unitOfWork.ArtworkRepository
+        IQueryable<Artwork> artworks = _unitOfWork.ArtworkRepository
             .Include(x => x.Likes).AsNoTracking()
             .OrderByDescending(x => x.CreatedDate);
         if (browserArtworkModel != null)
@@ -234,7 +234,7 @@ public class ArtworkService : IArtworkService
 
             artworks = artworks.Skip((browserArtworkModel.PageIndex) * browserArtworkModel.PageSize).Take(browserArtworkModel.PageSize);
         }
-        return await artworks.Include(x=>x.Comments).AsNoTracking().Include(x => x.Artist).ThenInclude(x => x.User).AsNoTracking().ToListAsync();
+        return await artworks.Include(x => x.Comments).AsNoTracking().Include(x => x.Artist).ThenInclude(x => x.User).Include(x => x.MediaContents).AsNoTracking().ToListAsync();
     }
 
     public async Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy)
@@ -249,7 +249,7 @@ public class ArtworkService : IArtworkService
                     orderByExp = x => x.OrderBy(x => x.Likes != null ? x.Likes.Count : 0);
                     break;
                 case nameof(SortingArtwork.RecentArtworks):
-                    orderByExp = x => x.OrderByDescending(x=>x.CreatedDate);
+                    orderByExp = x => x.OrderByDescending(x => x.CreatedDate);
                     break;
                 case nameof(SortingArtwork.PriceDescending):
                     orderByExp = x => x.OrderByDescending(x => x.Price);
@@ -257,14 +257,14 @@ public class ArtworkService : IArtworkService
                 case nameof(SortingArtwork.PriceAscending):
                     orderByExp = x => x.OrderBy(x => x.Price);
                     break;
-                default:                   
+                default:
                     break;
             }
-            
+
         }
-                
-        return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x=>x.ArtistId.Equals(artistId), orderByExp, x=>x.Likes, x=>x.MediaContents);
-       
+
+        return _unitOfWork.ArtworkRepository.GetPaginatedResult(pageSize, pageIndex, x => x.ArtistId.Equals(artistId), orderByExp, x => x.Likes, x => x.MediaContents);
+
     }
     public IEnumerable<Artwork> Get(Expression<Func<Artwork, bool>> filter = null,
       Func<IQueryable<Artwork>, IOrderedQueryable<Artwork>> orderBy = null, string includeProperties = "",
@@ -292,5 +292,10 @@ public class ArtworkService : IArtworkService
             .ThenInclude(x => x.User)
              .Include(x => x.MediaContents)
             .FirstOrDefaultAsync(x => x.Id == artworkId);
+    }
+
+    public async Task<Artwork> GetArtwork(Guid id)
+    {
+        return await _unitOfWork.ArtworkRepository.FirstOrDefaultAsync(x => x.Id == id);
     }
 }

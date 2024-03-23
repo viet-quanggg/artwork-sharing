@@ -38,7 +38,8 @@ async function getData(val) {
     response.forEach(item => {
       const createdDate = new Date(item.createdDate);
       let key;
-
+      let Total = 0;
+      Total += item.totalBill;
       // Format the key based on the selected time range
       if (val === 'day') {
         key = createdDate.toLocaleDateString('VN', { day: 'numeric', month: 'numeric', year: 'numeric' });
@@ -78,7 +79,8 @@ async function getData(val) {
         categories: dates,
       },
     };
-
+    $('#PercentTransaction h7').empty();
+    $('#PercentTransaction h7').append(Total / 100 * 10 + ' $');
     // Render the chart using ApexCharts
     const chart = new ApexCharts(document.querySelector("#transactionChart"), chartOptions);
     chart.render();

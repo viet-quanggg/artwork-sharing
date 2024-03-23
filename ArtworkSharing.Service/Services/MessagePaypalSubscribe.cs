@@ -1,7 +1,9 @@
 ﻿using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Helpers.MsgQueues;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -11,11 +13,13 @@ namespace ArtworkSharing.Service.Services
 {
     public class MessagePaypalSubscribe : BackgroundService, IDisposable
     {
+        private readonly IServiceScopeFactory _serviceScope;
         private readonly MessageConnection _msgConnection;
         private IModel _chanel;
 
-        public MessagePaypalSubscribe(IConfiguration configuration)
+        public MessagePaypalSubscribe(IConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
         {
+            _serviceScope = serviceScopeFactory;
             _msgConnection = new MessageConnection(configuration);
         }
         protected async override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -59,17 +63,32 @@ namespace ArtworkSharing.Service.Services
             _chanel.BasicConsume(messageChanel.QueueName, false, consumer);
             await Task.CompletedTask;
         }
+
         private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
         {
-            await Task.CompletedTask;
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<ITransactionService>();
+                await svc.UpdateTransaction(transactionViewModel);
+            }
         }
+
         private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
         {
-            await Task.CompletedTask;
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<IArtworkRequestService>();
+                await svc.ChangeStatusAfterDeposit(transactionViewModel);
+            }
         }
+
         private async Task UpdatePackage(TransactionViewModel transactionViewModel)
         {
-            await Task.CompletedTask;
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<IPackageService>();
+                await svc.CheckOutPackage(transactionViewModel);
+            }
         }
     }
 }

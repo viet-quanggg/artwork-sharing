@@ -1,6 +1,7 @@
 const fileInput = document.getElementById('fileInput');
 const imagePreview = document.getElementById('imagePreview');
 const MAX_FILES = 5;
+var token = localStorage.getItem("token");
 fileInput.addEventListener('change', function () {
     imagePreview.innerHTML = '';
 
@@ -35,6 +36,9 @@ form.addEventListener('submit', async (event) => {
     try {
         const response = await fetch('https://localhost:7270/user/artist/postartwork', {
             method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
             body: formData
         });
 

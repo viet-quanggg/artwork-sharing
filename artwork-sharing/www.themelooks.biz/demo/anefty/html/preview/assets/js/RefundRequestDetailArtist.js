@@ -2,7 +2,7 @@
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id');
-
+const token = localStorage.getItem('token');
 // If id is not available, you can handle it according to your requirements, for example, redirecting the user to a 404 page
 if (!id) {
     window.location.href = '404.html'; // Redirect to 404 page
@@ -105,7 +105,40 @@ function updateRefundRequestStatus(status) {
         success: function(response) {
             console.log(`Refund request ${id} status updated to ${status}`);
             // Thực hiện các hành động phản hồi sau khi cập nhật thành công
-            window.location.href = 'RefundRequestHomeArtist.html';
+            if(status=='AcceptedByArist'){
+              //code herre
+
+
+             
+              
+              
+              const apiUrl = `'https://localhost:7270/api/Payment/paypalRefund/${id}`;
+              
+              fetch(apiUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',  
+                    'Authorization': `Bearer ${token}`                        
+                }
+                  //body: JSON.stringify(data), // Nếu cần gửi dữ liệu trong body của request
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  console.log(`Refund request ${id} status updated to ${status}`);
+                  // Thực hiện các hành động phản hồi sau khi cập nhật thành công
+                
+              })
+              .catch(error => {
+                  console.error('Error updating refund request status:', error);
+                  // Xử lý lỗi nếu cần thiết
+              });
+
+
+
+            }else{
+            window.location.href = 'RefundRequestHomeArtist.html';}
         },
         error: function(xhr, status, error) {
             console.error('Error updating refund request status:', error);

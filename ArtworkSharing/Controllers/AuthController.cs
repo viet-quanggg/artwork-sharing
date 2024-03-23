@@ -8,6 +8,7 @@ using ArtworkSharing.Service.AutoMappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ArtworkSharing.Extensions;
 
 namespace ArtworkSharing.Controllers;
 
@@ -104,7 +105,7 @@ public class AuthController : ControllerBase
 
 
     [HttpPost]
-    [Authorize]
+    [Extensions.Authorize]
     public async Task<IActionResult> Logout()
     {
         //try
@@ -173,7 +174,8 @@ public class AuthController : ControllerBase
     public IActionResult ResetPassword(string token = null)
     {
         if (token == null) return BadRequest("A code must be supplied for password reset");
-        return Ok(new ResetPasswordModel { Code = token });
+        return Redirect("http://127.0.0.1:5500/demo/anefty/html/preview/reset-password.html?token={token}");
+       
     }
 
     [HttpPost]

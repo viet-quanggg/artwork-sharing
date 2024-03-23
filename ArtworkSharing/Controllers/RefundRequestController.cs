@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+using ArtworkSharing.Extensions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Security.Claims;
 using ArtworkSharing.Core.Domain.Enums;
@@ -95,8 +95,12 @@ public class RefundRequestController : ControllerBase
         try
         {
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid currentUserId = Guid.Parse(id + "");
+
+            if (currentUserId == Guid.Empty) return Unauthorized();
             var Artists = await _artistService.GetOneArist(currentUserId);
             if (Artists == null)
             {
@@ -207,8 +211,12 @@ public class RefundRequestController : ControllerBase
         try
         {
 
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            Guid currentUserId = new Guid(userIdClaim?.Value);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid currentUserId = Guid.Parse(id + "");
+
+            if (currentUserId == Guid.Empty) return Unauthorized();
             var Artists = await _artistService.GetOneArist(currentUserId);
             if (Artists == null)
             {
@@ -340,13 +348,19 @@ public class RefundRequestController : ControllerBase
     [HttpGet("/RefundRequestByUser")]
     public async Task<IActionResult> RefundRequestForUser()
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid currentUserId = new Guid(userIdClaim?.Value);
         try
         {
-            if (currentUserId != null)
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid uid = Guid.Parse(id + "");
+
+            if (uid == Guid.Empty) return Unauthorized();
+            if (uid == null) return BadRequest();
+            
+            if (uid != null)
             {
-                var list = await _refundRequestService.GetRefundRequestForUser(currentUserId);
+                var list = await _refundRequestService.GetRefundRequestForUser(uid);
                 return Ok(list);
             }
 
