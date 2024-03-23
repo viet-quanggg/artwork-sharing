@@ -102,7 +102,7 @@ public class TransactionController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTransactionArtwork(TransactionArtworkModel transactionArtworkModel)
     {
-        var rs = await _transactionService.CreateTransactionArtwork(transactionCreateModel);
-        return Ok(rs);
+       // var rs = await _transactionService.CreateTransactionArtwork(transactionCreateModel);
+        return Ok();
     }
 }
