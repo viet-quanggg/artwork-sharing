@@ -234,7 +234,7 @@ public class ArtworkService : IArtworkService
 
             artworks = artworks.Skip((browserArtworkModel.PageIndex) * browserArtworkModel.PageSize).Take(browserArtworkModel.PageSize);
         }
-        return await artworks.Include(x=>x.Comments).AsNoTracking().Include(x => x.Artist).ThenInclude(x => x.User).AsNoTracking().ToListAsync();
+        return await artworks.Include(x=>x.Comments).AsNoTracking().Include(x => x.Artist).ThenInclude(x => x.User).Include(x => x.MediaContents).AsNoTracking().ToListAsync();
     }
 
     public async Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy)

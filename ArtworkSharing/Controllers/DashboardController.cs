@@ -29,7 +29,6 @@ public class DashboardController : ControllerBase
         _ArtworkService = artworkService;
         _ArtistService = artistService;
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Transaction",Name = "Getalltransactionfordashboard")]
     public async Task<IActionResult> GetTransactionsByTimeRange(string timeRange, int page)
     {
@@ -73,7 +72,6 @@ public class DashboardController : ControllerBase
 
         }
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Transaction/Chart", Name = "GetalltransactionforChart")]
     public async Task<IActionResult> GetalltransactionforChart(string timeRange)
     {
@@ -115,7 +113,6 @@ public class DashboardController : ControllerBase
 
         }
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Artwork",Name = "GetallArtworkforDashboard")]
     public async Task<ActionResult> GetArtWork()
     {
@@ -131,7 +128,6 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Artist",Name = "GetArtistforDashboard")]
     public async Task<IActionResult> GetArtistforDashboard()
     {
@@ -147,7 +143,6 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/Search/{name}", Name = "GetSearchArtist")]
     public async Task<IActionResult> GetSearchArtist(string name, int page)
     {
@@ -173,7 +168,6 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/GetNameArtist/{id}", Name = "GetNameArtist")]
     public async Task<IActionResult> GetNameArtist(Guid id)
     {
@@ -211,7 +205,6 @@ public class DashboardController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-    [Authorize(nameof(RoleOfSystem.Admin))]
     [HttpGet("/ArtworkbyId", Name = "GetArtworkbyId")]
     public async Task<ActionResult> GetArtworkbyId(Guid id)
     {
