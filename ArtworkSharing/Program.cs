@@ -10,18 +10,7 @@ using ArtworkSharing.Service.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-var ArtworkSharing = "ArtworkSharing";
 
-// Add services to the container.
-//builder.Services.AddCors(options =>
-//{
-//    options.AddDefaultPolicy(builder =>
-//    {
-//        builder.AllowAnyOrigin()
-//               .AllowAnyMethod()
-//               .AllowAnyHeader();
-//    });
-//});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",
@@ -86,7 +75,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 // Đăng ký WatermarkController
 builder.Services.AddTransient<WatermarkController>();
 builder.Services.AddTransient<IWatermarkService, WatermarkService>();
@@ -105,8 +93,6 @@ app.UseCors(builder => builder
     .AllowAnyHeader());
 EnsureMigrate(app);
 
-EnsureMigrate(app);
-
 //app.UseCors("AllowOrigin");
 // Configure the HTTP request pipeline.
 
@@ -116,10 +102,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseException();
-
-
 
 
 app.UseException();
@@ -133,7 +115,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization(); // Add this line to enable authorization
-app.UseMiddleware<ExceptionMiddleware>(); 
+
 
 app.UseEndpoints(endpoints =>
 {

@@ -1,10 +1,10 @@
-using System.Security.Claims;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
-using ArtworkSharing.Service.Services;
+using ArtworkSharing.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace ArtworkSharing.Controllers;
 
@@ -42,7 +42,7 @@ public class TransactionController : ControllerBase
 
         return Ok(await _transactionService.GetTransaction(id));
     }
-    
+
     [HttpGet("userTransactions")]
     public async Task<ActionResult> GetUserTransaction()
     {
@@ -68,32 +68,41 @@ public class TransactionController : ControllerBase
     public async Task<IActionResult> GetalltransactionforChart(string timeRange)
     {
         if (timeRange == null) return BadRequest();
-            DateTime startDate;
-            if (timeRange.IsNullOrEmpty())
+        DateTime startDate;
+        if (timeRange.IsNullOrEmpty())
+        {
+            startDate = DateTime.Now.AddYears(-1);
+        }
+        else
+        {
+            switch (timeRange.ToLower())
             {
-                startDate = DateTime.Now.AddYears(-1);
+                case "day":
+                    startDate = DateTime.Now.AddDays(-10);
+                    break;
+                case "month":
+                    startDate = DateTime.Now.AddMonths(-5);
+                    break;
+                case "year":
+                    startDate = DateTime.Now.AddYears(-5);
+                    break;
+                default:
+                    return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
             }
-            else
-            {
-                switch (timeRange.ToLower())
-                {
-                    case "day":
-                        startDate = DateTime.Now.AddDays(-10);
-                        break;
-                    case "month":
-                        startDate = DateTime.Now.AddMonths(-5);
-                        break;
-                    case "year":
-                        startDate = DateTime.Now.AddYears(-5);
-                        break;
-                    default:
-                        return BadRequest("Invalid time range. Supported values are 'day', 'month', and 'year'.");
-                }
-            }
-            var transactions = await _transactionService.GetAudience();
-            var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
+        }
+        var transactions = await _transactionService.GetAudience();
+        var filteredTransactions = transactions.Where(t => t.CreatedDate >= startDate);
 
-            return Ok(filteredTransactions);
+        return Ok(filteredTransactions);
     }
 
+
+    [ArtworkSharing.Extensions.Authorize]
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTransactionArtwork(TransactionArtworkModel transactionArtworkModel)
+    {
+        var rs = await _transactionService.CreateTransactionArtwork(transactionCreateModel);
+        return Ok(rs);
+    }
 }
