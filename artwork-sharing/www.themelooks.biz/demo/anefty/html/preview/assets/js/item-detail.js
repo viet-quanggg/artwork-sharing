@@ -3,7 +3,7 @@ window.onload = async function LoadItemDetail() {
     const urlParams = new URLSearchParams(queryString);
 
     var token = localStorage.getItem('token');
-
+    console.log(token)
     var headers = new Headers();
     headers.append('Authorization', 'Bearer ' + token);
 
