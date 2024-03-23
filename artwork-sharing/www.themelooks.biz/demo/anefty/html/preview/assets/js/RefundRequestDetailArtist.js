@@ -105,7 +105,43 @@ function updateRefundRequestStatus(status) {
         success: function(response) {
             console.log(`Refund request ${id} status updated to ${status}`);
             // Thực hiện các hành động phản hồi sau khi cập nhật thành công
-            window.location.href = 'RefundRequestHomeArtist.html';
+            if(status=='AcceptedByArist'){
+              //code herre
+
+
+             
+              
+              
+              const apiUrl = `https://localhost:7270/api/RefundRequest/${id}/status?status=${status}`;
+              
+              fetch(apiUrl, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  //body: JSON.stringify(data), // Nếu cần gửi dữ liệu trong body của request
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  console.log(`Refund request ${id} status updated to ${status}`);
+                  // Thực hiện các hành động phản hồi sau khi cập nhật thành công
+                  if(status === 'AcceptedByArist') {
+                      // Code ở đây cho trường hợp trạng thái là 'AcceptedByArist'
+                  } else {
+                      window.location.href = 'RefundRequestHomeArtist.html';
+                  }
+              })
+              .catch(error => {
+                  console.error('Error updating refund request status:', error);
+                  // Xử lý lỗi nếu cần thiết
+              });
+
+
+
+            }else{
+            window.location.href = 'RefundRequestHomeArtist.html';}
         },
         error: function(xhr, status, error) {
             console.error('Error updating refund request status:', error);
