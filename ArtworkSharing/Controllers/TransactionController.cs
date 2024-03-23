@@ -46,10 +46,13 @@ public class TransactionController : ControllerBase
     [HttpGet("userTransactions")]
     public async Task<ActionResult> GetUserTransaction()
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid currentUserId = new Guid(userIdClaim?.Value);
-        if (currentUserId == Guid.Empty) return BadRequest(new { Message = "User not found!" });
-        return Ok(await _transactionService.GetTransactionsForUser(currentUserId));
+        var id = HttpContext.Items["UserId"];
+        if (id == null) return Unauthorized();
+
+        Guid uid = Guid.Parse(id + "");
+
+        if (uid == Guid.Empty) return Unauthorized();
+        return Ok(await _transactionService.GetTransactionsForUser(uid));
     }
 
     [HttpPost("/CreateTransactionForArtworkServiceDeposit")]
