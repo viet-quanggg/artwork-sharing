@@ -1,4 +1,3 @@
-const token = localStorage.getItem('token');
 $(document).ready(function () {
     // Initialize DataTable
     $('#purchaseTable').DataTable();
@@ -8,9 +7,6 @@ $(document).ready(function () {
         $.ajax({
             url: 'https://localhost:7270/api/Transaction/userTransactions',
             type: 'GET',
-            headers: {               
-                'Authorization': `Bearer ${token}`                        
-            },
             success: function (response) {
                 // Clear existing table data
 

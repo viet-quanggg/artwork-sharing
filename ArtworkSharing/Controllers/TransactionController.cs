@@ -1,7 +1,7 @@
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using ArtworkSharing.Extensions;
-using Microsoft.AspNetCore.Authorization;
+using ArtworkSharing.Service.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -43,6 +43,7 @@ public class TransactionController : ControllerBase
         return Ok(await _transactionService.GetTransaction(id));
     }
 
+    [Authorize]
     [HttpGet("userTransactions")]
     public async Task<ActionResult> GetUserTransaction()
     {
@@ -52,16 +53,22 @@ public class TransactionController : ControllerBase
         Guid uid = Guid.Parse(id + "");
 
         if (uid == Guid.Empty) return Unauthorized();
+
         return Ok(await _transactionService.GetTransactionsForUser(uid));
     }
 
+    [Authorize]
     [HttpPost("/CreateTransactionForArtworkServiceDeposit")]
     public async Task<IActionResult> CreateTransactionForArtworkServiceDeposit(Guid artworkServiceId, Guid paymentMethodId)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        Guid currentUserId = new Guid(userIdClaim?.Value);
-        if (artworkServiceId == null || currentUserId == null) return BadRequest();
-        return Ok(await _transactionService.CreateTransactionForArtworkRequestDeposit(artworkServiceId, currentUserId, paymentMethodId));
+        var id = HttpContext.Items["UserId"];
+        if (id == null) return Unauthorized();
+
+        Guid uid = Guid.Parse(id + "");
+
+        if (uid == Guid.Empty) return Unauthorized();
+        if (uid == null) return BadRequest();
+        return Ok(await _transactionService.CreateTransactionForArtworkRequestDeposit(artworkServiceId, uid, paymentMethodId));
     }
 
     [HttpGet("/Count")]
