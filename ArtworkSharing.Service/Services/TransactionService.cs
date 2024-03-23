@@ -105,6 +105,7 @@ public class TransactionService : ITransactionService
             transaction.TotalBill = artworkService.RequestedDeposit;
             transaction.Type = TransactionType.ArtworkService;
             transaction.Status = TransactionStatus.Pending;
+            transaction.ArtworkService = artworkService;
             transaction.PaymentMethod = paymentMethod;
 
             await transactionRepo.AddAsync(transaction);
@@ -152,6 +153,23 @@ public class TransactionService : ITransactionService
         _uow.TransactionRepository.UpdateTransaction(transaction);
         await _uow.SaveChangesAsync();
         return await GetTransaction(id);
+    }
+
+    public async Task<TransactionViewModel> CreateTransactionArtwork(TransactionCreateModel transactionCreateModel)
+    {
+        Transaction transaction = new Transaction
+        {
+            Id = Guid.NewGuid(),
+            ArtworkId = transactionCreateModel.ArtworkId,
+            TotalBill = transactionCreateModel.TotalBill,
+            CreatedDate = DateTime.Now,
+            PaymentMethodId = transactionCreateModel.PaymentMethodId,
+            Type = TransactionType.Artwork,
+            Status = TransactionStatus.Pending
+        };
+        await _uow.TransactionRepository.AddAsync(transaction);
+        await _uow.SaveChangesAsync();
+        return AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(await GetOne(transaction.Id));
     }
 
     IEnumerable<Transaction> ITransactionService.Get(Expression<Func<Transaction, bool>> filter, Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderBy, string includeProperties, int? pageIndex, int? pageSize)

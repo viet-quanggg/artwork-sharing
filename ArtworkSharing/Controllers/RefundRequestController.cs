@@ -348,17 +348,19 @@ public class RefundRequestController : ControllerBase
     [HttpGet("/RefundRequestByUser")]
     public async Task<IActionResult> RefundRequestForUser()
     {
-        var id = HttpContext.Items["UserId"];
-        if (id == null) return Unauthorized();
-
-        Guid currentUserId = Guid.Parse(id + "");
-
-        if (currentUserId == Guid.Empty) return Unauthorized();
         try
         {
-            if (currentUserId != null)
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid uid = Guid.Parse(id + "");
+
+            if (uid == Guid.Empty) return Unauthorized();
+            if (uid == null) return BadRequest();
+            
+            if (uid != null)
             {
-                var list = await _refundRequestService.GetRefundRequestForUser(currentUserId);
+                var list = await _refundRequestService.GetRefundRequestForUser(uid);
                 return Ok(list);
             }
 

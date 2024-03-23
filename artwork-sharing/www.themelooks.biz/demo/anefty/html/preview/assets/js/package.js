@@ -31,12 +31,12 @@ function renderPackages(packages) {
                 <h6>${package.price} $</h6>
                 <div class="countdown-wrap">
                   <ul class="countdown">
-                    <li><span class="hours">${package.price*24}</span></li>
+                    <li><span class="hours">${package.price}</span></li>
                     <li class="ms-1 me-1">:</li>
                     <li><span class="minutes">00</span></li>
                     <li class="ms-1 me-1">:</li>
                     <li><span class="seconds">00</span></li>
-                    <li class="text-uppercase ms-1">left</li>
+                    <li class="text-uppercase ms-1">h</li>
                   </ul>
                 </div>
               </div>
