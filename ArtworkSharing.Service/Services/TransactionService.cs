@@ -154,7 +154,7 @@ public class TransactionService : ITransactionService
         return await GetTransaction(id);
     }
 
-    public async Task<TransactionViewModel> CreateTransactionArtwork(TransactionCreateModel transactionCreateModel)
+    public async Task<Transaction> CreateTransactionArtwork(TransactionCreateModel transactionCreateModel)
     {
         Transaction transaction = new Transaction
         {
@@ -164,11 +164,23 @@ public class TransactionService : ITransactionService
             CreatedDate = DateTime.Now,
             PaymentMethodId = transactionCreateModel.PaymentMethodId,
             Type = TransactionType.Artwork,
-            Status = TransactionStatus.Pending
+            Status = TransactionStatus.Pending,
+            AudienceId = transactionCreateModel.AudienceId
         };
         await _uow.TransactionRepository.AddAsync(transaction);
         await _uow.SaveChangesAsync();
-        return AutoMapperConfiguration.Mapper.Map<TransactionViewModel>(await GetOne(transaction.Id));
+        return await GetOne(transaction.Id);
+    }
+
+    public async Task UpdateTransaction(TransactionViewModel transactionViewModel)
+    {
+        var transaction = await _uow.TransactionRepository.FirstOrDefaultAsync(x => x.Id == transactionViewModel.Id);
+        if (transaction != null)
+        {
+            transaction.Status = TransactionStatus.Success;
+            _uow.TransactionRepository.UpdateTransaction(transaction);
+            await _uow.SaveChangesAsync();
+        }
     }
 
     IEnumerable<Transaction> ITransactionService.Get(Expression<Func<Transaction, bool>> filter, Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderBy, string includeProperties, int? pageIndex, int? pageSize)

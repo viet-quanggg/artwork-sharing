@@ -22,6 +22,7 @@ public interface IArtworkService
     Task<bool> DeleteArtworkAdmin(Guid artworkId);
     Task<List<Artwork>> GetArtworks(BrowseArtworkModel? bam = null!);
     Task<PaginatedResult> GetArtworkByArtist(Guid artistId, int pageIndex, int pageSize, string filter, string orderBy);
+    Task<Artwork> GetArtwork(Guid id);
     IEnumerable<Artwork> Get(
        Expression<Func<Artwork, bool>> filter = null,
        Func<IQueryable<Artwork>, IOrderedQueryable<Artwork>> orderBy = null,

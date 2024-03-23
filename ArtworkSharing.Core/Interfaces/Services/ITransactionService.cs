@@ -17,7 +17,8 @@ public interface ITransactionService
     Task<List<TransactionsViewModelUser>> GetTransactionsForUser(Guid userId);
 
     Task<TransactionViewModel> AddTransaction(Transaction transaction);
-    Task<TransactionViewModel> CreateTransactionArtwork(TransactionCreateModel transactionCreateModel);
+    Task<Transaction> CreateTransactionArtwork(TransactionCreateModel transactionCreateModel);
+    Task UpdateTransaction(TransactionViewModel transactionViewModel);
     IEnumerable<Transaction> Get(
 Expression<Func<Transaction, bool>> filter = null,
 Func<IQueryable<Transaction>, IOrderedQueryable<Transaction>> orderBy = null,

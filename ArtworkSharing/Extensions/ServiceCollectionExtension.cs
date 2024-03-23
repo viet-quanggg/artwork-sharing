@@ -70,7 +70,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IPaypalPaymentEventService, PaypalPaymentEventService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IPaypalRefundEventService, PaypalRefundEventService>();
-
+        services.AddScoped<IPaymentService, PaymentService>();
 
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
