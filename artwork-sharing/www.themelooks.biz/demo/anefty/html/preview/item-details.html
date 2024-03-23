@@ -161,7 +161,7 @@
                                         <h5 id="name-artist">Anehty_Yacht</h5>
                                     </div>
                                 </a></div>
-                        </div> 
+                        </div>
                         <ul class="nav tab-buttons style--two">
                             <li><button class="active" data-bs-toggle="tab" data-bs-target="#info">Comments</button>
                             </li>
@@ -193,8 +193,9 @@
                             </div>
                             <div class="mb-3">
                                 <label id="name-u" for="exampleInputEmail1" class="form-label">Michael</label>
-                                <input id="content-cmt" style="border: 1px solid #ff0076; border-radius: 10px;" type="text"
-                                    class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                                <input id="content-cmt" style="border: 1px solid #ff0076; border-radius: 10px;"
+                                    type="text" class="form-control" id="exampleInputEmail1"
+                                    aria-describedby="emailHelp">
                             </div>
                             <div id="btn-send-cmt">
                                 <button onclick="SendCmt('')" type="button" class="btn btn-primary">Comments</button>
@@ -287,6 +288,33 @@
                                 class="text-white">Themelooks</a> Networks, Inc. All Right Reserved.</div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="modal fade" id="paymentMethod" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Select Payment Method</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <p>
+                            Please select payment method for your transaction
+                            </p>
+                        </div>
+                        <div id="methodSelect">
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button id="closePaymentButton" type="button" class="btn btn-close" data-dismiss="modal">Close</button>
+                        <button type="button" id="confirmPaymentButton" class="btn btn-primary">Proceed To Payment</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </footer><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>

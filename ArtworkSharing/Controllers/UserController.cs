@@ -2,6 +2,7 @@ using ArtworkSharing.Core.Domain.Entities;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.User;
 using ArtworkSharing.Core.ViewModels.Users;
+using ArtworkSharing.Extensions;
 using ArtworkSharing.Service.AutoMappings;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -33,12 +34,20 @@ public class UserController : Controller
         }
     }
 
+    [Authorize]
     [HttpGet("getuser")]
-    public async Task<ActionResult> getUser(Guid userId)
+    public async Task<ActionResult> getUser()
     {
         try
         {
-            var user = await _userService.GetUserAdmin(userId);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid uid = Guid.Parse(id + "");
+
+            if (uid == Guid.Empty) return Unauthorized();
+
+            var user = await _userService.GetUserAdmin(uid);
             return Ok(user);
         }
         catch (Exception ex)

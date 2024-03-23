@@ -3,7 +3,6 @@ window.onload = async function LoadItemDetail() {
     const urlParams = new URLSearchParams(queryString);
 
     var token = localStorage.getItem('token');
-
     var headers = new Headers();
     headers.append('Authorization', 'Bearer ' + token);
 
@@ -47,9 +46,7 @@ async function CheckLike(id) {
     if (rs.ok) {
         var txt = await rs.text();
         var pTxt = JSON.parse(txt);
-
-        console.log(pTxt);
-        if (pTxt.result == "true") {
+        if (pTxt.result + "" == "true") {
             document.getElementById('like-artwork').innerHTML = `  <div onclick="SendLike('${id}')"  class="love-react style--two is-active"></div>
             <div class="love-count">${pTxt.likeViewModels.length}</div>`
         } else {
@@ -60,6 +57,12 @@ async function CheckLike(id) {
 }
 
 async function SendLike(id) {
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + token);
+    headers.append('Content-Type', 'application/json');
+
     var obj = {
         "ArtworkId": id,
     }
@@ -68,20 +71,29 @@ async function SendLike(id) {
     var resultFet = await fetch(url,
         {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             body: JSON.stringify(obj)
         }
     );
     if (resultFet.ok) {
         await CheckLike(id);
+    } else {
+        // redirect login
     }
 }
 
 async function GetComments(id) {
+
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + token);
+
     var url = "https://localhost:7270/api/Comment/" + id;
-    var request = new Request(url);
+    var request = new Request(url, {
+        method: 'GET',
+        headers: headers
+    });
     var rs = await fetch(request);
     if (rs.ok) {
         var txt = await rs.text();
@@ -97,14 +109,46 @@ async function GetComments(id) {
         });
     }
 }
+async function GetPaymentMethod(id) {
 
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + token);
+
+    var url = "https://localhost:7270/api/Payment/paymentMethod" + id;
+    var request = new Request(url, {
+        method: 'GET',
+        headers: headers
+    });
+    var rs = await fetch(request);
+    if (rs.ok) {
+        var txt = await rs.text();
+        var pTxt = JSON.parse(txt);
+        document.getElementById('u-cmt').innerHTML = "";
+        var aa = 0
+        pTxt.forEach(element => {
+
+            document.getElementById('u-cmt').innerHTML += `<li > 
+            <h6><b>${element.commentedUser.name}</b></h6>
+            <h6>${element.content}</h6>
+        </li>`
+        });
+    }
+}
 async function SendCmt(id) {
+
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + token);
+    headers.append('Content-Type', 'application/json');
+
     var content = document.getElementById('content-cmt').value;
     if ((content + "").trim() == "") {
         return;
     }
     var obj = {
-        "CommentedUserId": sessionStorage.getItem("uid") + "",
         "ArtworkId": id,
         "Content": content
     }
@@ -113,9 +157,7 @@ async function SendCmt(id) {
     var resultFet = await fetch(url,
         {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: headers,
             body: JSON.stringify(obj)
         }
     );
@@ -126,8 +168,15 @@ async function SendCmt(id) {
 }
 
 async function GetUser() {
-    var url = "https://localhost:7270/api/usercontroller/getuser?userId=" + sessionStorage.getItem("uid");
-    var request = new Request(url);
+    var token = localStorage.getItem('token');
+
+    var headers = new Headers();
+    headers.append('Authorization', 'Bearer ' + token);
+    var url = "https://localhost:7270/api/usercontroller/getuser";
+    var request = new Request(url, {
+        method: 'GET',
+        headers: headers
+    });
     var rs = await fetch(request);
     if (rs.ok) {
         var txt = await rs.text();
