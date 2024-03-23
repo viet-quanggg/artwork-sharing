@@ -18,10 +18,13 @@ window.onload = async function LoadItemDetail() {
     if (rs.ok) {
         var txt = await rs.text();
         var pTxt = JSON.parse(txt);
+        console.log(pTxt);
         document.getElementById('price-artwork').innerText = pTxt.price;
-        document.getElementById('name-artist').innerText = pTxt.artist.user.name;
+        // document.getElementById('name-artist').innerText = pTxt.artist.user.name;
         document.getElementById('artwork-tilte').innerText = pTxt.name;
         document.getElementById('artwork-description').innerText = pTxt.description;
+        var h5HTML = '<h5 id="name-artist"><a href="ArtistProfile.html?id=' + pTxt.artistId + '">' + pTxt.artist.user.name + '</a></h5>';
+        document.getElementById('artistTab').insertAdjacentHTML('beforeend', h5HTML);
 
         await GetUser();
         await CheckLike(artworkId);
