@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/register.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:09 GMT -->
+
+<head>
+    <title>Anefty || NFT Marketplace HTML5 Template</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link rel="shortcut icon" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&amp;family=Roboto:wght@400;700&amp;display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/plugins/swiper/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/plugins/magnific-popup/magnific-popup.css">
+    <link rel="stylesheet" href="assets/plugins/nice-select/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+
+<body>
+    <div class="preloader">
+        <div class="preloader-inner"><img src="assets/img/icons/text.svg" alt="" class="svg preloader-svg"></div>
+    </div>
+    <header class="header">
+    </header>
+    <div class="py-5 d-flex align-items-center" style="min-height: calc(100vh - 100px);"
+        data-bg-img="assets/img/bg/page-bg2.png">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-10">
+                    <div class="card login-register-card">
+                        <div class="card-body">
+                            <div class="text-center mb-5">
+                                <h2>Register New Account</h2>
+                                <p>Already account yet? <a href="login.html" class="c1">Login Now!</a></p>
+                            </div>
+                            <form id="register-form">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group"><label for="display_name" class="mb-2">Display
+                                                name</label> <input type="text" id="display_name" class="form-control"
+                                                placeholder="e.g@alex_anefty"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group"><label for="email" class="mb-2">Email Address</label>
+                                            <input type="email" id="email" class="form-control"
+                                                placeholder="anefty@gmail.com">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="gender" class="mb-2">Gender</label>
+                                            <select class="form-control" id="gender" name="gender">
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group"><label for="phone_num" class="mb-2">Phone Number</label>
+                                            <input type="tel" id="phone_num" class="form-control"
+                                                placeholder="+01 776-542154">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group"><label for="password" class="mb-2">Password</label>
+                                            <input type="password" id="password" class="form-control"
+                                                placeholder="*** **** *** ****">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group"><label for="re-password" class="mb-2">Re-enter
+                                                Password</label> <input type="password" id="re-password"
+                                                class="form-control" placeholder="*** **** *** ****"></div>
+                                    </div>
+                                    <!-- Error message display -->
+                                    <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
+                                    <div class="col-12 pt-2"><button type="submit" class="btn"><img
+                                                src="assets/img/icons/btn-login.svg" alt="" class="svg"> register
+                                            now</button></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
+    <script>
+        async function registerUser() {
+            const displayName = document.getElementById('display_name').value;
+            const email = document.getElementById('email').value;
+            const gender = document.getElementById('gender').value;
+            const phoneNumber = document.getElementById('phone_num').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('re-password').value;
+
+            const data = {
+                Email: email,
+                Name: displayName,
+                Password: password,
+                ConfirmPassword: confirmPassword,
+                Gender: gender,
+                Phone: phoneNumber
+            };
+
+            fetch('https://localhost:7270/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errors => {
+                            const errorMessageElement = document.getElementById('error-message');  
+                            errorMessageElement.textContent = "";
+                            const passwordErrors = errors.errors.Password;
+                            const cfPasswordErrors = errors.errors.ConfirmPassword;
+                            const emailErrors = errors.errors.Email;
+                            if (passwordErrors && passwordErrors.length > 0) {
+                                const firstPasswordError = passwordErrors[0];
+                                displayErrorMessage(firstPasswordError);
+                            }  if (emailErrors && emailErrors.length > 0) {
+                                const firstemailError = emailErrors[0];
+                                displayErrorMessage(firstemailError);
+                            }  if (cfPasswordErrors && cfPasswordErrors.length > 0) {
+                                const cfPasswordError = cfPasswordErrors[0];
+                                displayErrorMessage(cfPasswordError);
+                            }
+                           
+                            console.log(errors);
+                        });
+                    }
+                    window.location.href = "register-success.html";
+                    console.log('Registration successful');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayErrorMessage('An error occurred while processing your request. Please try again later.');
+                });
+        }
+
+
+        // Function to display error message
+        function displayErrorMessage(message) {
+            const errorMessageElement = document.getElementById('error-message');           
+            errorMessageElement.textContent += message;
+            errorMessageElement.style.display = 'block';
+        }
+
+        // Add an event listener to the register form
+        document.getElementById('register-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission
+            registerUser(); // Call the registerUser function to handle the registration process
+        });
+    </script>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/plugins/particles/particles.min.js"></script>
+    <script src="assets/js/menu.min.js"></script>
+    <script src="assets/plugins/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/plugins/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="assets/plugins/countdown/countdown.min.js"></script>
+    <script src="assets/plugins/nice-select/jquery.nice-select.min.js"></script>
+    <script src="assets/plugins/Isotope/isotope.pkgd.js"></script>
+    <script src="assets/plugins/counterup/waypoints.min.js"></script>
+    <script src="assets/plugins/counterup/jquery.counterup.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/custom.js"></script>
+</body>
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/register.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:13 GMT -->
+
+</html>

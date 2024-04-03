@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/item-details.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:21 GMT -->
+
+<head>
+    <title>Anefty || NFT Marketplace HTML5 Template</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link rel="shortcut icon" href="favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&amp;family=Roboto:wght@400;700&amp;display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/plugins/swiper/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/plugins/magnific-popup/magnific-popup.css">
+    <link rel="stylesheet" href="assets/plugins/nice-select/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/custom.css">
+</head>
+
+<body>
+    <div class="preloader">
+        <div class="preloader-inner"><img src="assets/img/icons/text.svg" alt="" class="svg preloader-svg"></div>
+    </div>
+    <header class="header">
+        <div id="headerContainer"></div>    </header>
+    <div class="author-area">
+        <div class="author-cover" data-bg-img="assets/img/bg/author-cover.png"></div>
+    </div>
+    <section class="pt-120 pb-120">
+        <div class="container" id="refund-details">
+            <div class="row justify-content-between">
+                <div class="col-lg-6 order-1 order-lg-0">
+                    <div class="item-details ov-hidden">
+                        <h2 class="product-title" id="artwork-tilte"></h2>
+                        <div class="favorites">
+                            <div id="like-artwork" class="love-react-wrap d-flex align-items-center">
+                                <div class="love-count" id="request-date"></div>
+                            </div>
+                        </div>
+                        <div class="favorites">
+                            <div  class="love-react-wrap d-flex align-items-center">
+                                <div class="love-count" id="refund-id"></div>
+                            </div>
+                        </div>
+                        <div class="favorites">
+                            <div class="love-react-wrap d-flex align-items-center">
+                                <div class="love-count" id="transaction-id"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 id="refund-description">Description</h3>
+                        </div>
+                        <p id="refund-reason">
+                            
+                        </p>
+                        <div class="row pt-1">
+                            <div class="col-sm-6">
+                                <div class="price mb-4 mb-sm-0">
+                                    <h6>Item Price</h6>
+                                    <h3 id="price-artwork"></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div>
+                            <a class="btn btn-primary" ><button id="refund-status"></button></a>
+                        </div>
+                        <br>
+                        <div class="button-group style--two">
+                            <a id="cancel-button" class="btn btn-border btn-sm"><img src="assets/img/icons/btn-buy-now-icon.svg" alt="" class="svg">Cancel request</a> 
+                        </div>
+                        <div class="row mb-4 mt-40 pt-1">
+                            <div class="col-sm-6"><a href="profile.html" class="hz-profile creator media mb-4 mb-sm-0">
+                                    <div class="avatar"><img src="assets/img/media/creator-avatar.png" alt=""></div>
+                                    <div class="content media-body">
+                                        <h6 >Artwork Author</h6>
+                                        <h5 id="artwork-artist"></h5>
+                                    </div>
+                                </a></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-5 col-lg-6 order-0 order-lg-1">
+                    <div class="item-details-img mb-5 mb-lg-0"><img src="assets/img/media/item-details.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!--                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>-->
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Are you sure to cancel this request ?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div>
+                                <p>
+                                    Please note that canceling your refund request is irreversible and will result in the cancellation of your refund process !
+                                </p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="closeButton" type="button" class="btn btn-close" data-dismiss="modal">No</button>
+                            <button type="button" id="confirmButton" class="btn btn-primary">Yes</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        
+    </section>
+    <footer class="footer">
+        <div id="footerContainer"></div>
+    </footer><a href="#" class="back-to-top"><i class="fas fa-long-arrow-alt-up"></i></a>
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/plugins/particles/particles.min.js"></script>
+    <script src="assets/js/menu.min.js"></script>
+    <script src="assets/plugins/swiper/swiper-bundle.min.js"></script>
+    <script src="assets/plugins/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <script src="assets/plugins/countdown/countdown.min.js"></script>
+    <script src="assets/plugins/nice-select/jquery.nice-select.min.js"></script>
+    <script src="assets/plugins/Isotope/isotope.pkgd.js"></script>
+    <script src="assets/plugins/counterup/waypoints.min.js"></script>
+    <script src="assets/plugins/counterup/jquery.counterup.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/custom.js"></script>
+    <script src="assets/js/UserJS/RefundRequestDetails.js"></script>
+    <script src="assets/js/HomeJS.js"></script>
+</body>
+<!-- Mirrored from www.themelooks.biz/demo/anefty/html/preview/item-details.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 05 Feb 2024 11:07:22 GMT -->
+
+</html>
