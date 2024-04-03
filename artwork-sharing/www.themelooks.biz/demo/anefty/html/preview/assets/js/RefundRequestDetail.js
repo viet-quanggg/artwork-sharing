@@ -13,7 +13,7 @@ const apiUrl = `https://localhost:7270/RefundRequest/${id}`;
 
 // Function to render data on the HTML template
 function renderDataOnHTML(data) {
-  document.getElementById('product-title').textContent = data[0].id;
+  document.getElementById('product-title').textContent = data[0].transaction.audience.name;
   //document.getElementById('available').textContent = `Available ${data.id}`;
   //document.getElementById('love-count').textContent = data.id;
   //document.getElementById('paragraph').textContent = data.paragraph;
@@ -71,13 +71,13 @@ fetch(apiUrl)
 
   // Khi nhấp vào nút "Deny"
 $('#btn-border').click(function() {
-    updateRefundRequestStatus('Deny');
+    updateRefundRequestStatus('DeniedBySystem');
    
 });
 
 // Khi nhấp vào nút "Accept"
 $('#btn-sm').click(function() {
-    updateRefundRequestStatus('Accept');
+    updateRefundRequestStatus('AcceptedBySystem');
    
 });
 
@@ -92,7 +92,7 @@ function updateRefundRequestStatus(status) {
         console.error('Refund request id not found');
         return;
     }
-     status = status+"ByAdmin";
+     status = status;
     // Gọi API để cập nhật trạng thái của refund request
     const apiUrl = `https://localhost:7270/RefundRequest/${id}/status?status=${status}`;
     $.ajax({

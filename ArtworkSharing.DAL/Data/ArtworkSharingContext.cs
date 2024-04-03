@@ -38,6 +38,14 @@ public class ArtworkSharingContext : IdentityDbContext<User, Role,
     public DbSet<VNPayTransactionRefund> VNPayTransactionRefunds { get; set; }
     public DbSet<VNPayTransactionTransfer> VNPayTransactionTransfers { get; set; }
     public DbSet<PaymentEvent> PaymentEvents { get; set; }
+    public DbSet<PaypalAmount> PaypalAmounts { get; set; }
+    public DbSet<PaypalItem> PaypalItems { get; set; }
+    public DbSet<PaypalOrder> PaypalOrders { get; set; }
+    public DbSet<PaymentRefundEvent> PaymentRefundEvents { get; set; }
+    public DbSet<PaypalPaymentEvent> PaypalPaymentEvents { get; set; }
+    public DbSet<PaypalRefundEvent> PaypalRefundEvents { get; set; }
+    public DbSet<PaymentMethod> PaymentMethods { get; set; }
+    public DbSet<PaypalRefund> PaypalRefunds { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {

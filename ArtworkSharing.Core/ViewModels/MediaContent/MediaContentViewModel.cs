@@ -7,6 +7,6 @@ public class MediaContentViewModel
     public Guid ArtworkId { get; set; }
     public float Capacity { get; set; }
     public string Media { get; set; } = null!;
-
-    public Artwork Artwork { get; set; } = null!;
+    public string MediaWithoutWatermark { get; set; } = null!;
+  
 }

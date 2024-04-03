@@ -17,6 +17,7 @@ using ArtworkSharing.Core.ViewModels.Users;
 using ArtworkSharing.Core.ViewModels.VNPAYS;
 using ArtworkSharing.Service.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using ArtworkService = ArtworkSharing.Core.Domain.Entities.ArtworkService;
 using UserViewModel = ArtworkSharing.Core.ViewModels.User.UserViewModel;
 
@@ -38,11 +39,13 @@ public class AutoMapperConfiguration
 }
 
 public class MapperHandler : Profile
-{
+{   
     public MapperHandler()
     {
         CreateMap<Transaction, TransactionViewModel>().ReverseMap();
         CreateMap<Transaction, UpdateTransactionModel>().ReverseMap();
+        CreateMap<Transaction, TransactionsViewModelUser>().ReverseMap();
+        CreateMap<Transaction, OrderViewModel>().ReverseMap();
 
         CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
         CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
@@ -51,6 +54,7 @@ public class MapperHandler : Profile
         CreateMap<ArtworkService, CreateArtworkRequestModel>().ReverseMap();
         CreateMap<ArtworkService, UpdateArtworkRequestModel>().ReverseMap();
         CreateMap<ArtworkService, ArtworkRequestViewModel>().ReverseMap();
+        CreateMap<ArtworkService, ArtworkRequestViewModelUser>().ReverseMap();
 
         CreateMap<User, CreateUserViewModel>().ReverseMap();
         CreateMap<User, UserToLoginDto>().ReverseMap();
@@ -58,28 +62,38 @@ public class MapperHandler : Profile
         CreateMap<User, UserDto>().ReverseMap();
         CreateMap<User, UpdateUserModelAdmin>().ReverseMap();
 
-        CreateMap<Artwork, ArtworkViewModelAdmin>().ReverseMap();
         CreateMap<Artwork, ArtworkCreateModelAdmin>().ReverseMap();
         CreateMap<Artwork, UpdateArtworkRequestModel>().ReverseMap();
+        CreateMap<Artwork, ArtworkViewModelAdmin>().ReverseMap();
+
 
         CreateMap<RefundRequest, RefundRequestViewModel>().ReverseMap();
         CreateMap<RefundRequest, UpdateRefundRequestModel>().ReverseMap();
+        CreateMap<RefundRequest, RefundRequestViewModelUser>().ReverseMap();
+
+
         CreateMap<MediaContent, MediaContentViewModel>().ReverseMap();
         CreateMap<Package, PackageViewModel>().ReverseMap();
         CreateMap<Rating, RatingViewModel>().ReverseMap();
 
-        CreateMap<Artwork, ArtworkViewModel>().ReverseMap();
+        CreateMap<Artwork, ArtworkViewModel>().ForMember(x => x.MediaContents, x => x.MapFrom(x => x.MediaContents));
+        CreateMap<CreateArtworkModel, Artwork>()
+            .ForMember(dest => dest.MediaContents, opt => opt.Ignore());
+
         CreateMap<Category, CategoryViewModel>().ReverseMap();
         CreateMap<Artist, ArtistViewModel>().ReverseMap();
         CreateMap<MediaContent, Core.ViewModels.MediaContents.MediaContentViewModel>().ReverseMap();
 
         CreateMap<User, UserViewModel>().ReverseMap();
-        CreateMap<User, Core.ViewModels.Users.UserViewModel>().ReverseMap();
+        CreateMap<User, UserViewModel>().ReverseMap();
+        CreateMap<User, Core.ViewModels.Users.UserViewModel>();
         CreateMap<User, UpdateUserModel>().ReverseMap();
         CreateMap<User, CreateUserModel>().ReverseMap();
         CreateMap<User, UserToLoginDto>().ReverseMap();
         CreateMap<User, UserToRegisterDto>().ReverseMap();
         CreateMap<User, UserDto>().ReverseMap();
+
+        CreateMap<Artist, ArtistProfileViewModel>().ReverseMap();
 
         CreateMap<Like, LikeModel>().ReverseMap();
         CreateMap<Like, LikeViewModel>().ReverseMap();
@@ -89,6 +103,8 @@ public class MapperHandler : Profile
         CreateMap<Comment, UpdateCommentModel>().ReverseMap();
 
         CreateMap<VNPayTransaction, VNPayTransactionViewModel>().ReverseMap();
-        CreateMap<ITransactionService, TransactionService>().ReverseMap();
+        CreateMap<ITransactionService, TransactionService>().ReverseMap();      
+
     }
+   
 }

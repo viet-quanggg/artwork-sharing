@@ -8,6 +8,7 @@ using ArtworkSharing.Service.AutoMappings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ArtworkSharing.Extensions;
 
 namespace ArtworkSharing.Controllers;
 
@@ -53,9 +54,10 @@ public class AuthController : ControllerBase
             if (!result.Succeeded) return Unauthorized("Invalid password");
             var userMapping = AutoMapperConfiguration.Mapper.Map<User>(userToLoginDTO);
             var userToReturn = AutoMapperConfiguration.Mapper.Map<UserDto>(userMapping);
-            userToReturn.Token = await _tokenService.CreateToken(userMapping);
+            var userToGenerateToken = await _userManager.FindByEmailAsync(userToLoginDTO.Email);
+            userToReturn.Token = await _tokenService.CreateToken(userToGenerateToken);
             SaveTokenToHttpContext(userToReturn.Token);
-            return Ok();
+            return Ok(userToReturn.Token);
         }
         catch (Exception ex)
         {
@@ -74,15 +76,16 @@ public class AuthController : ControllerBase
             var result = await _userManager.CreateAsync(user, userToRegisterDTO.Password);
 
             if (!result.Succeeded)
+                
                 return BadRequest(result.Errors);
-
+            
             var roleResult = await _userManager.AddToRoleAsync(user, RoleOfSystem.Audience.ToString());
 
             if (!roleResult.Succeeded)
             {
                 // Rollback added user if role assignment fails
                 await _userManager.DeleteAsync(user);
-                return BadRequest(result.Errors);
+                return BadRequest("Error occur in server");
             }
 
             // Send confirmation email
@@ -92,7 +95,7 @@ public class AuthController : ControllerBase
                 $"Please confirm your email by clicking <a href='{confirmationLink}'>here</a>", true);
 
             // Return JSON response with redirect URL
-            return Ok(new { RedirectUrl = Url.Action("RegistrationSuccess", "Home") });
+            return Ok();
         }
         catch (Exception ex)
         {
@@ -102,16 +105,17 @@ public class AuthController : ControllerBase
 
 
     [HttpPost]
+    [Extensions.Authorize]
     public async Task<IActionResult> Logout()
     {
-        try
-        {
-            await _signInManager.SignOutAsync();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        //try
+        //{
+        //    await _signInManager.SignOutAsync();
+        //}
+        //catch (Exception ex)
+        //{
+        //    return BadRequest(ex.Message);
+        //}
 
         return Ok();
     }
@@ -124,7 +128,7 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByIdAsync(userId);
         if (user == null) return BadRequest("Invalid user");
         var result = await _userManager.ConfirmEmailAsync(user, token);
-        if (result.Succeeded) return Ok("Email confirmed");
+        if (result.Succeeded) return Redirect("http://127.0.0.1:5500/demo/anefty/html/preview/email-confirm.html");
         return BadRequest("Invalid code");
     }
 
@@ -170,7 +174,8 @@ public class AuthController : ControllerBase
     public IActionResult ResetPassword(string token = null)
     {
         if (token == null) return BadRequest("A code must be supplied for password reset");
-        return Ok(new ResetPasswordModel { Code = token });
+        return Redirect("http://127.0.0.1:5500/demo/anefty/html/preview/reset-password.html?token={token}");
+       
     }
 
     [HttpPost]
@@ -228,8 +233,19 @@ public class AuthController : ControllerBase
 
     private void AddErrors(IdentityResult result)
     {
-        foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+        foreach (var error in result.Errors)
+        {
+            if (error.Description != null)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, error.Code);
+            }
+        }
     }
+
 
     private string GetEmailBodyForResetPassword(string callbackUrl)
     {
@@ -245,7 +261,7 @@ public class AuthController : ControllerBase
     }
 
     private void SaveTokenToHttpContext(string token)
-    {        
-        Response.Cookies.Append("accessToken", token);
+    {
+        HttpContext.Response.Cookies.Append("token", token);
     }
 }

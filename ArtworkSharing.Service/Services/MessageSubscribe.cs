@@ -1,12 +1,18 @@
-﻿using ArtworkSharing.Core.Domain.Enums;
+﻿using ArtworkSharing.Core.Domain.Entities;
+using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Helpers.MsgQueues;
+using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Transactions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System;
+using System.Text.Json;
+
 
 namespace ArtworkSharing.Service.Services
 {
@@ -23,49 +29,75 @@ namespace ArtworkSharing.Service.Services
             _messageChannels = messageChanels;
             _serviceScope = serviceScope;
         }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            foreach (var item in _messageChannels)
+            MessageChanel messageChanel = new MessageChanel
             {
-                if (item.RoutingKey == null || item.QueueName == null || item.ExchangeName == null)
+                ExchangeName = Exchange.PaidRaise,
+                QueueName = Queue.PaidRaiseQueue,
+                RoutingKey = RoutingKey.PaidRaise
+            };
+            _channel = _getChannel.InititalBus(messageChanel);
+
+            var consumer = new EventingBasicConsumer(_channel);
+            consumer.Received += async (sender, ea) =>
+            {
+                var body = System.Text.Encoding.UTF8.GetString(ea.Body.ToArray());
+                body = body.Replace("\\", "");
+                var newBody = body.Trim('"');
+
+                if (!string.IsNullOrEmpty(newBody))
                 {
-                    continue;
-                }
-                _channel = _getChannel.InititalBus(item);
-
-                var consumer = new EventingBasicConsumer(_channel);
-                consumer.Received += async (sender, ea) =>
-                {
-                    var body = System.Text.Encoding.UTF8.GetString(ea.Body.ToArray());
-
-                    var data = JsonConvert.DeserializeObject<TransactionViewModel>(body);
-                    //  var dataTemp = JsonConvert.DeserializeObject<VNPayTransactionTransfer>(body);
-                    //using (var _scope = _serviceScope.CreateScope())
-                    //{
-                    //    var _refundRequestService = _scope.ServiceProvider.GetRequiredService<IVNPayTransactionTransferService>();
-
-                    //    await _refundRequestService.CreateVNPayTransactionTransfer(dataTemp);
-                    //}
-                    if (data!=null)
+                    var data = System.Text.Json.JsonSerializer.Deserialize<TransactionViewModel>(newBody);
+                    if (data != null)
                     {
                         var type = data.Type;
-                        if (type == TransactionType.Artwork)
+                        switch (type)
                         {
-                            using (var _scope = _serviceScope.CreateScope())
-                            {
-                                // waiting khoa
-
-                                //  var _refundRequestService = _scope.ServiceProvider.GetRequiredService<IVNPayTransactionTransferService>();
-                                //  await _refundRequestService.CreateVNPayTransactionTransfer();
-                                // updating
-                            }
+                            case TransactionType.Artwork:
+                                await UpdateArtwork(data);
+                                break;
+                            case TransactionType.ArtworkService:
+                                await UpdateArtworkService(data);
+                                break;
+                            case TransactionType.Package:
+                                await UpdatePackage(data);
+                                break;
                         }
                         _channel.BasicAck(ea.DeliveryTag, false);
                     }
-                };
-                _channel.BasicConsume(item.QueueName, false, consumer);
+                }
+            };
+            _channel.BasicConsume(messageChanel.QueueName, false, consumer);
+            await Task.CompletedTask; // Temp
+        }
+
+        private async Task UpdateArtwork(TransactionViewModel transactionViewModel)
+        {
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<ITransactionService>();
+                await svc.UpdateTransaction(transactionViewModel);
             }
-            await Task.CompletedTask;
+        }
+
+        private async Task UpdateArtworkService(TransactionViewModel transactionViewModel)
+        {
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<IArtworkRequestService>();
+                await svc.ChangeStatusAfterDeposit(transactionViewModel);
+            }
+        }
+
+        private async Task UpdatePackage(TransactionViewModel transactionViewModel)
+        {
+            using (var scope = _serviceScope.CreateScope())
+            {
+                var svc = scope.ServiceProvider.GetRequiredService<IPackageService>();
+                await svc.CheckOutPackage(transactionViewModel);
+            }
         }
     }
 }

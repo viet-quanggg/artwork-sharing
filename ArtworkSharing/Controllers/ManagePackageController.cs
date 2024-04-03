@@ -4,14 +4,15 @@ using ArtworkSharing.Core.Domain.Enums;
 using ArtworkSharing.Core.Interfaces.Services;
 using ArtworkSharing.Core.ViewModels.Package;
 using ArtworkSharing.Core.ViewModels.Transactions;
-using ArtworkSharing.Service.Services;
-using Firebase.Auth;
 using Microsoft.AspNetCore.Mvc;
+using ArtworkSharing.Extensions;
 
 namespace ArtworkSharing.Controllers;
 
 [Route("[controller]")]
 [ApiController]
+  
+
 public class ManagePackageController : Controller
 {
     private readonly IPackageService _packageService;
@@ -23,6 +24,7 @@ public class ManagePackageController : Controller
     private readonly IArtistPackageService _artistPackageService;
 
     private readonly IArtistService _artistService;
+
 
     private readonly HttpClient _httpClient;
 
@@ -43,7 +45,6 @@ public class ManagePackageController : Controller
     //    var packages = await _packageService.GetAll();
     //    return Ok(packages);
     //}
-
     [HttpGet(Name = "GetPackageWithPaging")]
     public async Task<ActionResult<List<PackageViewModel>>> GetPackageWithPaging(
         [FromQuery] int? pageIndex = null,
@@ -51,6 +52,10 @@ public class ManagePackageController : Controller
     {
         try
         {
+            //var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.NameId);
+            //var token = HttpContext.Request;
+            //var k = Request.Cookies["token"];
+           
             Expression<Func<Package, bool>> filter = null;
             Func<IQueryable<Package>, IOrderedQueryable<Package>> orderBy = null;
             var includeProperties = "";
@@ -117,13 +122,22 @@ public class ManagePackageController : Controller
     }
 
     //9c68f75b-ed05-4718-b6b8-05211342a80f
-    //8f5c103a-8cfb-4cc2-bf93-05286b79c43e
+    //32c5d536-a8dc-4e87-9018-11348de74b74
     //098901890883
     [HttpPut("{UserId}/checkout")]
+    [Authorize]
     public async Task<IActionResult> CheckOutPackage(Guid UserId,Guid PackageId)
     {
         try
         {
+           // var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            //Guid currentUserId = new Guid(userIdClaim?.Value);
+            var id = HttpContext.Items["UserId"];
+            if (id == null) return Unauthorized();
+
+            Guid currentUserId = Guid.Parse(id + "");
+
+            if (currentUserId == Guid.Empty) return Unauthorized();
             PackageViewModel package = await _packageService.GetOne(PackageId);
             if (package == null) return StatusCode(404);    
             //Create transaction
@@ -132,18 +146,31 @@ public class ManagePackageController : Controller
                 Id = new Guid(),
                 ArtworkId = null,
                 ArtworkServiceId = null,
-                AudienceId = UserId,
+                AudienceId = currentUserId,
                 TotalBill = package.Price,
                 CreatedDate = DateTime.UtcNow,
                 Status = TransactionStatus.Fail, // Đặt trạng thái mặc định
                 Type = TransactionType.Package,
                 PackageId = PackageId,
-                
+                PaymentMethodId= Guid.Parse("d9bfaaf3-a690-46cd-8387-4e1f318ec76f")
+               
             };
             await _transactionService.AddTransaction(transaction);
+            //TransactionViewModel transactionV = new TransactionViewModel
+            //{
+            //    Id = transaction.Id,
+            //    ArtworkId = null,
+            //    ArtworkServiceId = null,
+            //    AudienceId = UserId,
+            //    TotalBill = package.Price,
+            //    CreatedDate = DateTime.UtcNow,
+            //    Type = TransactionType.Package,
+            //    PackageId = PackageId,
 
+            //};
+           // _packageService.CheckOutPackage(transactionV);
             // Call API VNPay
-            var response = await _httpClient.GetAsync($"Payment/{transaction.Id}");
+            var response = await _httpClient.GetAsync($"Payment/vnpay/{transaction.Id}");
 
             //if (response.IsSuccessStatusCode)
             //{

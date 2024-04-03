@@ -2,6 +2,7 @@
 using Firebase.Auth;
 using Firebase.Storage;
 using Microsoft.AspNetCore.Http;
+using System.Reactive.Disposables;
 
 namespace ArtworkSharing.Service.Services;
 
@@ -12,7 +13,7 @@ public class FireBaseService : IFireBaseService
     private static readonly string AuthEmail = "recipeorganizert3@gmail.com";
     private static readonly string AuthPassword = "recipeorganizer123";
 
-    public async Task<string> UploadImageSingleNotList(IFormFile files)
+    public async Task<string> UploadImageSingle(IFormFile files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
@@ -47,8 +48,45 @@ public class FireBaseService : IFireBaseService
 
         return imageLink;
     }
+    public async Task<string> UploadImageWatermarkIntoFireBase(byte[] imageBytes, string imageType)
+    {
+        var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
-    public async Task<string> UploadImageSingle(List<IFormFile> files)
+        // get authentication token
+        var authResultTask = auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+        var authResult = await authResultTask;
+        var token = authResult.FirebaseToken;
+
+        var imageLink = "";
+
+        // Kiểm tra xem mảng byte của hình ảnh không phải là rỗng và kiểm tra xem chuỗi MIME type được cung cấp
+        // có hợp lệ không
+        if (imageBytes != null && !string.IsNullOrEmpty(imageType))
+        {
+            // Tạo stream từ mảng byte của hình ảnh
+            using (var stream = new MemoryStream(imageBytes))
+            {
+                // Bắt đầu quá trình tải lên hình ảnh lên Firebase Storage
+                var result = await new FirebaseStorage(Bucket,
+                    new FirebaseStorageOptions
+                    {
+                        AuthTokenAsyncFactory = () => Task.FromResult(token)
+                    })
+                    .Child("products")
+                    .Child(Guid.NewGuid().ToString()) // Đổi tên ngẫu nhiên cho hình ảnh để tránh trùng lặp
+                    .PutAsync(stream, new CancellationTokenSource().Token, $"image/{imageType}");
+
+                // Lấy đường dẫn của hình ảnh sau khi tải lên thành công
+                imageLink = result;
+            }
+        }
+
+        return imageLink;
+    }
+
+
+
+    public async Task<string> Test(List<IFormFile> files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
@@ -84,7 +122,7 @@ public class FireBaseService : IFireBaseService
         return imageLink;
     }
 
-    public async Task<string> UploadImage(List<IFormFile> files)
+    public async Task<string> Test2(List<IFormFile> files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
 
@@ -120,10 +158,10 @@ public class FireBaseService : IFireBaseService
         return imageLink;
     }
 
-    public async Task<string> UploadImages(List<IFormFile> files)
+    public async Task<List<string>> UploadMultiImagesAsync(List<IFormFile> files)
     {
         var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
-
+        List<string> images = new List<string>();
         // get authentication token
         var authResultTask = auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
         var authResult = await authResultTask;
@@ -154,6 +192,7 @@ public class FireBaseService : IFireBaseService
 
                     cancellation.Cancel();
                     imageLink += result + "ygbygyn34897gnygytfrfr";
+                    images.Add(result);
                 }
                 else
                 {
@@ -162,7 +201,7 @@ public class FireBaseService : IFireBaseService
                 }
             }
 
-        return imageLink;
+        return images;
     }
 
     private bool IsImage(IFormFile file)

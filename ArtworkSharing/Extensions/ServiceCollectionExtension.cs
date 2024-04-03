@@ -13,7 +13,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ArtworkService = ArtworkSharing.Service.Services.ArtworkService;
 
@@ -53,7 +52,6 @@ public static class ServiceCollectionExtension
         services.AddScoped<UnitOfWork>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IFollowService, FollowService>();
-        services.AddScoped<IRefundRequestService, RefundRequestService>();
         services.AddScoped<ITransactionService, TransactionService>();
         services.AddScoped<IPackageService, PackageService>();
         services.AddScoped<ITokenService, TokenService>();
@@ -63,27 +61,36 @@ public static class ServiceCollectionExtension
         services.AddScoped<ICommentService, CommentService>();
         services.AddScoped<IVNPayTransactionService, VNPayTransactionService>();
         services.AddScoped<ITransactionService, TransactionService>();
-<<<<<<< HEAD
         services.AddScoped<IUserRoleService, UserRoleService>();
-=======
         services.AddScoped<IPaymentEventService, PaymentEventService>();
         services.AddScoped<IVNPayTransactionTransferService, VNPayTransactionTransferService>();
->>>>>>> e9cf46968973864689cabb18726a9098ed81b417
+        services.AddScoped<IPaypalOrderService, PaypalOrderService>();
+        services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IPaymentRefundEventService, PaymentRefundEventService>();
+        services.AddScoped<IPaypalPaymentEventService, PaypalPaymentEventService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+        services.AddScoped<IPaypalRefundEventService, PaypalRefundEventService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+
         services.AddTransient<IEmailSender, EmailSender>();
         services.AddFluentValidationAutoValidation();
         services.AddValidatorsFromAssemblyContaining<UserToLoginDTOValidator>();
         services.AddValidatorsFromAssemblyContaining<UserToRegisterDTOValidator>();
 
-
-
         MessageChanel messageChanel = new();
         services.AddSingleton<MessageChanel>(messageChanel.PaidRaise());
+        services.AddSingleton<MessageChanel>(messageChanel.PaypalPaidRaise());
+        services.AddSingleton<MessageChanel>(messageChanel.RefundPaidRaise());
+        services.AddSingleton<MessageChanel>(messageChanel.RefundPaypalPaidRaise());
         services.AddSingleton<IMessageSupport, MessageSupport>();
         services.AddSingleton<MessagePaymentEvent>();
-        services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>());
+        services.AddSingleton<MessageRefundEvent>();
+        services.AddHostedService<MessagePaymentEvent>(_ => _.GetService<MessagePaymentEvent>()!);
+        services.AddHostedService<MessageRefundEvent>(_ => _.GetService<MessageRefundEvent>()!);
         services.AddHostedService<MessageSubscribe>();
-
-
+        services.AddHostedService<MessageRefundSubscribe>();
+        services.AddHostedService<MessagePaypalRefundSubscribe>();
+        services.AddHostedService<MessagePaypalSubscribe>();
         return services;
     }
 
@@ -120,15 +127,8 @@ public static class ServiceCollectionExtension
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddCookie(x =>
-        {
-            x.Cookie.Name = "accessToken";
-        }
-            )
-            .AddJwtBearer(options =>
+        }).AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = true;
-                options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -137,24 +137,16 @@ public static class ServiceCollectionExtension
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Cookies["accessToken"];
-                     
-                        return Task.CompletedTask;
-                    }
-                };
-            });
-        
-        services.AddAuthentication()
-            .AddGoogle(options =>
-            {
-                options.ClientId = "[Your Google Client ID]";
-                options.ClientSecret = "[Your Google Client Secret]";
-                // You can set other options as needed.
-            });
+               
+
+            })
+            ;
+        services.AddAuthentication().AddGoogle(options =>
+        {
+
+            // You can set other options as needed.
+        });
+
         //services.AddAuthorization(opt =>
         //{
         //    opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
@@ -162,4 +154,6 @@ public static class ServiceCollectionExtension
         //});
         return services;
     }
+
+
 }

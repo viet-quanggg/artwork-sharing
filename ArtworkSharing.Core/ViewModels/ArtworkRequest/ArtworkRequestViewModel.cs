@@ -5,6 +5,7 @@ namespace ArtworkSharing.Core.ViewModels.ArtworkRequest;
 
 public class ArtworkRequestViewModel
 {
+    public Guid Id { get; set; }
     public Guid AudienceId { get; set; }
     public Guid ArtistId { get; set; }
     public Guid TransactionId { get; set; }
@@ -14,5 +15,5 @@ public class ArtworkRequestViewModel
     public float RequestedDeposit { get; set; }
     public DateTime RequestedDeadlineDate { get; set; }
     public ArtworkServiceStatus Status { get; set; }
-    public ICollection<MediaContentViewModel>? ArtworkProduct { get; set; }
+    // public ICollection<MediaContentViewModel>? ArtworkProduct { get; set; }
 }

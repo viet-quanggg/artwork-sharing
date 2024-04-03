@@ -1,9 +1,9 @@
-﻿using System.Data;
-using ArtworkSharing.Core.Interfaces;
+﻿using ArtworkSharing.Core.Interfaces;
 using ArtworkSharing.Core.Interfaces.Repositories;
 using ArtworkSharing.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace ArtworkSharing.DAL;
 
@@ -30,17 +30,21 @@ public class UnitOfWork : IUnitOfWork
         RatingRepository = new RatingRepository(DbContext);
         RefundRequestRepository = new RefundRequestRepository(DbContext);
         TransactionRepository = new TransactionRepository(DbContext);
-        
         VNPayTransactionRepository = new VNPayTransactionRepository(DbContext);
         VNPayTransactionRefundRepository = new VNPayTransactionRefundRepository(DbContext);
         VNPayTransactionTransferRepository = new VNPayTransactionTransferRepository(DbContext);
-<<<<<<< HEAD
         UserRepository = new UserRepository(DbContext);
         UserRoleRepository = new UserRoleRepository(DbContext);
-
-=======
         PaymentEventRepository = new PaymentEventRepository(DbContext);
->>>>>>> e9cf46968973864689cabb18726a9098ed81b417
+        PaypalOrderRepository = new PaypalOrderRepository(DbContext);
+        PaypalAmountRepository = new PaypalAmountRepository(DbContext);
+        PaypalItemRepository = new PaypalItemRepository(DbContext);
+        PaymentRefundEventRepository = new PaymentRefundEventRepository(DbContext);
+        PaypalPaymentEventRepository = new PaypalPaymentEventRepository(DbContext);
+        PaypalRefundEventRepository = new PaypalRefundEventRepository(DbContext);
+        PaymentMethodRepository = new PaymentMethodRepository(DbContext);
+        PaypalRefundRepository = new PaypalRefundRepository(DbContext);
+
     }
 
     public DbContext DbContext { get; }
@@ -77,11 +81,25 @@ public class UnitOfWork : IUnitOfWork
 
     public IVNPayTransactionTransferRepository VNPayTransactionTransferRepository { get; }
 
-<<<<<<< HEAD
     public IUserRoleRepository UserRoleRepository { get; }
-=======
+
     public IPaymentEventRepository PaymentEventRepository { get; }
->>>>>>> e9cf46968973864689cabb18726a9098ed81b417
+    public IPaypalOrderRepository PaypalOrderRepository { get; }
+
+    public IPaypalAmountRepository PaypalAmountRepository { get; }
+
+    public IPaypalItemRepository PaypalItemRepository { get; }
+
+    public IPaymentRefundEventRepository PaymentRefundEventRepository { get; }
+
+    public IPaypalPaymentEventRepository PaypalPaymentEventRepository { get; }
+
+    public IPaypalRefundEventRepository PaypalRefundEventRepository { get; }
+
+    public IPaymentMethodRepository PaymentMethodRepository { get; }
+
+    public IPaypalRefundRepository PaypalRefundRepository { get; }
+
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
